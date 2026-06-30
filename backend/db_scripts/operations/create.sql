@@ -233,7 +233,6 @@ create table if not exists auth.roles (
   title text null,
   description text null,
   is_selectable boolean not null,
-  is_translatable boolean not null,
 
   constraint uk_auth_roles_name unique (name),
 
@@ -251,14 +250,14 @@ create table if not exists auth.roles (
 insert into auth.roles (
   uuid,
   name, title, description,
-  is_selectable, is_translatable,
+  is_selectable,
   created_at, created_by_id,
   updated_at, updated_by_id,
   deleted_at, deleted_by_id
 ) select 
     gen_random_uuid(),
     'admin', 'Administrator', 'Administrator role with full privileges',
-    true, true,
+    true,
     now(), system.id,
     now(), system.id,
     null, null

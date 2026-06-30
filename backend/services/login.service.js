@@ -4,6 +4,7 @@ import { Error400 } from '../errors/error400.js';
 import { Error403 } from '../errors/error403.js';
 import { UserMinDTO } from '../dtos/user.dto.js';
 import { SessionResponse } from '../dtos/session.dto.js';
+import { RoleMinDTO } from '../dtos/role.dto.js';
 
 export default class LoginService {
   constructor() {
@@ -11,6 +12,7 @@ export default class LoginService {
     this.userPasswordService = getDependency('userPasswordService');
     this.deviceService = getDependency('deviceService');
     this.sessionService = getDependency('sessionService');
+    this.roleXUserService = getDependency('roleXUserService');
   }
 
   async hashPassword(password) {
@@ -54,7 +56,8 @@ export default class LoginService {
 
     response.device = device.token;
     response.user = new UserMinDTO(user);
-    response.role = session.role;
+    response.role = (await this.roleXUserService.getRolesByUserId(user.id))
+      .map(role => role.name);
 
     return response;
   }

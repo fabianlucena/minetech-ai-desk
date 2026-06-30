@@ -12,20 +12,23 @@ import UserPasswordService from './services/user_password.service.js';
 import LoginService from './services/login.service.js';
 import DeviceService from './services/device.service.js';
 import SessionService from './services/session.service.js';
+import RoleService from './services/role.service.js';
+import RoleXUserService from './services/role_x_user.service.js';
 
 addDependency('config', config);
+
+for (const [key, value] of Object.entries(models)) {
+  addDependency(key[0].toLocaleLowerCase() + key.substring(1) + 'Model', () => value);
+}
 
 addDependency('helloController', () => helloController);
 addDependency('userController', () => userController);
 addDependency('loginController', () => loginController);
-
-addDependency('userModel', () => models.User);
-addDependency('userPasswordModel', () => models.UserPassword);
-addDependency('deviceModel', () => models.Device);
-addDependency('sessionModel', () => models.Session);
 
 addDependency('userService', () => new UserService());
 addDependency('userPasswordService', () => new UserPasswordService());
 addDependency('loginService', () => new LoginService());
 addDependency('deviceService', () => new DeviceService());
 addDependency('sessionService', () => new SessionService());
+addDependency('roleService', () => new RoleService());
+addDependency('roleXUserService', () => new RoleXUserService());
