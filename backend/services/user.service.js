@@ -5,7 +5,14 @@ export default class UserService {
     this.userModel = getDependency('userModel');
   }
 
-  async findByUsername(username) {
+  async getSystemUserId() {
+    const systemUser = await this.userModel.findOne({ where: { username: 'system' } });
+    if (!systemUser)
+      throw new Error('System user not found');
+    return systemUser.id;
+  }
+
+  async getByUsername(username) {
     const user = await this.userModel.findOne({ where: { username } });
     return user;
   }

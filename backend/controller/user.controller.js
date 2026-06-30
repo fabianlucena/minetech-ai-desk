@@ -1,7 +1,7 @@
 import getDependency from '../dependency.js';
 
-export function getAll(req, res) {
+export async function getAll(req, res) {
   const userService = getDependency('userService');
-  userService.getList()
-    .then(users => res.json(users));
+  const users = await userService.getList();
+  res.json(users);
 }

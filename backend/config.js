@@ -5,6 +5,8 @@ let config = {
   dbPass: 'password',
   dbHost: 'localhost',
   dbPort: 5432,
+  tokenSize: 64,
+  sessionExpiration: 60 * 60 * 24 * 1, // 1 day
 };
 
 try {

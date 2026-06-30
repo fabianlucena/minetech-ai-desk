@@ -5,7 +5,7 @@ export default class UserPasswordService {
     this.userPasswordModel = getDependency('userPasswordModel');
   }
 
-  async findByUserId(userId) {
+  async getByUserId(userId) {
     const passwordHash = await this.userPasswordModel.findOne({ where: { userId } });
     return passwordHash;
   }

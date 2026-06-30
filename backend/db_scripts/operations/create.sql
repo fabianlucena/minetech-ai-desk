@@ -123,9 +123,9 @@ create table if not exists auth.user_passwords (
 
 do $$ -- Check system user
 begin
-	if not exists (select 1 from auth.users where username = 'system') then
-		raise exception 'El usuario system no existe.';
-	end if;
+  if not exists (select 1 from auth.users where username = 'system') then
+    raise exception 'El usuario system no existe.';
+  end if;
 end $$;
 
 do $$ -- Insert default admin user
@@ -155,16 +155,230 @@ end $$;
 
 -- Insert default admin user pasword (only if admin does not have password) 1234
 insert into auth.user_passwords (
-	user_id,
-	password_hash,
-	created_at, updated_at, deleted_at,
-	created_by_id, updated_by_id, deleted_by_id
+  user_id,
+  password_hash,
+  created_at, updated_at, deleted_at,
+  created_by_id, updated_by_id, deleted_by_id
 )
 select admin.id, 
-	'$argon2id$v=19$m=65536,t=3,p=1$hN9eEqA0ugalPrBh8RljeQ$zaQ96ZcE+UCW/BPWnpnf+2/ZKy6y0/RYo6skrg/KKH0',
-	now(), now(), null,
-	system.id, system.id, null
+  '$argon2id$v=19$m=65536,t=3,p=1$hN9eEqA0ugalPrBh8RljeQ$zaQ96ZcE+UCW/BPWnpnf+2/ZKy6y0/RYo6skrg/KKH0',
+  now(), now(), null,
+  system.id, system.id, null
 from auth.users admin, auth.users system
 where admin.username = 'admin'
-	and system.username = 'system'
+  and system.username = 'system'
 on conflict (user_id) do nothing;
+
+-- devices table
+create table if not exists auth.devices (
+  id bigint generated always as identity primary key,
+  uuid uuid not null default gen_random_uuid(),
+
+  created_at timestamp not null default now(),
+  created_by_id bigint not null,
+
+  token varchar(64) not null,
+
+  constraint uk_auth_devices_token unique (token),
+
+  constraint fk_auth_devices_created_by_id foreign key (created_by_id)
+    references auth.users(id) on delete restrict
+);
+
+-- sessions table
+create table if not exists auth.sessions (
+  id bigint generated always as identity primary key,
+  uuid uuid not null default gen_random_uuid(),
+
+  created_at timestamp not null default now(),
+  created_by_id bigint not null,
+
+  authorization_token varchar(64) not null,
+  expires_at timestamp not null,
+  auto_login_token varchar(64) not null,
+  last_used_at timestamp not null,
+  closed_at timestamp null,
+
+  user_id bigint not null,
+  device_id bigint not null,
+  data_json text null,
+
+  constraint uk_auth_sessions_authorization_token unique (authorization_token),
+  
+  constraint fk_auth_sessions_User foreign key (user_id)
+    references auth.users(id) on delete restrict,
+    
+  constraint fk_auth_sessions_Device foreign key (device_id)
+    references auth.devices(id) on delete restrict,
+
+  constraint fk_auth_sessions_created_by_id foreign key (created_by_id)
+    references auth.users(id) on delete restrict
+);
+
+-- roles table
+create table if not exists auth.roles (
+  id bigint generated always as identity primary key,
+  uuid uuid not null default gen_random_uuid(),
+
+  created_at timestamp not null default now(),
+  created_by_id bigint not null,
+
+  updated_at timestamp not null default now(),
+  updated_by_id bigint not null,
+
+  deleted_at timestamp null,
+  deleted_by_id bigint null,
+
+  name varchar(256) not null,
+  title text null,
+  description text null,
+  is_selectable boolean not null,
+  is_translatable boolean not null,
+
+  constraint uk_auth_roles_name unique (name),
+
+  constraint fk_auth_roles_created_by_id foreign key (created_by_id)
+    references auth.users(id) on delete restrict,
+
+  constraint fk_auth_roles_updated_by_id foreign key (updated_by_id)
+    references auth.users(id) on delete restrict,
+
+  constraint fk_auth_roles_deleted_by_id foreign key (deleted_by_id)
+    references auth.users(id) on delete restrict
+);
+
+-- Insert default admin role
+insert into auth.roles (
+  uuid,
+  name, title, description,
+  is_selectable, is_translatable,
+  created_at, created_by_id,
+  updated_at, updated_by_id,
+  deleted_at, deleted_by_id
+) select 
+    gen_random_uuid(),
+    'admin', 'Administrator', 'Administrator role with full privileges',
+    true, true,
+    now(), system.id,
+    now(), system.id,
+    null, null
+  from auth.users system
+  where system.username = 'system'
+on conflict (name) do nothing;
+
+-- roles_x_users table
+create table if not exists auth.roles_x_users (
+  role_id bigint not null,
+  user_id bigint not null,
+
+  created_at timestamp not null default now(),
+  created_by_id bigint not null,
+
+  deleted_at timestamp null,
+  deleted_by_id bigint null,
+
+  constraint pk_auth_roles_x_users_x primary key (role_id,user_id),
+
+  constraint fk_auth_roles_x_users_role foreign key (role_id)
+    references auth.roles(id) on delete restrict,
+
+  constraint fk_auth_roles_x_users_User foreign key (user_id)
+    references auth.users(id) on delete restrict,
+
+  constraint fk_auth_roles_x_users_created_by_id foreign key (created_by_id)
+    references auth.users(id) on delete restrict,
+
+  constraint fk_auth_roles_x_users_deleted_by_id foreign key (deleted_by_id)
+    references auth.users(id) on delete restrict
+);
+
+-- Insert default admin user's role
+insert into auth.roles_x_users (
+  role_id, user_id,
+  created_at, deleted_at,
+  created_by_id, deleted_by_id
+) select 
+    role_admin.id, user_admin.id,
+    now(), null,
+    user_system.id, null
+  from auth.roles role_admin,
+    auth.users user_admin,
+    auth.users user_system
+  where role_admin.name = 'admin' 
+    and user_admin.username = 'admin' 
+    and user_system.username = 'system'
+on conflict (role_id, user_id) do nothing;
+
+-- roles_includes table
+create table if not exists auth.roles_includes (
+  role_id bigint not null,
+  include_id bigint not null,
+
+  created_at timestamp not null default now(),
+  created_by_id bigint not null,
+
+  deleted_at timestamp null,
+  deleted_by_id bigint null,
+
+  constraint pk_auth_roles_includes primary key (role_id,include_id),
+
+  constraint fk_auth_roles_includes_role foreign key (role_id)
+    references auth.roles(id) on delete restrict,
+
+  constraint fk_auth_roles_includes_include foreign key (include_id)
+    references auth.roles(id) on delete restrict,
+
+  constraint fk_auth_roles_includes_created_by_id foreign key (created_by_id)
+    references auth.users(id) on delete restrict,
+
+  constraint fk_auth_roles_includes_deleted_by_id foreign key (deleted_by_id)
+    references auth.users(id) on delete restrict
+);
+
+-- permissions table
+create table if not exists auth.permissions (
+  id bigint generated always as identity primary key,
+  uuid uuid not null default gen_random_uuid(),
+
+  name varchar(255) not null,
+
+  created_at timestamp not null default now(),
+  created_by_id bigint not null,
+
+  deleted_at timestamp null,
+  deleted_by_id bigint null,
+
+  constraint uk_auth_permissions_name unique (name),
+
+  constraint fk_auth_permissions_created_by_id foreign key (created_by_id)
+    references auth.users(id) on delete restrict,
+
+  constraint fk_auth_permissions_deleted_by_id foreign key (deleted_by_id)
+    references auth.users(id) on delete restrict
+);
+
+-- permissions_x_roles table
+create table if not exists auth.permissions_x_roles (
+  permission_id bigint not null,
+  role_id bigint not null,
+
+  created_at timestamp not null default now(),
+  created_by_id bigint not null,
+
+  deleted_at timestamp null,
+  deleted_by_id bigint null,
+
+  constraint pk_auth_permissions_x_roles primary key (permission_id,role_id),
+
+  constraint fk_auth_permissions_x_roles_Permission foreign key (permission_id)
+    references auth.permissions(id) on delete restrict,
+
+  constraint fk_auth_permissions_x_roles_role foreign key (role_id)
+    references auth.roles(id) on delete restrict,
+
+  constraint fk_auth_permissions_x_roles_created_by_id foreign key (created_by_id)
+    references auth.users(id) on delete restrict,
+
+  constraint fk_auth_permissions_x_roles_deleted_by_id foreign key (deleted_by_id)
+    references auth.users(id) on delete restrict
+);
