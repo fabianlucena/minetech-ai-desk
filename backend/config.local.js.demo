@@ -1,0 +1,3 @@
+let config = {
+  dbConnectionString: 'postgres://minetech-ai-desk:password@localhost:5432/minetech-ai-desk',
+};
