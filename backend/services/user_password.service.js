@@ -6,7 +6,7 @@ export default class UserPasswordService {
   }
 
   async getByUserId(userId) {
-    const passwordHash = await this.userPasswordModel.findOne({ where: { userId } });
+    const passwordHash = await this.userPasswordModel.findOne({ where: { userId }, raw: true });
     return passwordHash;
   }
 }

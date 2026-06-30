@@ -20,7 +20,7 @@ export default class DeviceService {
     if (!token)
       return;
 
-    return this.deviceModel.findOne({ where: { token } });
+    return this.deviceModel.findOne({ where: { token }, raw: true });
   }
 
   async getOrCreateByToken(token) {

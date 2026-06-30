@@ -6,6 +6,6 @@ export default class RoleService {
   }
 
   async getByIds(ids) {
-    return await this.roleModel.findAll({ where: { id: ids } });
+    return await this.roleModel.findAll({ where: { id: ids }, raw: true });
   }
 }

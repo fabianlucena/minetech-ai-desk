@@ -13,6 +13,7 @@ export default class LoginService {
     this.deviceService = getDependency('deviceService');
     this.sessionService = getDependency('sessionService');
     this.roleXUserService = getDependency('roleXUserService');
+    this.permissionXRoleService = getDependency('permissionXRoleService');
   }
 
   async hashPassword(password) {
@@ -54,10 +55,15 @@ export default class LoginService {
 
     const response = new SessionResponse(session);
 
+    const roles = await this.roleXUserService.getAllRolesByUserId(user.id);
+    const rolesId = roles.map(role => role.id);
+      
+    const permissions = await this.permissionXRoleService.getPermissionsByRoleId  (rolesId);
+
     response.device = device.token;
     response.user = new UserMinDTO(user);
-    response.role = (await this.roleXUserService.getAllRolesByUserId(user.id))
-      .map(role => role.name);
+    response.roles = roles.map(r => r.name);
+    response.permissions = permissions.map(p => p.name);
 
     return response;
   }
