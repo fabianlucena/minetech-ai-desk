@@ -56,7 +56,7 @@ export default class LoginService {
 
     response.device = device.token;
     response.user = new UserMinDTO(user);
-    response.role = (await this.roleXUserService.getRolesByUserId(user.id))
+    response.role = (await this.roleXUserService.getAllRolesByUserId(user.id))
       .map(role => role.name);
 
     return response;

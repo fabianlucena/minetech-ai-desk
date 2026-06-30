@@ -14,6 +14,7 @@ import DeviceService from './services/device.service.js';
 import SessionService from './services/session.service.js';
 import RoleService from './services/role.service.js';
 import RoleXUserService from './services/role_x_user.service.js';
+import RoleIncludeService from './services/role_include.service.js';
 
 addDependency('config', config);
 
@@ -32,3 +33,4 @@ addDependency('deviceService', () => new DeviceService());
 addDependency('sessionService', () => new SessionService());
 addDependency('roleService', () => new RoleService());
 addDependency('roleXUserService', () => new RoleXUserService());
+addDependency('roleIncludeService', () => new RoleIncludeService());
