@@ -5,7 +5,8 @@ import { Error403 } from '../errors/error403.js';
 
 export default class LoginService {
   constructor() {
-    this.userService = new (getDependency('userService'))();
+    this.userService = getDependency('userService');
+    this.userPasswordService = getDependency('userPasswordService');
   }
 
   async hashPassword(password) {
@@ -27,10 +28,14 @@ export default class LoginService {
       throw new Error400('La contraseña es obligatoria');
 
     const user = await this.userService.findByUsername(data.username);
-    if (!user || !user.is_active|| !user.can_login)
+    if (!user || !user.isActive|| !user.canLogin)
       throw new Error403('Usuario o contraseña incorrecta');
 
-    const isValid = await argon2.verify(user.password, data.password);
+    const userPassword = await this.userPasswordService.findByUserId(user.id);
+    if (!userPassword)
+      throw new Error403('Usuario o contraseña incorrecta');
+
+    const isValid = await argon2.verify(userPassword.passwordHash, data.password);
     if (!isValid)
       throw new Error403('Usuario o contraseña incorrectos');
 
