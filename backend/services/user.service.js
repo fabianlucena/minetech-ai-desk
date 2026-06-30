@@ -5,13 +5,13 @@ export default class UserService {
     this.userModel = getDependency('userModel');
   }
 
+  async findByUsername(username) {
+    const user = await this.userModel.findOne({ where: { username } });
+    return user;
+  }
+
   async getList() {
-    try {
-      const users = await this.userModel.findAll();
-      return users;
-    } catch (error) {
-      console.error('Error fetching users:', error);
-      throw error;
-    }
+    const users = await this.userModel.findAll();
+    return users;
   }
 }

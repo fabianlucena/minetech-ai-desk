@@ -3,5 +3,5 @@ import getDependency from '../dependency.js';
 export function getAll(req, res) {
   const userService = new (getDependency('userService'))();
   userService.getList()
-    .then(users => res.json(users))
+    .then(users => res.json(users));
 }

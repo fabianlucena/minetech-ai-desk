@@ -161,7 +161,7 @@ insert into auth.user_passwords (
 	created_by_id, updated_by_id, deleted_by_id
 )
 select admin.id, 
-	'100000.He2nIoHKO5PDiudeF3GV1Q==.OXZML34kQ8gPcsX01odwNpaNmNMkMzlggv5pLKqzekg=',
+	'$argon2id$v=19$m=65536,t=3,p=1$hN9eEqA0ugalPrBh8RljeQ$zaQ96ZcE+UCW/BPWnpnf+2/ZKy6y0/RYo6skrg/KKH0',
 	now(), now(), null,
 	system.id, system.id, null
 from auth.users admin, auth.users system
