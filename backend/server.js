@@ -4,25 +4,30 @@ import { Sequelize } from 'sequelize';
 import routes from './routes/index.js';
 import './dependencies.js';
 import sequelize from './database.js';
+import errorMiddleware from './middlewares/error.middleware.js';
+import logMiddleware from './middlewares/log.middleware.js';
+import logger from './logger.js';
 
 try {
   await sequelize.authenticate();
-  console.log('🔌 Conexión a la base OK ✔️');
+  logger.info('🔌 Conexión a la base OK ✔️');
 } catch (error) {
-  console.error('❌ Error de conexión:', error);
+  logger.error('❌ Error de conexión:', error);
   process.exit(1);
 }
 
 try {
   const app = express();
 
+  
   app.use(express.json());
+  app.use(logMiddleware);
+  //app.use(checkAuthorizationTokenMiddleware);
   app.use('/api', routes);
+  app.use(errorMiddleware);
 
-  app.listen(config.port, () => {
-    console.log(`📡 Server escuchando en el puerto: ${config.port} ✔️`);
-  });
+  app.listen(config.port, () => logger.info(`📡 Server escuchando en el puerto: ${config.port} ✔️`));
 } catch (error) {
-  console.error('❌ Error al inicializar el servidor:', error);
+  logger.error('❌ Error al inicializar el servidor:', error);
   process.exit(1);
 }
