@@ -1,13 +1,15 @@
 import config from './config.js';
 import express from 'express';
 import { Sequelize } from 'sequelize';
-import api from './api/index.js';
+import routes from './routes/index.js';
+import './dependencies.js';
+import sequelize from './database.js';
 
 try {
-  const sequelize = new Sequelize(config.dbConnectionString);
-  console.log('Connection has been established successfully.');
+  await sequelize.authenticate();
+  console.log('🔌 Conexión a la base OK ✔️');
 } catch (error) {
-  console.error('Unable to connect to the database:', error);
+  console.error('❌ Error de conexión:', error);
   process.exit(1);
 }
 
@@ -15,12 +17,12 @@ try {
   const app = express();
 
   app.use(express.json());
-  app.use('/api', api);
+  app.use('/api', routes);
 
   app.listen(config.port, () => {
-    console.log(`Server is running on port ${config.port}`);
+    console.log(`📡 Server escuchando en el puerto: ${config.port} ✔️`);
   });
 } catch (error) {
-  console.error('Error initializing the application:', error);
+  console.error('❌ Error al inicializar el servidor:', error);
   process.exit(1);
 }

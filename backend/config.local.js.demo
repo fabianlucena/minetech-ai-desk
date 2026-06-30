@@ -1,3 +1,7 @@
-let config = {
-  dbConnectionString: 'postgres://minetech-ai-desk:password@localhost:5432/minetech-ai-desk',
+export default {
+  dbName: 'minetech-ai-desk',
+  dbUser: 'minetech-ai-desk',
+  dbPass: 'password',
+  dbHost: 'localhost',
+  dbPort: 5432,
 };

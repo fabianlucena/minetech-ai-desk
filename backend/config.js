@@ -1,6 +1,10 @@
 let config = {
   port: 3000,
-  dbConnectionString: 'postgres://minetech-ai-desk:password@localhost:5432/minetech-ai-desk',
+  dbName: 'minetech-ai-desk',
+  dbUser: 'minetech-ai-desk',
+  dbPass: 'password',
+  dbHost: 'localhost',
+  dbPort: 5432,
 };
 
 try {
