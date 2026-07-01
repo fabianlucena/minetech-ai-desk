@@ -6,16 +6,38 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import IconButton from '@mui/material/IconButton';
 
 export default function Header({ toggleShowMenu }) {
-  return <AppBar>
-    <Toolbar>
-      <IconButton color="inherit" onClick={toggleShowMenu}>
+  return <AppBar position="static">
+    <Toolbar
+      style={{
+        margin: 0,
+        padding: '0 .5em',
+      }}
+    >
+      <IconButton
+        color="inherit"
+        onClick={toggleShowMenu}
+      >
         <MenuIcon />
       </IconButton>
 
-      <img class="header-logo" src="/minetech-logo.png" alt="Logo" />
+      <img
+        src="/minetech.png"
+        alt="Logo"
+        style={{
+          height: '2em',
+          margin: '0 .5em',
+        }}
+      />
 
-      <Typography variant="h6" sx={{ flexGrow: 1 }}>
-        MineTech AI Desk
+      <Typography
+        variant="h6"
+        sx={{
+          flexGrow: 1,
+          fontFamily: '"Inter", Sans-serif',
+          fontWeight: 'bold',
+        }}
+      >
+        AI Desk
       </Typography>
 
       <IconButton color="inherit">

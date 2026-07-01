@@ -10,30 +10,5 @@ body {
   display: flex;
   flex-direction: column;
   height: 100%;
-}
-
-.content {
-  flex: 1;
-  display: flex;
-}
-
-.header-logo {
-  height: 2em;
-}
-
-header {
-  display: flex;
-}
-
-footer {
-  background-color: #b534b9;
-}
-
-nav {
-  background-color: #e6dc55;
-}
-
-main {
-  flex: 1;
-  background-color: #6dda88;
+  overflow: auto;
 }

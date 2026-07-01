@@ -1,31 +1,25 @@
 import { useState } from 'react';
-import { Box, Snackbar } from '@mui/material';
+import { Box } from '@mui/material';
 import Header from './Header';
+import Footer from './Footer';
 import Menu from './Menu';
 
 import MenuIcon from '@mui/icons-material/Menu';
 
 export default function Layout({ children }) {
   const [showMenu, setShowMenu] = useState(true);
-  const [open, setOpen] = useState(true);
 
   const toggleShowMenu = () => setShowMenu(!showMenu);
 
   return <>
     <Header toggleShowMenu={toggleShowMenu} />
 
-    <Snackbar
-      open={open}
-      autoHideDuration={3000}
-      onClose={() => setOpen(false)}
-      message="Operación realizada correctamente"
-    />
-
     <Box
       sx={{
         display: 'flex',
         flexDirection: 'row',
-        minHeight: '100vh',
+        flex: 1,
+        overflow: 'auto',
       }}
     >
       <Menu showMenu={showMenu} />
@@ -41,5 +35,9 @@ export default function Layout({ children }) {
         {children}
       </Box>
     </Box>
+
+    <Footer >
+      © 2026 MineTech. Todos los derechos reservados.
+    </Footer> 
   </>;
 }

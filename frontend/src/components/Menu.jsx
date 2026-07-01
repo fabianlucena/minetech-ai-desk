@@ -18,16 +18,16 @@ export default function Menu({ showMenu }) {
     </Typography>
 
     <List>
-      <ListItem button>
+      <ListItem >
         <ListItemText primary="Dashboard" />
       </ListItem>
-      <ListItem button>
+      <ListItem >
         <ListItemText primary="Tickets" />
       </ListItem>
-      <ListItem button>
+      <ListItem >
         <ListItemText primary="Clientes" />
       </ListItem>
-      <ListItem button>
+      <ListItem >
         <ListItemText primary="Operadores" />
       </ListItem>
     </List>

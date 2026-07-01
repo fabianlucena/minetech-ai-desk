@@ -46,7 +46,7 @@ export const mineTechTheme = createTheme({
       styleOverrides: {
         root: {
           backgroundColor: '#1A1A1A', // Negro técnico
-          color: '#FFFFFF',
+          color: '#888888',
         }
       }
     },
