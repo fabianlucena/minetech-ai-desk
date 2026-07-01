@@ -9,14 +9,9 @@ import {
 export default function Menu({ showMenu }) {
   return <Box
     sx={{
-      padding: 2,
       display: showMenu ? 'block' : 'none',
     }}
   >
-    <Typography variant="h6" sx={{ mb: 2 }}>
-      Menú
-    </Typography>
-
     <List>
       <ListItem >
         <ListItemText primary="Dashboard" />

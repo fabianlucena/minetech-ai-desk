@@ -26,8 +26,7 @@ export default function Layout({ children }) {
 
       <Box
         sx={{
-          marginTop: 8,
-          padding: 3,
+          padding: 1,
           overflow: 'auto',
           flex: 1,
         }}

@@ -10,10 +10,6 @@ export default function ButtonsDemo() {
       <Button variant="contained" color="secondary">
         Secundario MineTech
       </Button>
-
-      <Button variant="contained" sx={{ backgroundColor: '#D62828' }}>
-        Alerta MineTech
-      </Button>
     </Box>
   );
 }

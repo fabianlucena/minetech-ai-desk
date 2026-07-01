@@ -6,7 +6,7 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import IconButton from '@mui/material/IconButton';
 
 export default function Header({ toggleShowMenu }) {
-  return <AppBar position="static">
+  return <AppBar >
     <Toolbar
       style={{
         margin: 0,

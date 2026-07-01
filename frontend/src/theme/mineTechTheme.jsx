@@ -6,11 +6,11 @@ export const mineTechTheme = createTheme({
 
     primary: {
       main: '#F4C300',       // Amarillo MineTech
-      contrastText: '#1A1A1A'
+      contrastText: '#4A4A4A'
     },
 
     secondary: {
-      main: '#D62828',       // Rojo MineTech
+      main: '#888888', //'#D62828',       // Rojo MineTech
       contrastText: '#FFFFFF'
     },
 
@@ -47,6 +47,7 @@ export const mineTechTheme = createTheme({
         root: {
           backgroundColor: '#1A1A1A', // Negro técnico
           color: '#888888',
+          position: 'static',
         }
       }
     },
@@ -63,7 +64,7 @@ export const mineTechTheme = createTheme({
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 8
+          borderRadius: 6
         }
       }
     }
