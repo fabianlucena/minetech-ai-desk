@@ -1,16 +1,19 @@
 import './App.css';
-import Header from './components/Header';
-import Menu from './components/Menu';
-import Footer from './components/Footer';
-import Main from './components/Main';
+import Layout from './components/Layout';
+import { Typography, Box } from '@mui/material';
+import ButtonsDemo from './components/ButtonsDemo';
+import MineTechGrid from './components/MineTechGrid';
 
 export default function App() {
-  return <>
-    <Header />
-    <div className="content">
-      <Menu />
-      <Main />
-    </div>
-    <Footer />
-  </>;
+  return <Layout>
+    <Typography variant="h4" sx={{ mb: 3 }}>
+      Panel Administrativo MineTech
+    </Typography>
+
+    <ButtonsDemo />
+
+    <Box sx={{ mt: 4 }}>
+      <MineTechGrid />
+    </Box>
+  </Layout>;
 }
