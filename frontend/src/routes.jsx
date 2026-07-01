@@ -5,7 +5,7 @@ import Home from './pages/Home.jsx';
 import About from './pages/About.jsx';
 import NotFound from './pages/NotFound.jsx';
 
-export const router = createBrowserRouter([
+const routes = [
   {
     path: '/',
     element: <Layout />,
@@ -17,4 +17,6 @@ export const router = createBrowserRouter([
   },
 
   { path: '/login', element: <Login /> },
-]);
+];
+
+export const router = createBrowserRouter(routes);
