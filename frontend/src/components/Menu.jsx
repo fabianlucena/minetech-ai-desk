@@ -6,11 +6,11 @@ import {
   ListItemText
 } from '@mui/material';
 
-export default function Menu({ open }) {
+export default function Menu({ showMenu }) {
   return <Box
     sx={{
       padding: 2,
-      display: open ? 'block' : 'none',
+      display: showMenu ? 'block' : 'none',
     }}
   >
     <Typography variant="h6" sx={{ mb: 2 }}>

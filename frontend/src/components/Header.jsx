@@ -5,10 +5,10 @@ import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import IconButton from '@mui/material/IconButton';
 
-export default function Header({ toggleOpen }) {
+export default function Header({ toggleShowMenu }) {
   return <AppBar>
     <Toolbar>
-      <IconButton color="inherit" onClick={toggleOpen}>
+      <IconButton color="inherit" onClick={toggleShowMenu}>
         <MenuIcon />
       </IconButton>
 

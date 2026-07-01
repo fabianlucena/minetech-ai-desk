@@ -1,17 +1,25 @@
 import { useState } from 'react';
-import { Box } from '@mui/material';
+import { Box, Snackbar } from '@mui/material';
 import Header from './Header';
 import Menu from './Menu';
 
 import MenuIcon from '@mui/icons-material/Menu';
 
 export default function Layout({ children }) {
-  const [open, setOpen] = useState(false);
+  const [showMenu, setShowMenu] = useState(true);
+  const [open, setOpen] = useState(true);
 
-  const toggleOpen = () => setOpen(!open);
+  const toggleShowMenu = () => setShowMenu(!showMenu);
 
   return <>
-    <Header toggleOpen={toggleOpen} />
+    <Header toggleShowMenu={toggleShowMenu} />
+
+    <Snackbar
+      open={open}
+      autoHideDuration={3000}
+      onClose={() => setOpen(false)}
+      message="Operación realizada correctamente"
+    />
 
     <Box
       sx={{
@@ -20,7 +28,7 @@ export default function Layout({ children }) {
         minHeight: '100vh',
       }}
     >
-      <Menu open={open} />
+      <Menu showMenu={showMenu} />
 
       <Box
         sx={{
