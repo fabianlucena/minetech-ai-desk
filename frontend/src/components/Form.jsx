@@ -32,30 +32,30 @@ export default function Form({
         </Typography>}
       </Box>}
 
-      <form onSubmit={(e) => { e.preventDefault(); console.log("submit"); }}>
+      <form onSubmit={(e) => { e.preventDefault(); onSubmit(e); }}>
         <Stack spacing={2}>
           {children}
         </Stack>
-      </form>
 
-      {(footer || onSubmit || submitText || onCancel || cancelText) && <Box
-          sx={{
-            pt: 2,
-            borderTop: "1px solid",
-            borderColor: "divider",
-          display: "flex",
-          justifyContent: "flex-end",
-          gap: 2,
-        }}
-      >
-        {footer}
-        {(onCancel || cancelText) && <Button variant="outlined" onClick={onCancel}>
-          {cancelText || "Cancelar"}
-        </Button>}
-        {(onSubmit || submitText) && <Button variant="contained" onClick={onSubmit}>
-          {submitText || "Enviar"}
-        </Button>}
-      </Box> }
+        {(footer || onSubmit || submitText || onCancel || cancelText) && <Box
+            sx={{
+              pt: 2,
+              borderTop: "1px solid",
+              borderColor: "divider",
+            display: "flex",
+            justifyContent: "flex-end",
+            gap: 2,
+          }}
+        >
+          {footer}
+          {(onCancel || cancelText) && <Button variant="outlined" onClick={onCancel}>
+            {cancelText || "Cancelar"}
+          </Button>}
+          {(onSubmit || submitText) && <Button variant="contained" type="submit" >
+            {submitText || "Enviar"}
+          </Button>}
+        </Box> }
+      </form>
     </Paper>
   );
 }

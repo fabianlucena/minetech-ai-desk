@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Form from '../components/Form';
 import TextField from '../components/TextField';
 import PasswordField from '../components/PasswordField';
+import { loginService } from '../services/login.service.js';
 
 export default function Login() {
   const [data, setData] = useState({
@@ -9,10 +10,15 @@ export default function Login() {
     password: ''
   });
 
+  async function onSubmit() {
+    const response = await loginService(data);
+    console.log(response);
+  }
+
   return <Form
     title="Ingresar"
     description="Por favor, ingrese sus credenciales para continuar"
-    onSubmit={() => console.log(data)}
+    onSubmit={onSubmit}
     sx={{
       maxWidth: 400,
       margin: "auto",
