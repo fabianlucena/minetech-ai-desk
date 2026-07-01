@@ -46,7 +46,7 @@ export default class LoginService {
     if (!isValid)
       throw new Error403('Usuario o contraseña incorrectos');
 
-    const device = await this.deviceService.getOrCreateByToken(data.device);
+    const device = await this.deviceService.getOrCreateByToken(data.deviceToken);
 
     const session = await this.sessionService.create({
       userId: user.id,

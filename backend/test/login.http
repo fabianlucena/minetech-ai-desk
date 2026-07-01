@@ -7,5 +7,6 @@ Content-Type: application/json
 
 {
   "username": "admin",
-  "password": "1234"
+  "password": "1234",
+  "deviceToken": "D7gjdBTFad7YX7sxRHfsAgBim4j7nQLmtj2KMmL4ASsoZLvbPXTCZFRhhbEKz4jZ"
 }
