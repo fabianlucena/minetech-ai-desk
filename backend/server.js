@@ -7,6 +7,7 @@ import sequelize from './database.js';
 import errorMiddleware from './middlewares/error.middleware.js';
 import logMiddleware from './middlewares/log.middleware.js';
 import logger from './logger.js';
+import cors from 'cors';
 
 try {
   await sequelize.authenticate();
@@ -19,7 +20,12 @@ try {
 try {
   const app = express();
 
-  
+  if (config.cors) {
+    const corsOptions = config.cors === true ? {} : config.cors;
+    app.use(cors(config.cors));
+    logger.info('🔓 CORS habilitado ✔️');
+  }
+
   app.use(express.json());
   app.use(logMiddleware);
   //app.use(checkAuthorizationTokenMiddleware);
