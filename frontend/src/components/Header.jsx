@@ -4,8 +4,11 @@ import Typography from '@mui/material/Typography';
 import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import IconButton from '@mui/material/IconButton';
+import { useSession } from '../state/session';
 
-export default function Header({ toggleShowMenu }) {
+export default function Header() {
+  const { toggleMenuOpen } = useSession();
+
   return <AppBar >
     <Toolbar
       style={{
@@ -15,7 +18,7 @@ export default function Header({ toggleShowMenu }) {
     >
       <IconButton
         color="inherit"
-        onClick={toggleShowMenu}
+        onClick={toggleMenuOpen}
       >
         <MenuIcon />
       </IconButton>

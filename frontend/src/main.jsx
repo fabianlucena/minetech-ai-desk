@@ -4,11 +4,14 @@ import './index.css';
 import App from './App.jsx';
 import { ThemeProvider } from '@mui/material/styles';
 import { mineTechTheme } from './theme/mineTechTheme';
+import { SessionProvider } from './state/session.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ThemeProvider theme={mineTechTheme}>
-      <App />
+      <SessionProvider>
+        <App />
+      </SessionProvider>
     </ThemeProvider>
   </StrictMode>,
 )

@@ -8,12 +8,8 @@ import Menu from './Menu';
 import MenuIcon from '@mui/icons-material/Menu';
 
 export default function Layout() {
-  const [showMenu, setShowMenu] = useState(true);
-
-  const toggleShowMenu = () => setShowMenu(!showMenu);
-
   return <>
-    <Header toggleShowMenu={toggleShowMenu} />
+    <Header />
 
     <Box
       sx={{
@@ -23,7 +19,7 @@ export default function Layout() {
         overflow: 'auto',
       }}
     >
-      <Menu showMenu={showMenu} />
+      <Menu />
 
       <Box
         sx={{

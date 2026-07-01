@@ -6,11 +6,14 @@ import {
   ListItemText
 } from '@mui/material';
 import { Link } from 'react-router-dom';
+import { useSession } from '../state/session';
 
-export default function Menu({ showMenu }) {
+export default function Menu() {
+  const { menuOpen } = useSession();
+
   return <Box
     sx={{
-      display: showMenu ? 'block' : 'none',
+      display: menuOpen ? 'block' : 'none',
     }}
   >
     <List>
