@@ -5,6 +5,7 @@ import {
   ListItem,
   ListItemText
 } from '@mui/material';
+import { Link } from 'react-router-dom';
 
 export default function Menu({ showMenu }) {
   return <Box
@@ -14,16 +15,24 @@ export default function Menu({ showMenu }) {
   >
     <List>
       <ListItem >
-        <ListItemText primary="Dashboard" />
+        <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+          <ListItemText primary="Inicio" />
+        </Link>
       </ListItem>
       <ListItem >
-        <ListItemText primary="Tickets" />
+        <Link to="/about" style={{ textDecoration: 'none', color: 'inherit' }}>
+          <ListItemText primary="Acerca de" />
+        </Link>
       </ListItem>
       <ListItem >
-        <ListItemText primary="Clientes" />
+        <Link to="/login" style={{ textDecoration: 'none', color: 'inherit' }}>
+          <ListItemText primary="Login" />
+        </Link>
       </ListItem>
       <ListItem >
-        <ListItemText primary="Operadores" />
+        <Link to="/otro" style={{ textDecoration: 'none', color: 'inherit' }}>
+          <ListItemText primary="Otro" />
+        </Link>
       </ListItem>
     </List>
   </Box>;

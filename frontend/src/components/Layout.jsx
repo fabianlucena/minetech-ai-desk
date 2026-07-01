@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Outlet } from 'react-router-dom';
 import { Box } from '@mui/material';
 import Header from './Header';
 import Footer from './Footer';
@@ -6,7 +7,7 @@ import Menu from './Menu';
 
 import MenuIcon from '@mui/icons-material/Menu';
 
-export default function Layout({ children }) {
+export default function Layout() {
   const [showMenu, setShowMenu] = useState(true);
 
   const toggleShowMenu = () => setShowMenu(!showMenu);
@@ -31,7 +32,7 @@ export default function Layout({ children }) {
           flex: 1,
         }}
       >
-        {children}
+        <Outlet />
       </Box>
     </Box>
 
