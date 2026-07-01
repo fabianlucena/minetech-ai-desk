@@ -7,7 +7,12 @@ import {
 } from '@mui/material';
 
 export default function Menu({ open }) {
-  return <Box sx={{ width: 260, padding: 2, display: open ? 'block' : 'none' }}>
+  return <Box
+    sx={{
+      padding: 2,
+      display: open ? 'block' : 'none',
+    }}
+  >
     <Typography variant="h6" sx={{ mb: 2 }}>
       Menú
     </Typography>

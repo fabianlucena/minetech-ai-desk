@@ -22,7 +22,14 @@ export default function Layout({ children }) {
     >
       <Menu open={open} />
 
-      <Box sx={{ marginTop: 8, padding: 3 }}>
+      <Box
+        sx={{
+          marginTop: 8,
+          padding: 3,
+          overflow: 'auto',
+          flex: 1,
+        }}
+      >
         {children}
       </Box>
     </Box>
