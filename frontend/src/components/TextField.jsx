@@ -1,5 +1,5 @@
-import { TextField } from '@mui/material';
+import { TextField as MuiTextField } from '@mui/material';
 
-export default function Home(props) {
-  return <TextField {...props}/>
+export default function TextField(props) {
+  return <MuiTextField {...props}/>
 }

@@ -6,10 +6,10 @@ import {
   ListItemText
 } from '@mui/material';
 import { Link } from 'react-router-dom';
-import { useSession } from '../state/session';
+import { useGlobal } from '../state/global';
 
 export default function Menu() {
-  const { menuOpen } = useSession();
+  const { menuOpen } = useGlobal();
 
   return <Box
     sx={{

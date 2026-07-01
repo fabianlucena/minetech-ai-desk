@@ -4,14 +4,17 @@ import './index.css';
 import App from './App.jsx';
 import { ThemeProvider } from '@mui/material/styles';
 import { mineTechTheme } from './theme/mineTechTheme';
-import { SessionProvider } from './state/session.jsx';
+import { GlobalProvider } from './state/global.jsx';
+import { ToastProvider } from './state/toast.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ThemeProvider theme={mineTechTheme}>
-      <SessionProvider>
-        <App />
-      </SessionProvider>
+      <ToastProvider>
+        <GlobalProvider>
+          <App />
+        </GlobalProvider>
+      </ToastProvider>
     </ThemeProvider>
   </StrictMode>,
 )

@@ -1,7 +1,13 @@
-import { Snackbar, Alert, Button } from '@mui/material';
+import { Snackbar as MuiSnackbar, Alert, Button } from '@mui/material';
 import { useState } from 'react';
 
-export default function MineTechSnackbar() {
+export default function Snackbar({
+  title,
+  text,
+  severity = 'success',
+  variant = 'filled',
+  autoHideDuration = 4000
+}) {
   const [open, setOpen] = useState(true);
 
   const handleClose = (_, reason) => {
@@ -10,24 +16,20 @@ export default function MineTechSnackbar() {
   };
 
   return <>
-    <Button variant="contained" color="primary" onClick={() => setOpen(true)}>
-      Guardar cambios
-    </Button>
-
-    <Snackbar
+    <MuiSnackbar
       open={open}
-      autoHideDuration={4000}
+      autoHideDuration={autoHideDuration}
       onClose={handleClose}
       anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
     >
       <Alert
         onClose={handleClose}
-        severity="success"
-        variant="filled"
+        severity={severity}
+        variant={variant}
         sx={{ width: '100%' }}
       >
-        Cambios guardados correctamente
+        {text}
       </Alert>
-    </Snackbar>
+    </MuiSnackbar>
   </>;
 }

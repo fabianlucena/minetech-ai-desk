@@ -4,10 +4,10 @@ import Typography from '@mui/material/Typography';
 import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import IconButton from '@mui/material/IconButton';
-import { useSession } from '../state/session';
+import { useGlobal } from '../state/global';
 
 export default function Header() {
-  const { toggleMenuOpen } = useSession();
+  const { toggleMenuOpen } = useGlobal();
 
   return <AppBar >
     <Toolbar

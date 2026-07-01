@@ -17,11 +17,11 @@ export async function autoLoginService() {
   };
 
   if (body.autoLoginToken && body.deviceToken)
-    return _loginService('v1/auto-login', body);
+    return _loginService('auto-login', body);
 }
 
 export async function logoutService() {
-  await Api.getJson('v1/logout');
+  await Api.getJson('logout');
   localStorage.removeItem('autoLoginToken');
   if (Api.Authorization)
     Api.Authorization = null;
