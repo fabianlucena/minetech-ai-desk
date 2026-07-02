@@ -78,7 +78,7 @@ export default function Form({
         }}
       >
         {footer}
-        {(onCancel || cancelText) && <Button variant="outlined" onClick={onCancel}>
+        {(onCancel) && <Button variant="outlined" onClick={onCancel}>
           {cancelText || "Cancelar"}
         </Button>}
         {(onSubmit || submitText) && <Button variant="contained" type="submit" >
