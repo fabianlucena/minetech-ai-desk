@@ -1,5 +1,5 @@
-export default function About() {
+export default function NotFound() {
   return <h1>
-    Not found
+    Página no encontrada o prohibida. Por favor, verifique la URL o regrese a la página de inicio.
   </h1>
 }

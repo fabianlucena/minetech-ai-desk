@@ -1,22 +1,72 @@
-import { createBrowserRouter } from 'react-router-dom';
+import { useGlobal } from './state/global.jsx';
 import Layout from './components/Layout.jsx';
-import Login from './pages/Login.jsx';
 import Home from './pages/Home.jsx';
+import Login from './pages/Login.jsx';
+import Logout from './pages/Logout.jsx';
 import About from './pages/About.jsx';
 import NotFound from './pages/NotFound.jsx';
+import Dashboard from './pages/Dashboard.jsx';
 
-const routes = [
+export const allRoutes = [
   {
     path: '/',
     element: <Layout />,
     children: [
-      { index: true, element: <Home /> },
-      { path: 'about', element: <About /> },
-      { path: '*', element: <NotFound /> },
+      {
+        index: true,
+        label: 'Inicio',
+        menuItemOrder: 1,
+        element: <Home />,
+      },
+      {
+        path: '/logout',
+        label: 'Salir',
+        menuItemOrder: 3,
+        element: <Logout />,
+        condition: global => !!global?.session?.user,
+      },
+      {
+        path: 'dashboard',
+        label: 'Dashboard',
+        menuItemOrder: 2,
+        element: <Dashboard />,
+        condition: global => !!global?.session?.user,
+      },
+      {
+        path: 'about',
+        label: 'Acerca de',
+        menuItemOrder: 99,
+        element: <About />,
+      },
+      {
+        path: '*',
+        element: <NotFound />,
+      },
     ],
   },
 
-  { path: '/login', element: <Login /> },
+  {
+    path: '/login',
+    label: 'Ingresar',
+    menuItemOrder: 2,
+    element: <Login />,
+    condition: global => !global?.session?.user,
+  },
 ];
 
-export const router = createBrowserRouter(routes);
+export function getFilteredRoutes(routes = allRoutes, global) {
+  return routes.map(route => {
+    if (route.condition && !route.condition(global)) {
+      return null;
+    }
+
+    const { children, ...rest } = route;
+    const filteredChildren = children ? getFilteredRoutes(children, global) : undefined;
+    return { ...rest, children: filteredChildren };
+  }).filter(route => route !== null);
+}
+
+export function useRoutes() {
+  const global = useGlobal();
+  return getFilteredRoutes(allRoutes, global);
+}

@@ -1,7 +1,10 @@
-import { RouterProvider } from 'react-router-dom';
-import { router } from './routes.jsx';
+import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import { useRoutes } from './routes.jsx';
 
 export default function App() {
+  const routes = useRoutes();
+  const router = createBrowserRouter(routes);
+
   return <RouterProvider
     router={router}
     future={{

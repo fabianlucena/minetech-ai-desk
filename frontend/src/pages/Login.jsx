@@ -7,17 +7,23 @@ import { loginService } from '../services/login.service.js';
 import { useGlobal } from '../state/global.jsx';
 import { useToast } from '../state/toast.jsx';
 
+export function wait(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 export default function Login() {
   const { updateSession } = useGlobal();
   const { addMessage } = useToast();
   const navigate = useNavigate();
+  const [disabled, setDisabled] = useState(false);
   const [data, setData] = useState({
-    username: '',
-    password: ''
+    username: 'admin',
+    password: '1234'
   });
 
   async function onSubmit() {
-    addMessage('Iniciando sesión...');
+    setDisabled(true);
+    await wait(2000);
     try {
       const response = await loginService(data);
       updateSession({
@@ -28,20 +34,37 @@ export default function Login() {
       navigate('/dashboard');
       addMessage('Sesión iniciada correctamente');
     } catch (error) {
+      console.error('Error al iniciar sesión:', error);
       addMessage('Error al iniciar sesión', { severity: 'error' });
     }
+    setDisabled(false);
   }
 
   return <Form
     title="Ingresar"
     description="Por favor, ingrese sus credenciales para continuar"
+    disabled={disabled}
+    disabledMessage="Iniciando sesión..."
     onSubmit={onSubmit}
     sx={{
       maxWidth: 400,
       margin: "auto",
     }}
   >
-    <TextField label="Nombre de usuario" value={data.username} onChange={(e) => setData({...data, username: e.target.value})} />
-    <PasswordField label="Contraseña" value={data.password} onChange={(e) => setData({...data, password: e.target.value})} />
+    <TextField
+      label="Nombre de usuario"
+      disabled={disabled}
+      required
+      autoFocus
+      value={data.username}
+      onChange={(e) => setData({...data, username: e.target.value})}
+    />
+    <PasswordField
+      label="Contraseña"
+      disabled={disabled}
+      required
+      value={data.password}
+      onChange={(e) => setData({...data, password: e.target.value})}
+    />
   </Form>;
 }

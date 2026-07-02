@@ -1,15 +1,43 @@
-import {
-  Box,
-  Typography,
-  List,
-  ListItem,
-  ListItemText
-} from '@mui/material';
+import { useState, useEffect } from 'react';
+import { Box, Typography, List, ListItem, ListItemText } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { useGlobal } from '../state/global';
+import { useRoutes } from '../routes.jsx';
+
+function flattenNavigableRoutes(routes) {
+  const result = [];
+
+  function walk(node) {
+    const isNavigable = node.index || node.path && node.path !== '*';
+
+    if (isNavigable) {
+      result.push({
+        path: node.path,
+        label: node.label ?? null,
+        menuItemOrder: node.menuItemOrder ?? Infinity,
+      });
+    }
+
+    if (Array.isArray(node.children)) {
+      node.children.forEach(child => walk(child));
+    }
+  }
+
+  routes.forEach(r => walk(r));
+  return result;
+}
 
 export default function Menu() {
   const { menuOpen } = useGlobal();
+  const routes = useRoutes();
+  const [ menuItems, setMenuItems ] = useState([]);
+
+  useEffect(() => {
+    const menuItems = flattenNavigableRoutes(routes)
+      .sort((a, b) => a.menuItemOrder - b.menuItemOrder);
+
+    setMenuItems(menuItems);
+  }, [routes]);
 
   return <Box
     sx={{
@@ -17,26 +45,13 @@ export default function Menu() {
     }}
   >
     <List>
-      <ListItem >
-        <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
-          <ListItemText primary="Inicio" />
-        </Link>
-      </ListItem>
-      <ListItem >
-        <Link to="/about" style={{ textDecoration: 'none', color: 'inherit' }}>
-          <ListItemText primary="Acerca de" />
-        </Link>
-      </ListItem>
-      <ListItem >
-        <Link to="/login" style={{ textDecoration: 'none', color: 'inherit' }}>
-          <ListItemText primary="Login" />
-        </Link>
-      </ListItem>
-      <ListItem >
-        <Link to="/otro" style={{ textDecoration: 'none', color: 'inherit' }}>
-          <ListItemText primary="Otro" />
-        </Link>
-      </ListItem>
+      {menuItems.map((route, index) => (
+        <ListItem key={index}>
+          <Link to={route.path || (route.index ? '/' : '')} style={{ textDecoration: 'none', color: 'inherit' }}>
+            <ListItemText primary={route.label} />
+          </Link>
+        </ListItem>
+      ))}
     </List>
   </Box>;
 }
