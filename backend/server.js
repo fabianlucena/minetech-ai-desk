@@ -11,7 +11,7 @@ import cors from 'cors';
 
 try {
   await sequelize.authenticate();
-  logger.info('🔌 Conexión a la base OK ✔️');
+  logger.info('🛢️ Conexión a la base OK ✔️');
 } catch (error) {
   logger.error('❌ Error de conexión:', error);
   process.exit(1);
