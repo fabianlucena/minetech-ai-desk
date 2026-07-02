@@ -6,7 +6,7 @@ import { useToast } from '../state/toast.jsx';
 export default function Logout() {
   const navigate = useNavigate();
   const { updateSession } = useGlobal();
-  const { addMessage, addWarning } = useToast();
+  const { addWarning, addError } = useToast();
 
   useEffect(() => {
     try {
@@ -19,7 +19,7 @@ export default function Logout() {
       addWarning('Sesión cerrada correctamente');
     } catch (error) {
       console.error('Error al cerrar sesión:', error);
-      addMessage('Error al cerrar sesión', { severity: 'error' });
+      addError('Error al cerrar sesión', { severity: 'error' });
     }
   }, []);
 

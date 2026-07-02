@@ -7,13 +7,9 @@ import { loginService } from '../services/login.service.js';
 import { useGlobal } from '../state/global.jsx';
 import { useToast } from '../state/toast.jsx';
 
-export function wait(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 export default function Login() {
   const { updateSession } = useGlobal();
-  const { addMessage } = useToast();
+  const { addInfo, addError } = useToast();
   const navigate = useNavigate();
   const [disabled, setDisabled] = useState(false);
   const [data, setData] = useState({
@@ -23,7 +19,6 @@ export default function Login() {
 
   async function onSubmit() {
     setDisabled(true);
-    await wait(2000);
     try {
       const response = await loginService(data);
       updateSession({
@@ -32,10 +27,10 @@ export default function Login() {
         permissions: response.permissions ?? null,
       });
       navigate('/dashboard');
-      addMessage('Sesión iniciada correctamente');
+      addInfo('Sesión iniciada correctamente');
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
-      addMessage('Error al iniciar sesión', { severity: 'error' });
+      addError('Error al iniciar sesión', { severity: 'error' });
     }
     setDisabled(false);
   }
