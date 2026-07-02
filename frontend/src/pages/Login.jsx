@@ -30,7 +30,7 @@ export default function Login() {
       addInfo('Sesión iniciada correctamente');
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
-      addError('Error al iniciar sesión', { severity: 'error' });
+      addError('Error al iniciar sesión');
     }
     setDisabled(false);
   }
