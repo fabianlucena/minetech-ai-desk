@@ -22,7 +22,7 @@ export function GlobalProvider({ children }) {
     value={{
       menuOpen, setMenuOpen, toggleMenuOpen,
       loading, setLoading,
-      session, setSession,
+      session, setSession, updateSession,
     }}
   >
     {children}
