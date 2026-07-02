@@ -1,4 +1,4 @@
-import { Snackbar as MuiSnackbar, Alert, Button } from '@mui/material';
+import { Snackbar as MuiSnackbar, Alert, Button, Slide } from '@mui/material';
 import { useState } from 'react';
 
 export default function Snackbar({
@@ -15,12 +15,14 @@ export default function Snackbar({
     setOpen(false);
   };
 
-  return <>
+  return <Slide
+    direction="up"
+    in={open}
+  >
     <MuiSnackbar
       open={open}
       autoHideDuration={autoHideDuration}
       onClose={handleClose}
-      anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
     >
       <Alert
         onClose={handleClose}
@@ -31,5 +33,5 @@ export default function Snackbar({
         {text}
       </Alert>
     </MuiSnackbar>
-  </>;
+  </Slide>;
 }
