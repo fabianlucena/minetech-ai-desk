@@ -12,6 +12,7 @@ function flattenNavigableRoutes(routes) {
 
     if (isNavigable) {
       result.push({
+        id: node.id,
         path: node.path,
         label: node.label ?? null,
         menuItemOrder: node.menuItemOrder ?? Infinity,
@@ -58,7 +59,7 @@ export default function Menu() {
       {menuItems.map((route, index) => (
         <ListItemButton
           key={route.id}
-          selected={location.pathname.startsWith(route.path)}
+          selected={location.pathname === route.path}
         >
           <Link to={route.path || (route.index ? '/' : '')} style={{ textDecoration: 'none', color: 'inherit' }}>
             <ListItemText primary={route.label || route.path || (route.index ? '/' : '')} />
