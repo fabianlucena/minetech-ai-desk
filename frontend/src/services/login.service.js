@@ -1,4 +1,4 @@
-import Api from '../libs/api.js';
+import Api from '../utils/api.js';
 
 export async function loginService(data) {
   return _loginService(

@@ -1,4 +1,4 @@
-import { Box, Paper, Typography, Button, Stack } from '@mui/material';
+import { Box, Paper, Typography, Button, Stack, CircularProgress } from '@mui/material';
 
 export default function Form({
   title,
@@ -31,14 +31,24 @@ export default function Form({
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: "rgba(112, 112, 112, 0.8)",
+        backgroundColor: "rgba(63, 63, 63, 0.8)",
         display: "flex",
+        color: "white",
         alignItems: "center",
         justifyContent: "center",
         zIndex: 1,
+        flexDirection: "column",
       }}
     >
-      <Typography variant="body2" color="text.secondary">
+      <CircularProgress
+        size={32}
+        color="primary"
+      />
+
+      <Typography
+        variant="body2"
+        color="text.secondary"
+      >
         {disabledMessage}
       </Typography>
     </Box>}
