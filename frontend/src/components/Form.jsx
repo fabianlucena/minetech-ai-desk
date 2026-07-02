@@ -21,7 +21,10 @@ export default function Form({
       flexDirection: "column",
       gap: 3,
       maxWidth: 480,
-      ...sx
+      ...sx,
+      border: "1px solid",
+      borderColor: "divider",
+      borderRadius: 3,
     }}
   >
     {disabled && <Box
