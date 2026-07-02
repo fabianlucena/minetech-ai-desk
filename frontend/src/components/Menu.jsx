@@ -34,6 +34,7 @@ export default function Menu() {
 
   useEffect(() => {
     const menuItems = flattenNavigableRoutes(routes)
+      .filter(route => route.label)
       .sort((a, b) => a.menuItemOrder - b.menuItemOrder);
 
     setMenuItems(menuItems);
@@ -41,14 +42,22 @@ export default function Menu() {
 
   return <Box
     sx={{
-      display: menuOpen ? 'block' : 'none',
+      display: menuOpen ? 'flex' : 'none',
+      flexDirection: 'column',
+      bgcolor: '#666666'
     }}
   >
-    <List>
+    <List
+      sx={{
+        margin: 0,
+        padding: 0,
+        flex: 1,
+      }}
+    >
       {menuItems.map((route, index) => (
         <ListItem key={index}>
           <Link to={route.path || (route.index ? '/' : '')} style={{ textDecoration: 'none', color: 'inherit' }}>
-            <ListItemText primary={route.label} />
+            <ListItemText primary={route.label || route.path || (route.index ? '/' : '')} />
           </Link>
         </ListItem>
       ))}

@@ -67,6 +67,33 @@ export const mineTechTheme = createTheme({
           borderRadius: 6
         }
       }
+    },
+
+    MuiListItem: {
+      styleOverrides: {
+        root: {
+          color: '#FFFFFF',                // color del texto del menú
+          backgroundColor: '#888888',
+          paddingLeft: 16,
+          paddingRight: 16,
+          transition: 'background-color 0.2s ease',
+
+          '&:hover': {
+            backgroundColor: '#D62828',    // rojo MineTech
+            color: '#FFFFFF',
+          },
+
+          '&.Mui-selected': {
+            backgroundColor: '#F4C300',    // amarillo MineTech
+            color: '#1A1A1A',
+          },
+
+          '&.Mui-selected:hover': {
+            backgroundColor: '#D62828',    // hover del seleccionado
+            color: '#FFFFFF',
+          }
+        }
+      }
     }
   }
 });
