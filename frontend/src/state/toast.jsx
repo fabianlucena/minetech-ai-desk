@@ -8,16 +8,35 @@ export function ToastProvider({ children }) {
 
   function addMessage(message, options = {}) {
     if (typeof message === 'string') {
-      message = { text: message, severity: 'success', ...options };
+      message = {
+        text: message,
+        severity: 'info',
+        ...options,
+      };
     }
 
-    message.id = crypto.randomUUID();
+    message.id ??= crypto.randomUUID();
     setMessages((prevMessages) => [...prevMessages, message]);
+  }
+
+  function addWarning(message, options = {}) {
+    if (typeof message === 'string') {
+      message = {
+        text: message,
+        severity: 'warning',
+        ...options,
+      };
+    }
+
+    message.severity = 'warning';
+    addMessage(message);
   }
 
   return <ToastContext.Provider
     value={{
-      messages, setMessages, addMessage 
+      messages, setMessages,
+      addMessage,
+      addWarning,
     }}
   >
     {messages.map((message) => (
