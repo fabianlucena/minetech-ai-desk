@@ -69,7 +69,7 @@ export const mineTechTheme = createTheme({
       }
     },
 
-    MuiListItem: {
+    MuiListItemButton: {
       styleOverrides: {
         root: {
           color: '#FFFFFF',                // color del texto del menú

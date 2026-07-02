@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Box, Typography, List, ListItem, ListItemText } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { Box, Typography, List, ListItemButton, ListItemText } from '@mui/material';
+import { Link, useLocation  } from 'react-router-dom';
 import { useGlobal } from '../state/global';
 import { useRoutes } from '../routes.jsx';
 
@@ -31,6 +31,7 @@ export default function Menu() {
   const { menuOpen } = useGlobal();
   const routes = useRoutes();
   const [ menuItems, setMenuItems ] = useState([]);
+  const location = useLocation();
 
   useEffect(() => {
     const menuItems = flattenNavigableRoutes(routes)
@@ -55,11 +56,14 @@ export default function Menu() {
       }}
     >
       {menuItems.map((route, index) => (
-        <ListItem key={index}>
+        <ListItemButton
+          key={route.id}
+          selected={location.pathname.startsWith(route.path)}
+        >
           <Link to={route.path || (route.index ? '/' : '')} style={{ textDecoration: 'none', color: 'inherit' }}>
             <ListItemText primary={route.label || route.path || (route.index ? '/' : '')} />
           </Link>
-        </ListItem>
+        </ListItemButton>
       ))}
     </List>
   </Box>;

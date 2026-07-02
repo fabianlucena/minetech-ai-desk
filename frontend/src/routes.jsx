@@ -26,14 +26,14 @@ export const allRoutes = [
         condition: global => !!global?.session?.user,
       },
       {
-        path: 'dashboard',
+        path: '/dashboard',
         label: 'Dashboard',
         menuItemOrder: 2,
         element: <Dashboard />,
         condition: global => !!global?.session?.user,
       },
       {
-        path: 'about',
+        path: '/about',
         label: 'Acerca de',
         menuItemOrder: 99,
         element: <About />,
@@ -58,6 +58,10 @@ export function getFilteredRoutes(routes = allRoutes, global) {
   return routes.map(route => {
     if (route.condition && !route.condition(global)) {
       return null;
+    }
+
+    if (!route.path && route.index) {
+      route.path = '/';
     }
 
     const { children, ...rest } = route;
