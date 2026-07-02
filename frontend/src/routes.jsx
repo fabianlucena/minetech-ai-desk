@@ -6,6 +6,7 @@ import Logout from './pages/Logout.jsx';
 import About from './pages/About.jsx';
 import NotFound from './pages/NotFound.jsx';
 import Dashboard from './pages/Dashboard.jsx';
+import Usuarios from './pages/Usuarios.jsx';
 
 export const allRoutes = [
   {
@@ -19,13 +20,6 @@ export const allRoutes = [
         element: <Home />,
       },
       {
-        path: '/logout',
-        label: 'Salir',
-        menuItemOrder: 3,
-        element: <Logout />,
-        condition: global => !!global?.session?.user,
-      },
-      {
         path: '/dashboard',
         label: 'Dashboard',
         menuItemOrder: 2,
@@ -33,10 +27,24 @@ export const allRoutes = [
         condition: global => !!global?.session?.user,
       },
       {
+        path: '/users',
+        label: 'Usuarios',
+        menuItemOrder: 3,
+        element: <Usuarios />,
+        condition: global => !!global?.session?.permissions?.includes('users.list'),
+      },
+      {
         path: '/about',
         label: 'Acerca de',
-        menuItemOrder: 99,
+        menuItemOrder: 98,
         element: <About />,
+      },
+      {
+        path: '/logout',
+        label: 'Salir',
+        menuItemOrder: 99,
+        element: <Logout />,
+        condition: global => !!global?.session?.user,
       },
       {
         path: '*',
