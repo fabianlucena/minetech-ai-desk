@@ -8,10 +8,10 @@ export default function Footer() {
       textAlign: 'center',
       backgroundColor: '#f5f5f5',
       color: '#d1d1d1',
-      backgroundColor: 'rgba(32, 32, 32, .8)',
+      backgroundColor: '#1A1A1A',
       display: 'flex',
       justifyContent: 'space-between',
-      padding: '.2em .5em',
+      padding: '.4em .8em',
     }}
   >
     <Typography
