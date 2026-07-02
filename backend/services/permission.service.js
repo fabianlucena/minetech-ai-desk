@@ -1,11 +1,8 @@
 import { getDependency } from '../dependency.js';
+import ModelService from './model.service.js';
 
-export default class PermissionService {
+export default class PermissionService extends ModelService {
   constructor() {
-    this.permissionModel = getDependency('permissionModel');
-  }
-
-  async getByIds(ids) {
-    return await this.permissionModel.findAll({ where: { id: ids }, raw: true });
+    super({ model: getDependency('permissionModel') });
   }
 }

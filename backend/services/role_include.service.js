@@ -1,25 +1,30 @@
 import { getDependency } from '../dependency.js';
 import { Op } from 'sequelize';
+import ModelService from './model.service.js';
 
-export default class RoleIncludeService {
+export default class RoleIncludeService extends ModelService {
   constructor() {
-    this.roleXIncludeModel = getDependency('roleXIncludeModel');
+    super({ model: getDependency('roleXIncludeModel') });
   }
 
   async getAllIdsByIds(roleIds) {
+    if (!roleIds || !Array.isArray(roleIds))
+      throw new Error('Los IDs de roles son obligatorios y deben ser un array');
+    
     let newIds;
     const allIds = [...roleIds];
     do {
-      newIds = await this.roleXIncludeModel.findAll({
-        attributes: ['includeId'],
-        where: {
+      newIds = await this.getList(
+        {
           [Op.and]: [
             { roleId: { [Op.in]: allIds } },
             { includeId: { [Op.notIn]: allIds } }
           ]
         },
-        raw: true
-      });
+        {
+          attributes: ['includeId'],
+        }
+      );
 
       newIds.forEach(id => {
         if (!allIds.includes(id.includeId)) {

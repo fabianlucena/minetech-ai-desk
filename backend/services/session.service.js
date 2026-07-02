@@ -1,9 +1,13 @@
 import { getDependency } from '../dependency.js';
 import { generateToken } from '../utils/token.js';
+import ModelService from './model.service.js';
 
-export default class SessionService {
+export default class SessionService extends ModelService {
   constructor() {
-    this.sessionModel = getDependency('sessionModel');
+    super({
+      model: getDependency('sessionModel'),
+      softDelete: false,
+    });
     this.userService = getDependency('userService');
     this.config = getDependency('config');
   }
@@ -22,7 +26,14 @@ export default class SessionService {
     data.expiresAt ||= new Date(Date.now() + this.config.sessionExpiration * 1000);
     data.lastUsedAt ||= new Date();
 
-    const session = await this.sessionModel.create(data);
+    const session = await this.model.create(data, { raw: true });
     return session;
+  }
+
+  async getByAutoLoginToken(autoLoginToken) {
+    if (!autoLoginToken)
+      throw new Error('El token de auto-login es obligatorio');
+
+    return await this.getFirstOrDefault({ autoLoginToken });
   }
 }

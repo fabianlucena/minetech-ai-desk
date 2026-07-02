@@ -53,18 +53,51 @@ export default class LoginService {
       deviceId: device.id,
     });
 
+    const response = await this.getSessionWithCredentials(session);
+    return response;
+  }
+
+  async getSessionWithCredentials(session) {
+    if (!session)
+      throw new Error('La sesión es obligatoria');
+
     const response = new SessionResponse(session);
 
-    const roles = await this.roleXUserService.getAllRolesByUserId(user.id);
+    const device = await this.deviceService.getById(session.deviceId);
+    const user = await this.userService.getById(session.userId);
+    const roles = await this.roleXUserService.getAllRolesByUserId(session.userId);
     const rolesId = roles.map(role => role.id);
-      
-    const permissions = await this.permissionXRoleService.getPermissionsByRoleId  (rolesId);
+    const permissions = await this.permissionXRoleService.getPermissionsByRoleId(rolesId);
 
     response.device = device.token;
     response.user = new UserMinDTO(user);
     response.roles = roles.map(r => r.name);
     response.permissions = permissions.map(p => p.name);
 
+    return response;
+  }
+
+  async autoLogin(data) {
+    if (!data.autoLoginToken)
+      throw new Error400('El token de inicio de sesión automático (autoLoginToken) es obligatorio');
+
+    if (!data.deviceToken)
+      throw new Error400('El token de dispositivo (deviceToken) es obligatorio');
+
+    const device = await this.deviceService.getByToken(data.deviceToken);
+    if (!device)
+      throw new Error400('Dispositivo desconocido o token inválido');
+
+    const previousSession = await this.sessionService.getByAutoLoginToken(data.autoLoginToken);
+    if (!previousSession || previousSession.deviceId !== device.id || previousSession.closedAt)
+      throw new Error400('Dispositivo desconocido o token inválido');
+
+    const session = await this.sessionService.create({
+      userId: previousSession.userId,
+      deviceId: previousSession.deviceId,
+    });
+    
+    const response = await this.getSessionWithCredentials(session);
     return response;
   }
 }

@@ -1,9 +1,13 @@
 import { getDependency } from '../dependency.js';
 import { generateToken } from '../utils/token.js';
+import ModelService from './model.service.js';
 
-export default class DeviceService {
+export default class DeviceService extends ModelService {
   constructor() {
-    this.deviceModel = getDependency('deviceModel');
+    super({
+      model: getDependency('deviceModel'),
+      softDelete: false,
+    });
     this.userService = getDependency('userService');
     this.config = getDependency('config');
   }
@@ -12,18 +16,21 @@ export default class DeviceService {
     data.token ||= generateToken(this.config.tokenSize);
     data.createdById ||=await this.userService.getSystemUserId();
 
-    const device = await this.deviceModel.create(data);
+    const device = await this.model.create(data);
     return device;
   }
 
   async getByToken(token) {
     if (!token)
-      return;
+      throw new Error('El token de dispositivo es obligatorio');
 
-    return this.deviceModel.findOne({ where: { token }, raw: true });
+    return this.getFirstOrDefault({ token });
   }
 
   async getOrCreateByToken(token) {
+    if (!token)
+      throw new Error('El token de dispositivo es obligatorio');
+
     let device = await this.getByToken(token);
     if (!device)
       device = await this.create({ token });
@@ -32,6 +39,9 @@ export default class DeviceService {
   }
 
   async getIdOrCreateByToken(token) {
+    if (!token)
+      throw new Error('El token de dispositivo es obligatorio');
+
     let device = await this.getOrCreateByToken(token);
     return device.id;
   }

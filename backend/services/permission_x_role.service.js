@@ -1,20 +1,26 @@
 import { getDependency } from '../dependency.js';
+import ModelService from './model.service.js';
 
-export default class PermissionXRoleService {
+export default class PermissionXRoleService extends ModelService {
   constructor() {
-    this.permissionXRoleModel = getDependency('permissionXRoleModel');
+    super({ model: getDependency('permissionXRoleModel') });
     this.permissionService = getDependency('permissionService');
   }
 
   async getPermissionIdsByRoleId(roleId) {
-    return (await this.permissionXRoleModel.findAll({
-      attributes: ['permissionId'],
-      where: { roleId },
-      raw: true
-    })).map(p => p.permissionId);
+    if (!roleId)
+      throw new Error('El ID de rol es obligatorio');
+
+    return (await this.getList(
+      { roleId },
+      { attributes: ['permissionId'] }
+    )).map(p => p.permissionId);
   }
 
   async getPermissionsByRoleId(roleId) {
+    if (!roleId)
+      throw new Error('El ID de rol es obligatorio');
+    
     const permissionIds = await this.getPermissionIdsByRoleId(roleId);
     return await this.permissionService.getByIds(permissionIds);
   }

@@ -1,12 +1,15 @@
 import { getDependency } from '../dependency.js';
+import ModelService from './model.service.js';
 
-export default class UserPasswordService {
+export default class UserPasswordService extends ModelService {
   constructor() {
-    this.userPasswordModel = getDependency('userPasswordModel');
+    super({ model: getDependency('userPasswordModel') });
   }
 
   async getByUserId(userId) {
-    const passwordHash = await this.userPasswordModel.findOne({ where: { userId }, raw: true });
-    return passwordHash;
+    if (!userId)
+      throw new Error('El ID de usuario es obligatorio');
+
+    return await this.getFirstOrDefault({ userId });
   }
 }

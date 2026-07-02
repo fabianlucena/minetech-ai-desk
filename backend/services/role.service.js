@@ -1,11 +1,8 @@
 import { getDependency } from '../dependency.js';
+import ModelService from './model.service.js';
 
-export default class RoleService {
+export default class RoleService extends ModelService {
   constructor() {
-    this.roleModel = getDependency('roleModel');
-  }
-
-  async getByIds(ids) {
-    return await this.roleModel.findAll({ where: { id: ids }, raw: true });
+    super({ model: getDependency('roleModel') });
   }
 }
