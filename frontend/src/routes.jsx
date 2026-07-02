@@ -60,8 +60,13 @@ export function getFilteredRoutes(routes = allRoutes, global) {
       return null;
     }
 
-    if (!route.path && route.index) {
-      route.path = '/';
+    route.id ??= crypto.randomUUID();
+    if (!route.path) {
+      if (route.index) {
+        route.path = '/';
+      } else {
+        return null;
+      }
     }
 
     const { children, ...rest } = route;
@@ -72,5 +77,6 @@ export function getFilteredRoutes(routes = allRoutes, global) {
 
 export function useRoutes() {
   const global = useGlobal();
-  return getFilteredRoutes(allRoutes, global);
+  const routes = getFilteredRoutes(allRoutes, global);
+  return routes;
 }
