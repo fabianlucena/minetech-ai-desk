@@ -1,3 +1,5 @@
+import { Typography } from '@mui/material';
+
 export default function Footer() {
   return <footer
     style={{
@@ -6,9 +8,23 @@ export default function Footer() {
       textAlign: 'center',
       backgroundColor: '#f5f5f5',
       color: '#d1d1d1',
-      backgroundColor: '#585858',
+      backgroundColor: 'rgba(32, 32, 32, .8)',
+      display: 'flex',
+      justifyContent: 'space-between',
+      padding: '.2em .5em',
     }}
   >
-    © Desarrollado por Ing. Fabian Lucena para MineTech
+    <Typography
+      variant="body3"
+      color="black"
+    >
+      Copyright © 2026 MineTech. Todos los derechos reservados.
+    </Typography>
+    <Typography
+      variant="body3"
+      color="text.secondary"
+    >
+      Desarrollado por Ing. Fabian Lucena
+    </Typography>
   </footer>;
 }
