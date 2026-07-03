@@ -47,9 +47,11 @@ export default function Usuarios() {
 
   return <Grid
     title="Usuarios"
+    columns={columns}
     rows={data}
     onReload={() => load()}
     createPath={hasPermission('users.create') ? "/users/new" : null}
-    columns={columns}
+    onDelete={hasPermission('users.delete') ? true : true}
+    onEdit={hasPermission('users.edit') ? true : true}
   />;
 }

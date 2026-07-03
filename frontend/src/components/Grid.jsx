@@ -1,7 +1,9 @@
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DataGrid } from '@mui/x-data-grid';
 import { Box, Typography } from '@mui/material';
-import { ReloadButton, CreateButton } from './buttons';
+import { ReloadButton, CreateButton, DeleteButton, EditButton } from './buttons';
+import ConfirmDialog from './ConfirmDialog.jsx';
 
 export default function Grid({
   title,
@@ -11,9 +13,71 @@ export default function Grid({
   tools,
   onReload,
   onCreate,
+  onDelete,
+  onEdit,
   createPath,
+  deleteConfirmationMessage = '¿Está seguro de que desea eliminar este elemento?',
 }) {
   const navigate = useNavigate();
+  const [effectiveColumns, setEffectiveColumns] = useState(columns);
+  const [confirmation, setConfirmation] = useState({
+    open: false,
+    onClose: () => setConfirmation({...confirmation, open: false}),
+    title: 'Confirmar',
+    message: '',
+  });
+
+  function handleDelete(row) {
+    if (!deleteConfirmationMessage) {
+      onDelete(row);
+      return;
+    }
+
+    setConfirmation({
+      ...confirmation,
+      open: true,
+      title: 'Confirmar eliminación',
+      message: deleteConfirmationMessage,
+      onConfirm: () => {
+        onDelete(row);
+      },
+    });
+  }
+
+  useEffect(() => {
+    const effectiveColumns = [...columns];
+    if (onDelete || onEdit) {
+      let rowsActions = effectiveColumns.find(col => col.field === 'rowsActions');
+      if (!rowsActions) {
+        rowsActions = {
+          field: 'rowsActions',
+          headerName: 'Acciones',
+        };
+        effectiveColumns.push(rowsActions);
+      }
+
+      if (onDelete) {
+        const previousRenderCell = rowsActions.renderCell;
+        rowsActions.renderCell = (params) => {
+          return <>
+            {previousRenderCell?.(params)}
+            <DeleteButton onClick={() => handleDelete(params.row)} />
+          </>;
+        };
+      }
+
+      if (onEdit) {
+        const previousRenderCell = rowsActions.renderCell;
+        rowsActions.renderCell = (params) => {
+          return <>
+            {previousRenderCell?.(params)}
+            <EditButton onClick={() => onEdit(params.row)} />
+          </>;
+        };
+      }
+    }
+    setEffectiveColumns(effectiveColumns);
+  }, [columns, onDelete, onEdit]);
 
   return <Box
     sx={{
@@ -32,6 +96,8 @@ export default function Grid({
       overflow: 'hidden',
     }}
   >
+    <ConfirmDialog {...confirmation} />
+
     {(title || description || tools || onReload || onCreate || createPath) && <Box
       sx={{
         display: 'flex',
@@ -61,7 +127,7 @@ export default function Grid({
         overflow: 'hidden',
       }}
       rows={rows}
-      columns={columns}
+      columns={effectiveColumns}
     />
   </Box>;
 }
