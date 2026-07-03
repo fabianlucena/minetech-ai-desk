@@ -3,6 +3,7 @@ import Grid from '../components/Grid.jsx';
 import { userService } from '../services/user.service.js';
 import { useToast } from '../state/toast.jsx';
 import { hasPermission } from '../state/global.jsx';
+import { formatDate } from '../utils/date.js';
 
 export default function Usuarios() {
   const { addError } = useToast();
@@ -28,6 +29,18 @@ export default function Usuarios() {
       field: 'canLogin',
       headerName: 'Conectable',
       renderCell: ({value}) => value ? '✔️' : '❌',
+    },
+    {
+      field: 'roles',
+      headerName: 'Roles',
+      renderCell: ({value}) => value.map(role => role.title).join(', '),
+      width: 200,
+    },
+    {
+      field: 'lastLoginAt',
+      headerName: 'Último sesión',
+      renderCell: ({value}) => formatDate(value) || 'Nunca',
+      width: 130,
     },
   ];
 
