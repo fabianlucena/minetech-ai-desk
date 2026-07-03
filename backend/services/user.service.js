@@ -20,8 +20,4 @@ export default class UserService extends ModelService {
 
     return await this.getFirstOrDefault({ username });
   }
-
-  async getList() {
-    return await this.getList();
-  }
 }
