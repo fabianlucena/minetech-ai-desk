@@ -10,6 +10,7 @@ export default function Grid({
   description,
   rows,
   columns,
+  columnIdName = 'uuid',
   tools,
   onReload,
   onCreate,
@@ -28,6 +29,9 @@ export default function Grid({
   });
 
   function handleDelete(row) {
+    if (!onDelete)
+      return;
+
     if (!deleteConfirmationMessage) {
       onDelete(row);
       return;
@@ -120,14 +124,15 @@ export default function Grid({
       </Box>}
     </Box>}
     <DataGrid
+      rows={rows}
+      columns={effectiveColumns}
+      getRowId={(row) => row[columnIdName]}
       style={{
         flex: 1,
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
       }}
-      rows={rows}
-      columns={effectiveColumns}
     />
   </Box>;
 }

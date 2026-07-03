@@ -51,7 +51,7 @@ export default function Usuarios() {
     rows={data}
     onReload={() => load()}
     createPath={hasPermission('users.create') ? "/users/new" : null}
-    onDelete={hasPermission('users.delete') ? true : true}
-    onEdit={hasPermission('users.edit') ? true : true}
+    onDelete={hasPermission('users.delete') ? () => load() : null}
+    onEdit={hasPermission('users.edit') ? () => load() : null}
   />;
 }
