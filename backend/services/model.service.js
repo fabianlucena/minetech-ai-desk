@@ -18,14 +18,15 @@ export default class ModelService {
 
   async getFirstOrDefault(where, options = {}) {
     if (!where)
-      throw new Error('La cláusula Where es obligatoria');
+      throw new Error('La cláusula where es obligatoria');
 
     return this.model.findOne(this.getModelOptions({ where, ...options }));
   }
 
   async getList(where, options = {}) {
-    if (!where)
-      throw new Error('La cláusula Where es obligatoria');
+    if (!where) {
+      options.limit ??= 20;
+    }
 
     return await this.model.findAll(this.getModelOptions({ where, ...options }));
   }
