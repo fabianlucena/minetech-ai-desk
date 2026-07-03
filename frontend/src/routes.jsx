@@ -6,7 +6,8 @@ import Logout from './pages/Logout.jsx';
 import About from './pages/About.jsx';
 import NotFound from './pages/NotFound.jsx';
 import Dashboard from './pages/Dashboard.jsx';
-import Usuarios from './pages/Usuarios.jsx';
+import Users from './pages/Users.jsx';
+import User from './pages/User.jsx';
 
 export const allRoutes = [
   {
@@ -24,14 +25,24 @@ export const allRoutes = [
         label: 'Dashboard',
         menuItemOrder: 2,
         element: <Dashboard />,
-        condition: global => !!global?.session?.user,
+        condition: ({ user }) => !!user,
       },
       {
         path: '/users',
         label: 'Usuarios',
         menuItemOrder: 3,
-        element: <Usuarios />,
-        condition: global => !!global?.session?.permissions?.includes('users.list'),
+        element: <Users />,
+        condition: ({ permissions }) => permissions.includes('users.list'),
+      },
+      {
+        path: '/users/new',
+        element: <User />,
+        condition: ({ permissions }) => permissions.includes('users.create'),
+      },
+      {
+        path: '/users/:id/edit',
+        element: <User />,
+        condition: ({ permissions }) => permissions.includes('users.update'),
       },
       {
         path: '/about',
@@ -44,7 +55,7 @@ export const allRoutes = [
         label: 'Salir',
         menuItemOrder: 99,
         element: <Logout />,
-        condition: global => !!global?.session?.user,
+        condition: ({ user }) => !!user,
       },
       {
         path: '*',
@@ -58,13 +69,17 @@ export const allRoutes = [
     label: 'Ingresar',
     menuItemOrder: 2,
     element: <Login />,
-    condition: global => !global?.session?.user,
+    condition: ({ user }) => !user,
   },
 ];
 
 export function getFilteredRoutes(routes = allRoutes, global) {
+  const session = global?.session;
+  const user = session?.user;
+  const permissions = session?.permissions || [];
+
   return routes.map(route => {
-    if (route.condition && !route.condition(global)) {
+    if (route.condition && !route.condition({ global, session, user, permissions })) {
       return null;
     }
 

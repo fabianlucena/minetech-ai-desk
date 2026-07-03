@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Form from '../components/Form';
-import TextField from '../components/TextField';
-import PasswordField from '../components/PasswordField';
+import { TextField, PasswordField } from '../components/fields';
 import { loginService } from '../services/login.service.js';
 import { useGlobal } from '../state/global.jsx';
 import { useToast } from '../state/toast.jsx';

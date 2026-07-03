@@ -1,12 +1,20 @@
+import { useNavigate } from 'react-router-dom';
 import { DataGrid } from '@mui/x-data-grid';
 import { Box, Typography } from '@mui/material';
+import { ReloadButton, CreateButton } from './buttons';
 
 export default function Grid({
   title,
   description,
   rows,
   columns,
+  tools,
+  onReload,
+  onCreate,
+  createPath,
 }) {
+  const navigate = useNavigate();
+
   return <Box
     sx={{
       '& .MuiDataGrid-columnHeaders': {
@@ -24,13 +32,26 @@ export default function Grid({
       overflow: 'hidden',
     }}
   >
-    {(title || description) && <Box>
-      {title && <Typography variant="h6" fontWeight={600}>
-        {title}
-      </Typography>}
-      {description && <Typography variant="body2" color="text.secondary">
-        {description}
-      </Typography>}
+    {(title || description || tools || onReload || onCreate || createPath) && <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'space-between',
+      }}
+    >
+      <Box>
+        {title && <Typography variant="h6" fontWeight={600}>
+          {title}
+        </Typography>}
+        {description && <Typography variant="body2" color="text.secondary">
+          {description}
+        </Typography>}
+      </Box>
+      {(tools || onReload || onCreate || createPath) && <Box sx={{ marginTop: 1 }}>
+        {tools}
+        {onCreate && <CreateButton onClick={onCreate} />}
+        {createPath && <CreateButton onClick={() => navigate(createPath)} />}
+        {onReload && <ReloadButton onClick={onReload} />}
+      </Box>}
     </Box>}
     <DataGrid
       style={{

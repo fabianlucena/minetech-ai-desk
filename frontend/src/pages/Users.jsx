@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import Grid from '../components/Grid';
+import Grid from '../components/Grid.jsx';
 import { userService } from '../services/user.service.js';
 import { useToast } from '../state/toast.jsx';
+import { hasPermission } from '../state/global.jsx';
 
 export default function Usuarios() {
   const { addError } = useToast();
@@ -30,18 +31,25 @@ export default function Usuarios() {
     },
   ];
 
-  useState(() => {
-    userService().then((res) => {
+  async function load() {
+    try {
+      const res = await userService();
       setData(res);
-    }).catch((error) => {
+    } catch (error) {
       addError('Error al obtener los usuarios');
       console.error('Error al obtener los usuarios:', error);
-    });
+    }
+  }
+
+  useState(() => {
+    load();
   }, []);
 
   return <Grid
     title="Usuarios"
     rows={data}
+    onReload={() => load()}
+    createPath={hasPermission('users.create') ? "/users/new" : null}
     columns={columns}
   />;
 }
