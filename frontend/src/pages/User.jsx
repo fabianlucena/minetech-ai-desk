@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Form from '../components/Form.jsx';
-import { TextField, SwitchField, PasswordField } from '../components/fields';
+import { TextField, SwitchField, PasswordField, CheckboxSelectField } from '../components/fields';
 import { useToast } from '../state/toast.jsx';
 
 export default function User() {
@@ -16,6 +16,7 @@ export default function User() {
     isActive: true,
     canLogin: false,
     password: '',
+    roles: [],
   });
   const [formConfig, setFormConfig] = useState({
     title: 'Crear nuevo usuario',
@@ -94,5 +95,16 @@ export default function User() {
       value={data.password}
       onChange={(e) => setData({...data, password: e.target.value})}
     />}
+    <CheckboxSelectField
+      label="Roles"
+      disabled={disabled}
+      value={data.roles}
+      onChange={(e) => setData({...data, roles: e.target.value})}
+      options={[
+        { value: 'admin', label: 'Administrador' },
+        { value: 'supervisor', label: 'Supervisor' },
+        { value: 'operator', label: 'Operador' },
+      ]}
+    />
   </Form>;
 }
