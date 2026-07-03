@@ -9,6 +9,9 @@ export default class SessionService extends ModelService {
       softDelete: false,
     });
     this.userService = getDependency('userService');
+    this.deviceService = getDependency('deviceService');
+    this.roleXUserService = getDependency('roleXUserService');
+    this.permissionXRoleService = getDependency('permissionXRoleService');
     this.config = getDependency('config');
   }
 
@@ -33,10 +36,37 @@ export default class SessionService extends ModelService {
     return session;
   }
 
+  async getByAuthorizationToken(authorizationToken) {
+    if (!authorizationToken)
+      throw new Error('El token de autorización es obligatorio');
+
+    return await this.getFirstOrDefault({ where: { authorizationToken } });
+  }
+
   async getByAutoLoginToken(autoLoginToken) {
     if (!autoLoginToken)
       throw new Error('El token de auto-login es obligatorio');
 
     return await this.getFirstOrDefault({ where: { autoLoginToken } });
+  }
+
+  async decorateWithCredentials(session) {
+    if (!session)
+      throw new Error('La sesión es obligatoria');
+
+    session = {...session};
+
+    const device = await this.deviceService.getById(session.deviceId);
+    const user = await this.userService.getById(session.userId);
+    const roles = await this.roleXUserService.getAllRolesByUserId(session.userId);
+    const rolesId = roles.map(role => role.id);
+    const permissions = await this.permissionXRoleService.getPermissionsByRoleId(rolesId);
+
+    session.device = device;
+    session.user = user;
+    session.roles = roles;
+    session.permissions = permissions;
+
+    return session;
   }
 }

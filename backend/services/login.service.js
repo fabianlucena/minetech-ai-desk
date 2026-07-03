@@ -2,9 +2,7 @@ import { getDependency } from '../dependency.js';
 import argon2 from 'argon2';
 import { Error400 } from '../errors/error400.js';
 import { Error403 } from '../errors/error403.js';
-import { UserMinDTO } from '../dto/user.dto.js';
 import { SessionResponse } from '../dto/session.dto.js';
-import { RoleMinDTO } from '../dto/role.dto.js';
 
 export default class LoginService {
   constructor() {
@@ -12,8 +10,6 @@ export default class LoginService {
     this.userPasswordService = getDependency('userPasswordService');
     this.deviceService = getDependency('deviceService');
     this.sessionService = getDependency('sessionService');
-    this.roleXUserService = getDependency('roleXUserService');
-    this.permissionXRoleService = getDependency('permissionXRoleService');
   }
 
   async hashPassword(password) {
@@ -48,31 +44,13 @@ export default class LoginService {
 
     const device = await this.deviceService.getOrCreateByToken(data.deviceToken);
 
-    const session = await this.sessionService.create({
+    let session = await this.sessionService.create({
       userId: user.id,
       deviceId: device.id,
     });
 
-    const response = await this.getSessionWithCredentials(session);
-    return response;
-  }
-
-  async getSessionWithCredentials(session) {
-    if (!session)
-      throw new Error('La sesión es obligatoria');
-
+    session = await this.sessionService.decorateWithCredentials(session);
     const response = new SessionResponse(session);
-
-    const device = await this.deviceService.getById(session.deviceId);
-    const user = await this.userService.getById(session.userId);
-    const roles = await this.roleXUserService.getAllRolesByUserId(session.userId);
-    const rolesId = roles.map(role => role.id);
-    const permissions = await this.permissionXRoleService.getPermissionsByRoleId(rolesId);
-
-    response.device = device.token;
-    response.user = new UserMinDTO(user);
-    response.roles = roles.map(r => r.name);
-    response.permissions = permissions.map(p => p.name);
 
     return response;
   }
@@ -92,12 +70,14 @@ export default class LoginService {
     if (!previousSession || previousSession.deviceId !== device.id || previousSession.closedAt)
       throw new Error400('Dispositivo desconocido o token inválido');
 
-    const session = await this.sessionService.create({
+    let session = await this.sessionService.create({
       userId: previousSession.userId,
       deviceId: previousSession.deviceId,
     });
-    
-    const response = await this.getSessionWithCredentials(session);
+
+    session = await this.sessionService.decorateWithCredentials(session);
+    const response = new SessionResponse(session);
+
     return response;
   }
 }
