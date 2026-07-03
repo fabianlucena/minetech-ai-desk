@@ -108,6 +108,8 @@ create table if not exists auth.user_passwords (
 
   password_hash varchar(256) not null,
 
+  constraint uk_auth_users_passwords_user_id unique (user_id),
+
   constraint fk_auth_user_passwords_user_id
     foreign key (user_id) references auth.users(id) on delete restrict,
 
@@ -181,6 +183,8 @@ create table if not exists auth.devices (
 
   constraint uk_auth_devices_token unique (token),
 
+  constraint uk_auth_devices_uuid unique (uuid),
+
   constraint fk_auth_devices_created_by_id foreign key (created_by_id)
     references auth.users(id) on delete restrict
 );
@@ -204,7 +208,11 @@ create table if not exists auth.sessions (
   data_json text null,
 
   constraint uk_auth_sessions_authorization_token unique (authorization_token),
-  
+
+  constraint uk_auth_sessions_auto_login_token unique (auto_login_token),
+
+  constraint uk_auth_sessions_uuid unique (uuid),
+
   constraint fk_auth_sessions_User foreign key (user_id)
     references auth.users(id) on delete restrict,
     
@@ -235,6 +243,8 @@ create table if not exists auth.roles (
   is_selectable boolean not null,
 
   constraint uk_auth_roles_name unique (name),
+
+  constraint uk_auth_roles_uuid unique (uuid),
 
   constraint fk_auth_roles_created_by_id foreign key (created_by_id)
     references auth.users(id) on delete restrict,
@@ -276,7 +286,7 @@ create table if not exists auth.roles_x_users (
   deleted_at timestamp null,
   deleted_by_id bigint null,
 
-  constraint pk_auth_roles_x_users_x primary key (role_id,user_id),
+  constraint pk_auth_roles_x_users primary key (role_id,user_id),
 
   constraint fk_auth_roles_x_users_role foreign key (role_id)
     references auth.roles(id) on delete restrict,
