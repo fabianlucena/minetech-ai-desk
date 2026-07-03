@@ -20,4 +20,11 @@ export default class UserService extends ModelService {
 
     return await this.getFirstOrDefault({ where: { username } });
   }
+
+  async updateLastLoginAtById(userId) {
+    if (!userId)
+      throw new Error('El ID de usuario es obligatorio');
+
+    await this.updateById(userId, { lastLoginAt: new Date() });
+  }
 }

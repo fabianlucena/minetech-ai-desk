@@ -6,6 +6,14 @@ export default class ModelService {
     this.softDelete = softDelete;
   }
 
+  async create(data, options = {}) {
+    if (!data || typeof data !== 'object')
+      throw new Error('Data es obligatorio y debe ser un objeto');
+
+    const result = await this.model.create(data, options);
+    return result.get({ plain: true });
+  }
+
   getModelOptions(options = {}) {
     if (this.softDelete &&!options.includeDeleted)
       options.where = { ...options.where, deletedAt: null };
@@ -21,7 +29,8 @@ export default class ModelService {
     if (!options.where)
       throw new Error('La cláusula where es obligatoria');
 
-    return this.model.findOne(this.getModelOptions(options));
+    const result = await this.model.findOne(this.getModelOptions(options));
+    return result?.get({ plain: true }) || null;
   }
 
   async getList(options = {}) {
@@ -30,7 +39,8 @@ export default class ModelService {
       options.limit ??= 20;
     }
 
-    return await this.model.findAll(this.getModelOptions(options));
+    const result = await this.model.findAll(this.getModelOptions(options));
+    return result.map(r => r.get({ plain: true }));
   }
 
   async getById(id) {
@@ -45,5 +55,25 @@ export default class ModelService {
       throw new Error('IDs es obligatorio y debe ser un array');
 
     return await this.getList({ where: { id: ids } });
+  }
+
+  async update(data, options = {}) {
+    if (!data || typeof data !== 'object')
+      throw new Error('Data es obligatorio y debe ser un objeto');
+
+    const result = await this.model.update(data, options);
+
+    return result;
+  }
+
+  async updateById(id, data) {
+    if (!id)
+      throw new Error('ID es obligatorio');
+
+    const [updatedCount] = await this.update(data, { where: { id } });
+    if (updatedCount === 0)
+      throw new Error(`No se encontró el registro con ID ${id}`);
+
+    return await this.getById(id);
   }
 }

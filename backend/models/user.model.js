@@ -16,6 +16,7 @@ export default (sequelize) => {
     displayName: { field: 'display_name', type: DataTypes.STRING, allowNull: false },
     isActive: { field: 'is_active', type: DataTypes.BOOLEAN, defaultValue: true },
     canLogin: { field: 'can_login', type: DataTypes.BOOLEAN, defaultValue: true },
+    lastLoginAt: { field: 'last_login_at', type: DataTypes.DATE, allowNull: true },
   }, {
     tableName: 'users',
     schema: 'auth',

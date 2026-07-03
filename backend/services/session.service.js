@@ -12,7 +12,7 @@ export default class SessionService extends ModelService {
     this.config = getDependency('config');
   }
 
-  async create(data) {
+  async create(data, options = {}) {
     if (!data.userId)
       throw new Error('El ID de usuario es obligatorio');
 
@@ -26,7 +26,10 @@ export default class SessionService extends ModelService {
     data.expiresAt ||= new Date(Date.now() + this.config.sessionExpiration * 1000);
     data.lastUsedAt ||= new Date();
 
-    const session = await this.model.create(data, { raw: true });
+    const session = await super.create(data, options);
+
+    await this.userService.updateLastLoginAtById(data.userId);
+
     return session;
   }
 
