@@ -30,3 +30,19 @@ export function GlobalProvider({ children }) {
 }
 
 export const useGlobal = () => useContext(GlobalContext);
+export const useSession = () => {
+  const { session, updateSession } = useGlobal();
+  return [session, updateSession];
+}
+export const useUser = () => {
+  const { session } = useGlobal();
+  return session?.user;
+}
+export const usePermissions = () => {
+  const { session } = useGlobal();
+  return session?.permissions || [];
+}
+export const hasPermission = (permission) => {
+  const { session } = useGlobal();
+  return session?.permissions?.includes(permission);
+}
