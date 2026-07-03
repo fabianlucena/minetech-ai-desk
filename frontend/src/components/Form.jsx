@@ -1,4 +1,5 @@
 import { Box, Paper, Typography, Button, Stack, CircularProgress } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 export default function Form({
   title,
@@ -9,10 +10,13 @@ export default function Form({
   submitText = 'Enviar',
   onCancel,
   cancelText = 'Cancelar',
+  onCancelGoBack,
   disabled,
   disabledMessage = 'Procesando...',
   sx,
 }) {
+  const navigate = useNavigate();
+
   return <Paper
     elevation={0}
     sx={{
@@ -69,7 +73,7 @@ export default function Form({
         {children}
       </Stack>
 
-      {(footer || onSubmit || submitText || onCancel || cancelText) && <Box
+      {(footer || onSubmit || submitText || onCancel || onCancelGoBack) && <Box
           sx={{
             pt: 2,
             borderTop: "1px solid",
@@ -81,6 +85,9 @@ export default function Form({
       >
         {footer}
         {(onCancel) && <Button variant="outlined" onClick={onCancel}>
+          {cancelText || "Cancelar"}
+        </Button>}
+        {(onCancelGoBack) && <Button variant="outlined" onClick={() => navigate(-1)}>
           {cancelText || "Cancelar"}
         </Button>}
         {(onSubmit || submitText) && <Button variant="contained" type="submit" >

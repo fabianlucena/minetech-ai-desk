@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import Form from '../components/Form.jsx';
 import { TextField, SwitchField, PasswordField, CheckboxSelectField } from '../components/fields';
 import { useToast } from '../state/toast.jsx';
 
 export default function User() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { id } = useParams();
   const isCreation = location.pathname === '/users/new';
   const { addInfo, addError } = useToast();
-  const navigate = useNavigate();
   const [disabled, setDisabled] = useState(false);
   const [data, setData] = useState({
     username: '',
@@ -46,7 +47,7 @@ export default function User() {
     try {
       addError('No implementado');
 
-      //navigate('/dashboard');
+      //navigate(-1);
       //addInfo('Usuario creado correctamente');
     } catch (error) {
       console.error('Error al crear usuario:', error);
@@ -58,7 +59,7 @@ export default function User() {
   return <Form
     disabled={disabled}
     onSubmit={onSubmit}
-    onCancel={() => navigate('/')}
+    onCancelGoBack={true}
     {...formConfig}
   >
     <SwitchField
