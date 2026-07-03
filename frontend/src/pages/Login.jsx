@@ -13,8 +13,8 @@ export default function Login() {
   const navigate = useNavigate();
   const [disabled, setDisabled] = useState(false);
   const [data, setData] = useState({
-    username: 'admin',
-    password: '1234'
+    username: '',
+    password: ''
   });
 
   async function onSubmit() {
