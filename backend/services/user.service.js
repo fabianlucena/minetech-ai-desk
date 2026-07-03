@@ -7,7 +7,7 @@ export default class UserService extends ModelService {
   }
 
   async getSystemUserId() {
-    const systemUser = await this.getFirstOrDefault({ username: 'system' });
+    const systemUser = await this.getFirstOrDefault({ where: { username: 'system' } });
     if (!systemUser)
       throw new Error('Usuario system no encontrado');
 
@@ -18,6 +18,6 @@ export default class UserService extends ModelService {
     if (!username)
       throw new Error('El nombre de usuario es obligatorio');
 
-    return await this.getFirstOrDefault({ username });
+    return await this.getFirstOrDefault({ where: { username } });
   }
 }

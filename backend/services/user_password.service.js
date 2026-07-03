@@ -10,6 +10,6 @@ export default class UserPasswordService extends ModelService {
     if (!userId)
       throw new Error('El ID de usuario es obligatorio');
 
-    return await this.getFirstOrDefault({ userId });
+    return await this.getFirstOrDefault({ where: { userId } });
   }
 }

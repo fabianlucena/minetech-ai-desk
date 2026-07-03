@@ -12,7 +12,7 @@ export default class RoleXUserService extends ModelService {
     if (!userId)
       throw new Error('El ID de usuario es obligatorio');
 
-    return await this.getList({ userId }, { attributes: ['roleId'] });
+    return await this.getList({ where: { userId }, attributes: ['roleId'] });
   }
 
   async getRolesByUserId(userId) {

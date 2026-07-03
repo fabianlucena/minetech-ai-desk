@@ -16,32 +16,34 @@ export default class ModelService {
     return options;
   }
 
-  async getFirstOrDefault(where, options = {}) {
-    if (!where)
+  async getFirstOrDefault(options = {}) {
+    options ??= {};
+    if (!options.where)
       throw new Error('La cláusula where es obligatoria');
 
-    return this.model.findOne(this.getModelOptions({ where, ...options }));
+    return this.model.findOne(this.getModelOptions(options));
   }
 
-  async getList(where, options = {}) {
-    if (!where) {
+  async getList(options = {}) {
+    options ??= {};
+    if (!options.where) {
       options.limit ??= 20;
     }
 
-    return await this.model.findAll(this.getModelOptions({ where, ...options }));
+    return await this.model.findAll(this.getModelOptions(options));
   }
 
   async getById(id) {
     if (!id)
       throw new Error('ID es obligatorio');
 
-    return this.getFirstOrDefault({ id });
+    return this.getFirstOrDefault({ where: { id } });
   }
 
   async getByIds(ids) {
     if (!ids || !Array.isArray(ids))
       throw new Error('IDs es obligatorio y debe ser un array');
 
-    return await this.getList({ id: ids }, { raw: true });
+    return await this.getList({ where: { id: ids } });
   }
 }

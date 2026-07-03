@@ -14,17 +14,15 @@ export default class RoleIncludeService extends ModelService {
     let newIds;
     const allIds = [...roleIds];
     do {
-      newIds = await this.getList(
-        {
+      newIds = await this.getList({
+        where: {
           [Op.and]: [
             { roleId: { [Op.in]: allIds } },
             { includeId: { [Op.notIn]: allIds } }
           ]
         },
-        {
-          attributes: ['includeId'],
-        }
-      );
+        attributes: ['includeId']
+      });
 
       newIds.forEach(id => {
         if (!allIds.includes(id.includeId)) {

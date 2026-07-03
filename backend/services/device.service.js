@@ -24,7 +24,7 @@ export default class DeviceService extends ModelService {
     if (!token)
       throw new Error('El token de dispositivo es obligatorio');
 
-    return this.getFirstOrDefault({ token });
+    return this.getFirstOrDefault({ where: { token } });
   }
 
   async getOrCreateByToken(token) {

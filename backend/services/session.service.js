@@ -34,6 +34,6 @@ export default class SessionService extends ModelService {
     if (!autoLoginToken)
       throw new Error('El token de auto-login es obligatorio');
 
-    return await this.getFirstOrDefault({ autoLoginToken });
+    return await this.getFirstOrDefault({ where: { autoLoginToken } });
   }
 }
