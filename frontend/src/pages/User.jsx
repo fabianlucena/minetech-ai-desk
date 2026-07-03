@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Form from '../components/Form.jsx';
-import { TextField, PasswordField } from '../components/fields';
+import { TextField, SwitchField, PasswordField } from '../components/fields';
 import { useToast } from '../state/toast.jsx';
 
 export default function User() {
@@ -13,7 +13,9 @@ export default function User() {
   const [data, setData] = useState({
     username: '',
     displayName: '',
-    password: ''
+    isActive: true,
+    canLogin: false,
+    password: '',
   });
   const [formConfig, setFormConfig] = useState({
     title: 'Crear nuevo usuario',
@@ -58,6 +60,12 @@ export default function User() {
     onCancel={() => navigate('/')}
     {...formConfig}
   >
+    <SwitchField
+      label="Activo"
+      disabled={disabled}
+      checked={data.isActive}
+      onChange={(e) => setData({...data, isActive: e.target.checked})}
+    />
     <TextField
       label="Nombre de usuario"
       disabled={disabled}
@@ -73,11 +81,18 @@ export default function User() {
       value={data.displayName}
       onChange={(e) => setData({...data, displayName: e.target.value})}
     />
-    <PasswordField
+    <SwitchField
+      label="Permitir inicio de sesión"
+      disabled={disabled}
+      checked={data.canLogin}
+      onChange={(e) => setData({...data, canLogin: e.target.checked})}
+    />
+    {data.canLogin && <PasswordField
       label="Contraseña"
       disabled={disabled}
+      required={data.canLogin}
       value={data.password}
       onChange={(e) => setData({...data, password: e.target.value})}
-    />
+    />}
   </Form>;
 }
