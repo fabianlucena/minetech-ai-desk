@@ -3,6 +3,6 @@ import getDependency from '../dependency.js';
 
 const router = Router();
 
-router.get('/', (...args) => getDependency('helloController').getAll(...args));
+router.get('/', (...args) => getDependency('helloController').get(...args));
 
 export default router;

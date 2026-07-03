@@ -1,7 +1,10 @@
 import getDependency from '../dependency.js';
+import { UserDTO } from '../dto/user.dto.js';
 
-export async function getAll(req, res) {
+export async function getList(req, res) {
   const userService = getDependency('userService');
-  const users = await userService.getList();
-  res.json(users);
+  const users = await userService.getList({}, {
+    include: 'roles',
+  });
+  res.json(users.map(u => new UserDTO(u)));
 }

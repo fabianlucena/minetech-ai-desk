@@ -1,3 +1,3 @@
-export function getAll(req, res) {
+export function get(req, res) {
   res.send('Hello, World!');
 }

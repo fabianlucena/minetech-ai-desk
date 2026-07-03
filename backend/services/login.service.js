@@ -2,9 +2,9 @@ import { getDependency } from '../dependency.js';
 import argon2 from 'argon2';
 import { Error400 } from '../errors/error400.js';
 import { Error403 } from '../errors/error403.js';
-import { UserMinDTO } from '../dtos/user.dto.js';
-import { SessionResponse } from '../dtos/session.dto.js';
-import { RoleMinDTO } from '../dtos/role.dto.js';
+import { UserMinDTO } from '../dto/user.dto.js';
+import { SessionResponse } from '../dto/session.dto.js';
+import { RoleMinDTO } from '../dto/role.dto.js';
 
 export default class LoginService {
   constructor() {
