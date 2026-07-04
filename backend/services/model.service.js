@@ -64,6 +64,19 @@ export default class ModelService {
     return this.getFirstOrDefault({ ...options, where: { ...options?.where, uuid } });
   }
 
+  async getIdByUuid(uuid, options) {
+    if (!uuid)
+      throw new Error('UUID es obligatorio');
+
+    if (Array.isArray(uuid)) {
+      const rows = await this.getList({ ...options, where: { ...options?.where, uuid } });
+      return rows.map(r => r.id);
+    } else {
+      const row = await this.getFirstOrDefault({ ...options, where: { ...options?.where, uuid } });
+      return row?.id;
+    }
+  }
+
   async update(data, options = {}) {
     if (!data || typeof data !== 'object')
       throw new Error('Data es obligatorio y debe ser un objeto');
@@ -82,5 +95,17 @@ export default class ModelService {
       throw new Error(`No se encontró el registro con ID ${id}`);
 
     return await this.getById(id);
+  }
+
+  async deleteByWhere(where, options = {}) {
+    if (!where || typeof where !== 'object')
+      throw new Error('La cláusula where es obligatoria y debe ser un objeto');
+
+    if (this.softDelete) {
+      const data = { deletedAt: new Date() };
+      return await this.update(data, { where: { ...where, ...options?.where }, ...options });
+    } else {
+      return await this.model.destroy({ where: { ...where, ...options?.where }, ...options });
+    }
   }
 }
