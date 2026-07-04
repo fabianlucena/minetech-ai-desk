@@ -4,6 +4,7 @@ import { userService } from '../services/user.service.js';
 import { useToast } from '../state/toast.jsx';
 import { hasPermission } from '../state/global.jsx';
 import { formatDate } from '../utils/date.js';
+import Chips from '../components/Chips.jsx';
 
 export default function Usuarios() {
   const { addError } = useToast();
@@ -32,8 +33,11 @@ export default function Usuarios() {
     },
     {
       field: 'roles',
-      headerName: 'Roles',
-      renderCell: ({value}) => value.map(role => role.title).join(', '),
+      headerName: 'Role',
+      renderCell: ({value}) => <Chips
+        chips={value}
+        mapper={role => ({ id: role.uuid, label: role.title })}
+      />,
       width: 200,
     },
     {

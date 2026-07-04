@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import Form from '../components/Form.jsx';
-import { TextField, SwitchField, PasswordField, CheckboxSelectField } from '../components/fields';
+import { TextField, SwitchField, PasswordField, ChippedCheckboxSelectField } from '../components/fields';
 import { useToast } from '../state/toast.jsx';
 
 export default function User() {
@@ -96,7 +96,7 @@ export default function User() {
       value={data.password}
       onChange={(e) => setData({...data, password: e.target.value})}
     />}
-    <CheckboxSelectField
+    <ChippedCheckboxSelectField
       label="Roles"
       disabled={disabled}
       value={data.roles}
