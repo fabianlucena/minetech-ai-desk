@@ -69,6 +69,6 @@ export default function Usuarios() {
     onReload={() => load()}
     createPath={hasPermission('users.create') ? "/users/new" : null}
     onDelete={hasPermission('users.delete') ? () => load() : null}
-    onEdit={hasPermission('users.edit') ? () => load() : null}
+    editPath={hasPermission('users.update') ? "/users/:uuid/edit" : null}
   />;
 }

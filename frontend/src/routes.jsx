@@ -32,7 +32,7 @@ export const allRoutes = [
         label: 'Usuarios',
         menuItemOrder: 3,
         element: <Users />,
-        condition: ({ permissions }) => permissions.includes('users.get'),
+        condition: ({ permissions }) => permissions.includes('users.list'),
       },
       {
         path: '/users/new',

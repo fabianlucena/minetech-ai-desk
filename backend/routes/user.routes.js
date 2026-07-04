@@ -4,6 +4,6 @@ import checkPermissionMiddleware from '../middlewares/check_permission_middlewar
 
 const router = Router();
 
-router.get('/', checkPermissionMiddleware('users.get'), (...args) => getDependency('userController').getList(...args));
+router.get('/', checkPermissionMiddleware('users.list'), (...args) => getDependency('userController').getList(...args));
 
 export default router;
