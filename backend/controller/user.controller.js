@@ -25,3 +25,21 @@ export async function getAsignableRoles(req, res) {
   });
   res.json(roles.map(r => new RoleMinDTO(r)));
 }
+
+export async function create(req, res) {
+  const userService = getDependency('userService');
+  const user = await userService.create(req.body);
+  res.json(new UserDTO(user));
+}
+
+export async function updateByUuid(req, res) {
+  const userService = getDependency('userService');
+  const user = await userService.updateByUuid(req.params.uuid, req.body);
+  res.json(new UserDTO(user));
+}
+
+export async function deleteByUuid(req, res) {
+  const userService = getDependency('userService');
+  await userService.deleteByUuid(req.params.uuid);
+  res.status(204).end();
+}

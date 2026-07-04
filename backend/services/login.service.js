@@ -8,19 +8,9 @@ export default class LoginService {
   constructor() {
     this.userService = getDependency('userService');
     this.userPasswordService = getDependency('userPasswordService');
+    this.passwordService = getDependency('passwordService');
     this.deviceService = getDependency('deviceService');
     this.sessionService = getDependency('sessionService');
-  }
-
-  async hashPassword(password) {
-    const hash = await argon2.hash(password, {
-      type: argon2.argon2id,
-      memoryCost: 2 ** 16,
-      timeCost: 3,
-      parallelism: 1
-    });
-
-    return hash;
   }
 
   async login(data) {
@@ -38,7 +28,7 @@ export default class LoginService {
     if (!userPassword)
       throw new Error403('Usuario o contraseña incorrecta');
 
-    const isValid = await argon2.verify(userPassword.passwordHash, data.password);
+    const isValid = await this.passwordService.verifyPassword(userPassword.passwordHash, data.password);
     if (!isValid)
       throw new Error403('Usuario o contraseña incorrectos');
 

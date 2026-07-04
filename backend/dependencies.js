@@ -9,6 +9,7 @@ import * as models from './models/index.js';
 
 import UserService from './services/user.service.js';
 import UserPasswordService from './services/user_password.service.js';
+import PasswordService from './services/password.service.js';
 import LoginService from './services/login.service.js';
 import DeviceService from './services/device.service.js';
 import SessionService from './services/session.service.js';
@@ -30,6 +31,7 @@ addDependency('loginController', () => loginController);
 
 addDependency('userService', () => new UserService());
 addDependency('userPasswordService', () => new UserPasswordService());
+addDependency('passwordService', () => new PasswordService());
 addDependency('loginService', () => new LoginService());
 addDependency('deviceService', () => new DeviceService());
 addDependency('sessionService', () => new SessionService());

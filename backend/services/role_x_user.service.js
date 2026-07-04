@@ -31,4 +31,34 @@ export default class RoleXUserService extends ModelService {
     rolesIds = await this.roleIncludeService.getAllIdsByIds(rolesIds.map(r => r.roleId));
     return await this.roleService.getByIds(rolesIds);
   }
+
+  async updateRoleIdsByUserId(userId, roleIds) {
+    if (!userId)
+      throw new Error('El ID de usuario es obligatorio');
+
+    if (!Array.isArray(roleIds))
+      throw new Error('Los IDs de roles deben ser un arreglo');
+
+    const existingRoleIds = await this.getRolesIdsByUserId(userId);
+
+    await this.deleteByWhere({ userId, roleId: existingRoleIds.filter(roleId => !roleIds.includes(roleId)) });
+
+    const roleXUserList = roleIds
+      .filter(roleId => !existingRoleIds.includes(roleId))
+      .map(roleId => ({ userId, roleId }));
+
+    await this.bulkCreate(roleXUserList);
+  }
+
+  async updateRolesUuidById(userId, roleUuids) {
+    if (!userId)
+      throw new Error('El ID de usuario es obligatorio');
+
+    if (!Array.isArray(roleUuids))
+      throw new Error('Los UUIDs de roles deben ser un arreglo');
+
+    const roleService = getDependency('roleService');
+    const roleIds = await roleService.getIdByUuid(roleUuids);
+    await this.updateRoleIdsByUserId(userId, roleIds);
+  }
 }
