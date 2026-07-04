@@ -3,32 +3,48 @@ import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import Form from '../components/Form.jsx';
 import { TextField, SwitchField, PasswordField, ChippedCheckboxSelectField } from '../components/fields';
 import { useToast } from '../state/toast.jsx';
-import { usersRead } from '../services/user.service.js';
+import { getUser, getRoles } from '../services/user.service.js';
 
 export default function User() {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const { uuid } = useParams();
-  const { addInfo, addError } = useToast();
-  const [disabled, setDisabled] = useState(false);
-  const [data, setData] = useState({
+  const defaultData = {
     username: '',
     displayName: '',
     isActive: true,
     canLogin: false,
     password: '',
     roles: [],
-  });
+  };
+
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { uuid } = useParams();
+  const { addInfo, addError } = useToast();
+  const [disabled, setDisabled] = useState(false);
+  const [data, setData] = useState({...defaultData});
+  const [roles, setRoles] = useState([]);
+  
   const [formConfig, setFormConfig] = useState({
     title: 'Crear nuevo usuario',
     description: 'Por favor, ingrese los datos del nuevo usuario',
     disabledMessage: 'Creando usuario...',
   });
 
+  async function loadRoles() {
+    try {
+      setRoles(await getRoles());
+    } catch (error) {
+      addError('Error al obtener los roles');
+      console.error('Error al obtener los roles:', error);
+    }
+  }
+
   async function load() {
     try {
-      const res = await usersRead(uuid);
-      setData(res);
+      const res = await getUser(uuid);
+      setData({
+        ...defaultData,
+        ...res,
+      });
     } catch (error) {
       addError('Error al obtener el usuario');
       console.error('Error al obtener el usuario:', error);
@@ -36,6 +52,8 @@ export default function User() {
   }
 
   useEffect(() => {
+    loadRoles();
+
     if (uuid) {
       setFormConfig({
         title: 'Editar usuario',
@@ -100,7 +118,7 @@ export default function User() {
       checked={data.canLogin}
       onChange={(e) => setData({...data, canLogin: e.target.checked})}
     />
-    {data.canLogin && <PasswordField
+    {!uuid && data.canLogin && <PasswordField
       label="Contraseña"
       disabled={disabled}
       required={data.canLogin}
@@ -110,13 +128,12 @@ export default function User() {
     <ChippedCheckboxSelectField
       label="Roles"
       disabled={disabled}
-      value={data.roles}
+      value={data.roles.map(role => role.uuid)}
       onChange={(e) => setData({...data, roles: e.target.value})}
-      options={[
-        { value: 'admin', label: 'Administrador' },
-        { value: 'supervisor', label: 'Supervisor' },
-        { value: 'operator', label: 'Operador' },
-      ]}
+      options={roles.map((role) => ({
+        value: role.uuid,
+        label: role.title,
+      }))}
     />
   </Form>;
 }

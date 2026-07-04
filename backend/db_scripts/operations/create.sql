@@ -240,7 +240,7 @@ create table if not exists auth.roles (
   name varchar(256) not null,
   title text null,
   description text null,
-  is_selectable boolean not null,
+  is_asignable boolean not null,
 
   constraint uk_auth_roles_name unique (name),
 

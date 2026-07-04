@@ -15,7 +15,7 @@ export default (sequelize) => {
     name: { type: DataTypes.STRING, allowNull: false, unique: true },
     title: { type: DataTypes.STRING, allowNull: false, unique: true },
     description: { type: DataTypes.STRING, allowNull: true },
-    isSelectable: { field: 'is_selectable', type: DataTypes.BOOLEAN, defaultValue: true },
+    isAsignable: { field: 'is_asignable', type: DataTypes.BOOLEAN, defaultValue: true },
   }, {
     tableName: 'roles',
     schema: 'auth',

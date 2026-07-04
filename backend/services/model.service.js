@@ -43,18 +43,25 @@ export default class ModelService {
     return result.map(r => r.get({ plain: true }));
   }
 
-  async getById(id) {
+  async getById(id, options) {
     if (!id)
       throw new Error('ID es obligatorio');
 
-    return this.getFirstOrDefault({ where: { id } });
+    return this.getFirstOrDefault({ ...options, where: { ...options?.where, id } });
   }
 
-  async getByIds(ids) {
+  async getByIds(ids, options) {
     if (!ids || !Array.isArray(ids))
       throw new Error('IDs es obligatorio y debe ser un array');
 
-    return await this.getList({ where: { id: ids } });
+    return await this.getList({ ...options, where: { ...options?.where, id: ids } });
+  }
+
+  async getByUuid(uuid, options) {
+    if (!uuid)
+      throw new Error('UUID es obligatorio');
+
+    return this.getFirstOrDefault({ ...options, where: { ...options?.where, uuid } });
   }
 
   async update(data, options = {}) {

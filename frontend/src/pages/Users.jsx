@@ -4,7 +4,7 @@ import { useToast } from '../state/toast.jsx';
 import { hasPermission } from '../state/global.jsx';
 import { formatDate } from '../utils/date.js';
 import Chips from '../components/Chips.jsx';
-import { usersList } from '../services/user.service.js';
+import { getUsers } from '../services/user.service.js';
 
 export default function Usuarios() {
   const { addError } = useToast();
@@ -50,7 +50,7 @@ export default function Usuarios() {
 
   async function load() {
     try {
-      const res = await usersList();
+      const res = await getUsers();
       setData(res);
     } catch (error) {
       addError('Error al obtener los usuarios');
