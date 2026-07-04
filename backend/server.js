@@ -21,8 +21,6 @@ try {
 try {
   const app = express();
 
-  
-  app.use(logMiddleware);
   if (config.cors) {
     const corsOptions = config.cors === true ? {} : config.cors;
     app.use(cors(config.cors));
@@ -30,6 +28,7 @@ try {
   }
   app.use(express.json());
   app.use(checkAuthorizationTokenMiddleware);
+  app.use(logMiddleware);
   app.use('/api', routes);
   app.use(errorMiddleware);
 
