@@ -58,7 +58,7 @@ export default class UserService extends ModelService {
     if (!user)
       throw new Error('Usuario no encontrado');
 
-    const result = await this.update(user.id, data);
+    const result = await this.updateById(user.id, data);
 
     if (data.password) {
       const userPasswordService = getDependency('userPasswordService');
