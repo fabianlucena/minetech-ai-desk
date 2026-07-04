@@ -14,9 +14,10 @@ export default function Grid({
   tools,
   onReload,
   onCreate,
+  createPath,
   onDelete,
   onEdit,
-  createPath,
+  editPath,
   deleteConfirmationMessage = '¿Está seguro de que desea eliminar este elemento?',
 }) {
   const navigate = useNavigate();
@@ -50,7 +51,7 @@ export default function Grid({
 
   useEffect(() => {
     const effectiveColumns = [...columns];
-    if (onDelete || onEdit) {
+    if (onDelete || onEdit || editPath) {
       let rowsActions = effectiveColumns.find(col => col.field === 'rowsActions');
       if (!rowsActions) {
         rowsActions = {
@@ -60,28 +61,18 @@ export default function Grid({
         effectiveColumns.push(rowsActions);
       }
 
-      if (onDelete) {
-        const previousRenderCell = rowsActions.renderCell;
-        rowsActions.renderCell = (params) => {
-          return <>
-            {previousRenderCell?.(params)}
-            <DeleteButton onClick={() => handleDelete(params.row)} />
-          </>;
-        };
-      }
-
-      if (onEdit) {
-        const previousRenderCell = rowsActions.renderCell;
-        rowsActions.renderCell = (params) => {
-          return <>
-            {previousRenderCell?.(params)}
-            <EditButton onClick={() => onEdit(params.row)} />
-          </>;
-        };
-      }
+      const previousRenderCell = rowsActions.renderCell;
+      rowsActions.renderCell = (params) => {
+        return <>
+          {previousRenderCell?.(params)}
+          {onDelete && <DeleteButton onClick={() => handleDelete(params.row)} />}
+          {onEdit && <EditButton onClick={() => onEdit(params.row)} />}
+          {editPath && <EditButton onClick={() => navigate(editPath.replace(':uuid', params.row[columnIdName]))} />}
+        </>;
+      };
     }
     setEffectiveColumns(effectiveColumns);
-  }, [columns, onDelete, onEdit]);
+  }, [columns, onDelete, onEdit, editPath]);
 
   return <Box
     sx={{
