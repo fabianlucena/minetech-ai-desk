@@ -124,4 +124,12 @@ export default class Api {
       json: true,
     });
   }
+
+  static async putJson(service, options) {
+    return await this.fetch(service, {
+      ...options,
+      method: 'PUT',
+      json: true,
+    });
+  }
 }

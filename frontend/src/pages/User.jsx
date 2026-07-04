@@ -3,7 +3,7 @@ import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import Form from '../components/Form.jsx';
 import { TextField, SwitchField, PasswordField, ChippedCheckboxSelectField } from '../components/fields';
 import { useToast } from '../state/toast.jsx';
-import { getUser, getRoles } from '../services/user.service.js';
+import { getUser, getRoles, updateUser, createUser } from '../services/user.service.js';
 
 export default function User() {
   const defaultData = {
@@ -74,13 +74,23 @@ export default function User() {
   async function onSubmit() {
     setDisabled(true);
     try {
-      addError('No implementado');
+      if (uuid) {
+        await updateUser(uuid, data);
+        addInfo('Usuario actualizado correctamente');
+      } else {
+        await createUser(data);
+        addInfo('Usuario creado correctamente');
+      }
 
-      //navigate(-1);
-      //addInfo('Usuario creado correctamente');
+      navigate(-1);
     } catch (error) {
-      console.error('Error al crear usuario:', error);
-      addError('Error al crear usuario');
+      if (uuid) {
+        console.error('Error al actualizar usuario:', error);
+        addError('Error al actualizar usuario');
+      } else {
+        console.error('Error al crear usuario:', error);
+        addError('Error al crear usuario');
+      }
     }
     setDisabled(false);
   }
