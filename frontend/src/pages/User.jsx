@@ -3,12 +3,12 @@ import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import Form from '../components/Form.jsx';
 import { TextField, SwitchField, PasswordField, ChippedCheckboxSelectField } from '../components/fields';
 import { useToast } from '../state/toast.jsx';
+import { usersRead } from '../services/user.service.js';
 
 export default function User() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { id } = useParams();
-  const isCreation = location.pathname === '/users/new';
+  const { uuid } = useParams();
   const { addInfo, addError } = useToast();
   const [disabled, setDisabled] = useState(false);
   const [data, setData] = useState({
@@ -25,22 +25,33 @@ export default function User() {
     disabledMessage: 'Creando usuario...',
   });
 
+  async function load() {
+    try {
+      const res = await usersRead(uuid);
+      setData(res);
+    } catch (error) {
+      addError('Error al obtener el usuario');
+      console.error('Error al obtener el usuario:', error);
+    }
+  }
+
   useEffect(() => {
-    if (isCreation) {
-      setFormConfig({
-        title: 'Crear nuevo usuario',
-        description: 'Por favor, ingrese los datos del nuevo usuario',
-        disabledMessage: 'Creando usuario...',
-      });
-    } else {
+    if (uuid) {
       setFormConfig({
         title: 'Editar usuario',
         description: 'Por favor, modifique los datos del usuario',
         disabledMessage: 'Actualizando usuario...',
       });
-      addError('Falta cargar los datos del usuario para editar');
+
+      load();
+    } else {
+      setFormConfig({
+        title: 'Crear nuevo usuario',
+        description: 'Por favor, ingrese los datos del nuevo usuario',
+        disabledMessage: 'Creando usuario...',
+      });
     }
-  }, [isCreation]);
+  }, [uuid]);
 
   async function onSubmit() {
     setDisabled(true);

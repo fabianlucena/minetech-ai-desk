@@ -40,7 +40,7 @@ export const allRoutes = [
         condition: ({ permissions }) => permissions.includes('users.create'),
       },
       {
-        path: '/users/:id/edit',
+        path: '/users/:uuid/edit',
         element: <User />,
         condition: ({ permissions }) => permissions.includes('users.update'),
       },
