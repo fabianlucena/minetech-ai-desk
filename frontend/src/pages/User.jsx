@@ -44,6 +44,7 @@ export default function User() {
       setData({
         ...defaultData,
         ...res,
+        roles: res.roles.map(role => role.uuid) || [],
       });
     } catch (error) {
       addError('Error al obtener el usuario');
@@ -138,7 +139,7 @@ export default function User() {
     <ChippedCheckboxSelectField
       label="Roles"
       disabled={disabled}
-      value={data.roles.map(role => role.uuid)}
+      value={data.roles}
       onChange={(e) => setData({...data, roles: e.target.value})}
       options={roles.map((role) => ({
         value: role.uuid,

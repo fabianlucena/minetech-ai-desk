@@ -13,9 +13,9 @@ export async function getRoles(params) {
 }
 
 export async function createUser(data) {
-  return await Api.postJson('users', data);
+  return await Api.postJson('users', { body: data });
 }
 
 export async function updateUser(uuid, data) {
-  return await Api.putJson(`users/${uuid}`, data);
+  return await Api.putJson(`users/${uuid}`, { body: data });
 }
