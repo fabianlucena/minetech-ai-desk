@@ -12,7 +12,8 @@ export default class RoleXUserService extends ModelService {
     if (!userId)
       throw new Error('El ID de usuario es obligatorio');
 
-    return await this.getList({ where: { userId }, attributes: ['roleId'] });
+    return (await this.getList({ where: { userId }, attributes: ['roleId'] }))
+      .map(r => r.roleId);
   }
 
   async getRolesByUserId(userId) {
@@ -28,7 +29,7 @@ export default class RoleXUserService extends ModelService {
       throw new Error('El ID de usuario es obligatorio');
     
     let rolesIds = await this.getRoleIdsByUserId(userId);
-    rolesIds = await this.roleIncludeService.getAllIdsByIds(rolesIds.map(r => r.roleId));
+    rolesIds = await this.roleIncludeService.getAllIdsByIds(rolesIds);
     return await this.roleService.getByIds(rolesIds);
   }
 
@@ -39,7 +40,9 @@ export default class RoleXUserService extends ModelService {
     if (!Array.isArray(roleIds))
       throw new Error('Los IDs de roles deben ser un arreglo');
 
-    const existingRoleIds = await this.getRolesIdsByUserId(userId);
+    const existingRoleIds = await this.getRoleIdsByUserId(userId);
+
+    console.log(existingRoleIds.filter(roleId => !roleIds.includes(roleId)));
 
     await this.deleteByWhere({ userId, roleId: existingRoleIds.filter(roleId => !roleIds.includes(roleId)) });
 
