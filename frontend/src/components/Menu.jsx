@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Box, Typography, List, ListItemButton, ListItemText } from '@mui/material';
+import { Box, Typography, List, ListItemButton, ListItemText, ListItemIcon } from '@mui/material';
 import { Link, useLocation  } from 'react-router-dom';
 import { useGlobal } from '../state/global';
 import { useRoutes } from '../routes.jsx';
@@ -15,6 +15,7 @@ function flattenNavigableRoutes(routes) {
         id: node.id,
         path: node.path,
         label: node.label ?? null,
+        icon: node.icon ?? null,
         menuItemOrder: node.menuItemOrder ?? Infinity,
       });
     }
@@ -60,10 +61,15 @@ export default function Menu() {
         <ListItemButton
           key={route.id}
           selected={location.pathname === route.path}
+          component={Link}
+          to={route.path || (route.index ? '/' : '')}
         >
-          <Link to={route.path || (route.index ? '/' : '')} style={{ textDecoration: 'none', color: 'inherit' }}>
-            <ListItemText primary={route.label || route.path || (route.index ? '/' : '')} />
-          </Link>
+          {route.icon && (
+            <ListItemIcon sx={{ color: 'inherit' }}>
+              {route.icon}
+            </ListItemIcon>
+          )}
+          <ListItemText primary={route.label || route.path || (route.index ? '/' : '')} />
         </ListItemButton>
       ))}
     </List>

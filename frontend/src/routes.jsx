@@ -8,6 +8,7 @@ import NotFound from './pages/NotFound.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import Users from './pages/Users.jsx';
 import User from './pages/User.jsx';
+import { HomeIcon, DashboardIcon, UsersIcon, AboutIcon, LoginIcon, LogoutIcon } from './components/icons/index.jsx';
 
 export const allRoutes = [
   {
@@ -17,12 +18,14 @@ export const allRoutes = [
       {
         index: true,
         label: 'Inicio',
+        icon: <HomeIcon />,
         menuItemOrder: 1,
         element: <Home />,
       },
       {
         path: '/dashboard',
-        label: 'Dashboard',
+        label: 'Panel de control',
+        icon: <DashboardIcon />,
         menuItemOrder: 2,
         element: <Dashboard />,
         condition: ({ user }) => !!user,
@@ -30,6 +33,7 @@ export const allRoutes = [
       {
         path: '/users',
         label: 'Usuarios',
+        icon: <UsersIcon />,
         menuItemOrder: 3,
         element: <Users />,
         condition: ({ permissions }) => permissions.includes('users.list'),
@@ -47,12 +51,14 @@ export const allRoutes = [
       {
         path: '/about',
         label: 'Acerca de',
+        icon: <AboutIcon />,
         menuItemOrder: 98,
         element: <About />,
       },
       {
         path: '/logout',
         label: 'Salir',
+        icon: <LogoutIcon />,
         menuItemOrder: 99,
         element: <Logout />,
         condition: ({ user }) => !!user,
@@ -67,6 +73,7 @@ export const allRoutes = [
   {
     path: '/login',
     label: 'Ingresar',
+    icon: <LoginIcon />,
     menuItemOrder: 2,
     element: <Login />,
     condition: ({ user }) => !user,
