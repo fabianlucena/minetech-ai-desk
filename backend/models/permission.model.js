@@ -8,7 +8,7 @@ export default (sequelize) => {
     uuid: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4 },
     createdAt: { field: 'created_at', type: DataTypes.DATE, defaultValue: DataTypes.NOW, allowNull: false },
     createdById: { field: 'created_by_id', type: DataTypes.BIGINT, allowNull: false },
-    deletedAt: { field: 'deleted_at', type: DataTypes.DATE, defaultValue: DataTypes.NOW, allowNull: true },
+    deletedAt: { field: 'deleted_at', type: DataTypes.DATE, allowNull: true },
     deletedById: { field: 'deleted_by_id', type: DataTypes.BIGINT, allowNull: true },
     name: { type: DataTypes.STRING, allowNull: false, unique: true },
   }, {
