@@ -21,6 +21,7 @@ export default function Grid({
   onEdit,
   editPath,
   deleteConfirmationMessage = '¿Está seguro de que desea eliminar este elemento?',
+  getRowClassName,
 }) {
   const navigate = useNavigate();
   const [effectiveColumns, setEffectiveColumns] = useState(columns);
@@ -123,11 +124,38 @@ export default function Grid({
       rows={rows}
       columns={effectiveColumns}
       getRowId={(row) => row[columnIdName]}
+      getRowClassName={(params) => {
+        let className = getRowClassName?.(params);
+        if (!className) {
+          if (params.row.deletedAt)
+            className = 'row-deleted';
+          else
+            className = params.indexRelativeToCurrentPage % 2 === 0
+              ? 'row-even'
+              : 'row-odd';
+        }
+
+        return className;
+      }}
       style={{
         flex: 1,
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
+      }}
+      sx={{
+        '& .row-even': {
+          backgroundColor: '#f7f7f7',
+        },
+        '& .row-odd': {
+          backgroundColor: '#ffffff',
+        },
+        '& .row-deleted': {
+          backgroundColor: 'rgba(255, 0, 0, 0.08)',
+          '&:hover': {
+            backgroundColor: 'rgba(255, 0, 0, 0.15)',
+          },
+        },
       }}
     />
   </Box>;
