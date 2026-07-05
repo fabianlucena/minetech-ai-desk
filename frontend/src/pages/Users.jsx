@@ -33,7 +33,7 @@ export default function Usuarios() {
     },
     {
       field: 'roles',
-      headerName: 'Role',
+      headerName: 'Rol',
       renderCell: ({value}) => <Chips
         chips={value}
         mapper={role => ({ id: role.uuid, label: role.title })}

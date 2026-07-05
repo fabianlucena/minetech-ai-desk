@@ -76,14 +76,6 @@ export default function Grid({
 
   return <Box
     sx={{
-      '& .MuiDataGrid-columnHeaders': {
-        backgroundColor: '#F4C300',
-        color: '#1A1A1A',
-        fontWeight: 'bold',
-      },
-      '& .MuiDataGrid-row:hover': {
-        backgroundColor: '#FFF7D1',
-      },
       height: '100%',
       flex: 1,
       display: 'flex',
