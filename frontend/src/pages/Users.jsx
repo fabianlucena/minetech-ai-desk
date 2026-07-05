@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import Grid from '../components/Grid.jsx';
+import { GridActionsCellItem } from '@mui/x-data-grid';
 import { useToast } from '../state/toast.jsx';
 import { hasPermission } from '../state/global.jsx';
 import { formatDate } from '../utils/date.js';
 import Chips from '../components/Chips.jsx';
 import { getUsers } from '../services/user.service.js';
+import { PasswordIcon } from '../components/icons';
 
 export default function Usuarios() {
   const { addError } = useToast();
@@ -70,5 +72,12 @@ export default function Usuarios() {
     createPath={hasPermission('users.create') ? "/users/new" : null}
     onDelete={hasPermission('users.delete') ? () => load() : null}
     editPath={hasPermission('users.update') ? "/users/:uuid/edit" : null}
+    rowsActions={({row}) => [
+      <GridActionsCellItem
+        icon={<PasswordIcon />}
+        label="Cambiar contraseña"
+        onClick={() => console.log(row)}
+      />
+    ]}
   />;
 }

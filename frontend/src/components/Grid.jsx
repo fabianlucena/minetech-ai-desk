@@ -1,14 +1,16 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
 import { Box, Typography } from '@mui/material';
-import { ReloadButton, CreateButton, DeleteButton, EditButton } from './buttons';
+import { ReloadButton, CreateButton } from './buttons';
+import { DeleteIcon, EditIcon } from './icons';
 import ConfirmDialog from './ConfirmDialog.jsx';
 
 export default function Grid({
   title,
   description,
   rows,
+  rowsActions,
   columns,
   columnIdName = 'uuid',
   tools,
@@ -52,24 +54,35 @@ export default function Grid({
   useEffect(() => {
     const effectiveColumns = [...columns];
     if (onDelete || onEdit || editPath) {
-      let rowsActions = effectiveColumns.find(col => col.field === 'rowsActions');
-      if (!rowsActions) {
-        rowsActions = {
-          field: 'rowsActions',
+      let actionsField = effectiveColumns.find(col => col.field === 'actions');
+      if (!actionsField) {
+        actionsField = {
+          field: 'actions',
+          type: 'actions',
           headerName: 'Acciones',
         };
-        effectiveColumns.push(rowsActions);
+        effectiveColumns.push(actionsField);
       }
 
-      const previousRenderCell = rowsActions.renderCell;
-      rowsActions.renderCell = (params) => {
-        return <>
-          {previousRenderCell?.(params)}
-          {onDelete && <DeleteButton onClick={() => handleDelete(params.row)} />}
-          {onEdit && <EditButton onClick={() => onEdit(params.row)} />}
-          {editPath && <EditButton onClick={() => navigate(editPath.replace(':uuid', params.row[columnIdName]))} />}
-        </>;
-      };
+      const previousGetActions = actionsField.getActions;
+      actionsField.getActions = (params) => [
+        ...rowsActions?.(params) || [],
+        onDelete && <GridActionsCellItem
+          icon={<DeleteIcon />}
+          label="Eliminar"
+          onClick={() => handleDelete(params.row)}
+        />,
+        onEdit && <GridActionsCellItem
+          icon={<EditIcon />}
+          label="Editar"
+          onClick={() => onEdit(params.row)}
+        />,
+        editPath && <GridActionsCellItem
+          icon={<EditIcon />}
+          label="Editar"
+          onClick={() => navigate(editPath.replace(':uuid', params.row[columnIdName]))}
+        />,
+      ];
     }
     setEffectiveColumns(effectiveColumns);
   }, [columns, onDelete, onEdit, editPath]);
