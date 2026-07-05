@@ -17,6 +17,7 @@ export async function getByUuid(req, res) {
   const userService = getDependency('userService');
   const user = await userService.getByUuid(req.params.uuid, {
     includeRoles: true,
+    includePassword: true,
     session: req.session,
   });
   res.json(new UserDTO(user));
@@ -63,6 +64,16 @@ export async function restoreByUuid(req, res) {
   const userService = getDependency('userService');
   await userService.restoreByUuid(
     req.params.uuid,
+    { session: req.session }
+  );
+  res.status(204).end();
+}
+
+export async function updatePasswordByUuid(req, res) {
+  const userService = getDependency('userService');
+  await userService.updatePasswordByUuid(
+    req.params.uuid,
+    req.body.password,
     { session: req.session }
   );
   res.status(204).end();

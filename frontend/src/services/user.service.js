@@ -27,3 +27,7 @@ export async function deleteUser(uuid) {
 export async function restoreUser(uuid) {
   return await Api.patchJson(`users/${uuid}/restore`);
 }
+
+export async function updateUserPassword(uuid, password) {
+  return await Api.patchJson(`users/${uuid}/password`, { body: { password } });
+}

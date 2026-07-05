@@ -93,4 +93,20 @@ export default class UserService extends ModelService {
 
     return result;
   }
+
+  async updatePasswordByUuid(uuid, password, options) {
+    if (!uuid)
+      throw new Error('El UUID de usuario es obligatorio');
+
+    if (!password)
+      throw new Error('La contraseña es obligatoria');
+
+    const user = await this.getByUuid(uuid);
+    if (!user)
+      throw new Error('Usuario no encontrado');
+
+    const globalOptions = { session: options?.session };
+    const userPasswordService = getDependency('userPasswordService');
+    return await userPasswordService.setPasswordForUser(user.id, password, globalOptions);
+  }
 }

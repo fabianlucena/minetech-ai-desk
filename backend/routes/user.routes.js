@@ -11,5 +11,6 @@ router.post('/', checkPermissionMiddleware('users.create'), (...args) => getDepe
 router.put('/:uuid', checkPermissionMiddleware('users.update'), (...args) => getDependency('userController').updateByUuid(...args));
 router.delete('/:uuid', checkPermissionMiddleware('users.delete'), (...args) => getDependency('userController').deleteByUuid(...args));
 router.patch('/:uuid/restore', checkPermissionMiddleware('users.restore'), (...args) => getDependency('userController').restoreByUuid(...args));
+router.patch('/:uuid/password', checkPermissionMiddleware('users.update'), (...args) => getDependency('userController').updatePasswordByUuid(...args));
 
 export default router;

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useLocation, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Form from '../components/Form.jsx';
 import { TextField, SwitchField, PasswordField, ChippedCheckboxSelectField } from '../components/fields';
 import { useToast } from '../state/toast.jsx';
@@ -15,7 +15,6 @@ export default function User() {
     roles: [],
   };
 
-  const location = useLocation();
   const navigate = useNavigate();
   const { uuid } = useParams();
   const { addInfo, addError } = useToast();
