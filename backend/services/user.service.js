@@ -93,18 +93,4 @@ export default class UserService extends ModelService {
 
     return result;
   }
-
-  async deleteByUuid(uuid) {
-    if (!uuid)
-      throw new Error('El UUID de usuario es obligatorio');
-
-    const user = await this.getByUuid(uuid);
-    if (!user)
-      throw new Error('Usuario no encontrado');
-
-    return await this.update(user.id, {
-      deletedAt: new Date(),
-      deletedById: await this.getCurrentUserId(),
-    });
-  }
 }

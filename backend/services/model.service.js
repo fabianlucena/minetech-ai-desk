@@ -184,9 +184,9 @@ export default class ModelService {
     return await this.getById(id);
   }
 
-  async deleteByWhere(where, options = {}) {
+  async deleteByWhere(where, options) {
     if (!where || typeof where !== 'object')
-      throw new Error('La cláusula where es obligatoria y debe ser un objeto');
+      throw new Error('La cláusula where del objeto a eliminar es obligatoria y debe ser un objeto');
 
     options = this.getModelOptions(options);
 
@@ -199,5 +199,27 @@ export default class ModelService {
     } else {
       return await this.model.destroy({ ...options, where: { ...where, ...options?.where } });
     }
+  }
+
+  async deleteById(id, options) {
+    if (!id)
+      throw new Error('El ID del elemento a eliminar es obligatorio');
+
+    const obj = await this.getById(id);
+    if (!obj)
+      throw new Error('Elemento no encontrado');
+
+    return await this.deleteByWhere({ id }, options);
+  }
+
+  async deleteByUuid(uuid, options) {
+    if (!uuid)
+      throw new Error('El UUID del elemento a eliminar es obligatorio');
+
+    const obj = await this.getByUuid(uuid);
+    if (!obj)
+      throw new Error('Elemento no encontrado');
+
+    return await this.deleteByWhere({ uuid }, options);
   }
 }
