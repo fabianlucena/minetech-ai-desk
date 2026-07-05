@@ -6,12 +6,21 @@ export default class UserService extends ModelService {
     super({ model: getDependency('userModel') });
   }
 
-  async getSystemUserId() {
-    const systemUser = await this.getFirstOrDefault({ where: { username: 'system' } });
-    if (!systemUser)
-      throw new Error('Usuario system no encontrado');
+  getModelOptions(options) {
+    options = super.getModelOptions(options);
+    if (options.includeRoles) {
+      options.include = [{
+        model: getDependency('roleModel'),
+        as: 'roles',
+        through: {
+          where: { deletedAt: null },
+        },
+      }],
 
-    return systemUser.id;
+      delete options.includeRoles;
+    }
+
+    return options;
   }
 
   async getByUsername(username) {
@@ -47,7 +56,7 @@ export default class UserService extends ModelService {
       await roleXUserService.updateRolesUuidById(user.id, data.roles);
     }
 
-    return await this.getById(user.id, { include: 'roles' });
+    return await this.getById(user.id);
   }
 
   async updateByUuid(uuid, data) {

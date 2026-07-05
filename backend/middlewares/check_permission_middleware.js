@@ -5,7 +5,7 @@ export default function checkPermissionMiddleware(...requiredPermissions) {
       return;
     }
 
-    if (!requiredPermissions.some(p => req.session.permissions.includes(p))) {
+    if (!requiredPermissions.some(p => req.session.permissionNames.includes(p))) {
       res.status(403).json({ error: 'Insufficient permissions' });
       return;
     }

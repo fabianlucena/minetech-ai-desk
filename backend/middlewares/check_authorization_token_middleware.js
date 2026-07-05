@@ -23,7 +23,9 @@ export default async function checkAuthorizationTokenMiddleware(req, res, next) 
         throw new Error('Invalid authorization token');
 
       session = await sessionService.decorateWithCredentials(session);
-      session = new SessionResponse(session);
+      session.roleNames = session.roles.map(r => r.name);
+      session.permissionNames = session.permissions.map(p => p.name);
+      
       cache.set(authHeader, session);
     }
 

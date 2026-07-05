@@ -1,21 +1,80 @@
 import { getDependency } from '../dependency.js';
 
 export default class ModelService {
-  constructor({ model, softDelete = true }) {
+  constructor({
+    model,
+    traceable = true,
+    auditable = true,
+    softDelete = true,
+  }) {
     this.model = model;
+    this.traceable = true;
+    this.auditable = true;
     this.softDelete = softDelete;
+  }
+
+  async getSystemUserId() {
+    if (!this.systemUserId) {
+      const userService = getDependency('userService');
+      const systemUser = await userService.getFirstOrDefault({
+        attributes: ['id'],
+        where: { username: 'system' },
+      });
+
+      if (!systemUser)
+        throw new Error('Usuario system no encontrado');
+
+      this.systemUserId = systemUser.id;
+    }
+
+    return this.systemUserId;
+  }
+
+  async getCurrentUserId(options) {
+    if (!this.currentUserId) {
+      this.currentUserId =
+        options?.currentUserId || 
+        options?.session?.userId || 
+        options?.session?.user?.id ||
+        await this.getSystemUserId();
+    }
+
+    return this.currentUserId;
   }
 
   async create(data, options = {}) {
     if (!data || typeof data !== 'object')
       throw new Error('Data es obligatorio y debe ser un objeto');
 
+    if (this.traceable && !options?.skipTraceable) {
+      data.createdAt ??= new Date();
+      data.createdById ??= await this.getCurrentUserId(options);
+    }
+
     const result = await this.model.create(data, options);
     return result.get({ plain: true });
   }
 
-  getModelOptions(options = {}) {
-    if (this.softDelete &&!options.includeDeleted)
+  async bulkCreate(dataList, options) {
+    if (!Array.isArray(dataList))
+      throw new Error('DataList es obligatorio y debe ser un arreglo');
+
+    if (this.traceable && !options?.skipTraceable) {
+      const date = new Date();
+      const creatorId = await this.getCurrentUserId(options);
+      dataList = dataList.map(data => {
+        data.createdAt ??= date;
+        data.createdById ??= creatorId;
+        return data;
+      });
+    }
+  
+    await this.model.bulkCreate(dataList, options);
+  }
+
+  getModelOptions(options) {
+    options = { ...options };
+    if (this.softDelete && !options.includeDeleted)
       options.where = { ...options.where, deletedAt: null };
 
     if (options.attributes)
@@ -24,18 +83,17 @@ export default class ModelService {
     return options;
   }
 
-  async getFirstOrDefault(options = {}) {
-    options ??= {};
-    if (!options.where)
+  async getFirstOrDefault(options) {
+    if (!options?.where)
       throw new Error('La cláusula where es obligatoria');
 
     const result = await this.model.findOne(this.getModelOptions(options));
     return result?.get({ plain: true }) || null;
   }
 
-  async getList(options = {}) {
-    options ??= {};
+  async getList(options) {
     if (!options.where) {
+      options = {...options};
       options.limit ??= 20;
     }
 
@@ -81,16 +139,30 @@ export default class ModelService {
     if (!data || typeof data !== 'object')
       throw new Error('Data es obligatorio y debe ser un objeto');
 
-    const result = await this.model.update(data, options);
+    options = this.getModelOptions(options);
+    if (this.auditable && !options.skipAudit) {
+      data.updatedAt ??= new Date();
+      data.updatedById ??= await this.getCurrentUserId(options);
+    }
 
-    return result;
+    return await this.model.update(data, options);
   }
 
-  async updateById(id, data) {
+  async updateByWhere(data, where, options = {}) {
+    if (!where || typeof where !== 'object')
+      throw new Error('La cláusula where es obligatoria y debe ser un objeto');
+
+    if (!data || typeof data !== 'object')
+      throw new Error('Data es obligatorio y debe ser un objeto');
+
+    return await this.update(data, { ...options, where: { ...options?.where, ...where } });
+  }
+
+  async updateById(id, data, options) {
     if (!id)
       throw new Error('ID es obligatorio');
 
-    const [updatedCount] = await this.update(data, { where: { id } });
+    const [updatedCount] = await this.updateByWhere(data, { id }, options);
     if (updatedCount === 0)
       throw new Error(`No se encontró el registro con ID ${id}`);
 
@@ -101,11 +173,16 @@ export default class ModelService {
     if (!where || typeof where !== 'object')
       throw new Error('La cláusula where es obligatoria y debe ser un objeto');
 
+    options = this.getModelOptions(options);
+
     if (this.softDelete) {
-      const data = { deletedAt: new Date() };
-      return await this.update(data, { where: { ...where, ...options?.where }, ...options });
+      const data = {
+        deletedAt: new Date(),
+        deletedById: await this.getCurrentUserId(options),
+      };
+      return await this.model.update(data, { ...options, where: { ...where, ...options?.where } });
     } else {
-      return await this.model.destroy({ where: { ...where, ...options?.where }, ...options });
+      return await this.model.destroy({ ...options, where: { ...where, ...options?.where } });
     }
   }
 }

@@ -3,7 +3,10 @@ import ModelService from './model.service.js';
 
 export default class RoleXUserService extends ModelService {
   constructor() {
-    super({ model: getDependency('roleXUserModel') });
+    super({
+      model: getDependency('roleXUserModel'),
+      traceable: false,
+    });
     this.roleService = getDependency('roleService');
     this.roleIncludeService = getDependency('roleIncludeService');
   }
@@ -40,11 +43,26 @@ export default class RoleXUserService extends ModelService {
     if (!Array.isArray(roleIds))
       throw new Error('Los IDs de roles deben ser un arreglo');
 
+    await this.updateByWhere(
+      {
+        deletedAt: null,
+        deletedById: null,
+      },
+      {
+        userId,
+        roleId: roleIds,
+      },
+      {
+        includeDeleted: true,
+      }
+    );
+
     const existingRoleIds = await this.getRoleIdsByUserId(userId);
+    const deleteingRoleIds = existingRoleIds.filter(roleId => !roleIds.includes(roleId));
+    const addingRoleIds = roleIds.filter(roleId => !existingRoleIds.includes(roleId));
 
-    console.log(existingRoleIds.filter(roleId => !roleIds.includes(roleId)));
-
-    await this.deleteByWhere({ userId, roleId: existingRoleIds.filter(roleId => !roleIds.includes(roleId)) });
+    if (deleteingRoleIds.length > 0)
+      await this.deleteByWhere({ userId, roleId: deleteingRoleIds });
 
     const roleXUserList = roleIds
       .filter(roleId => !existingRoleIds.includes(roleId))
