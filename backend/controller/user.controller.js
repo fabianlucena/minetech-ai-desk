@@ -6,6 +6,7 @@ export async function getList(req, res) {
   const userService = getDependency('userService');
   const users = await userService.getList({
     includeRoles: true,
+    includePassword: true,
     session: req.session,
   });
   res.json(users.map(u => new UserDTO(u)));

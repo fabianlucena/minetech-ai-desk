@@ -20,6 +20,11 @@ export const RoleXInclude = RoleXIncludeModel(sequelize);
 export const PermissionXRole = PermissionXRoleModel(sequelize);
 export const Permission = PermissionModel(sequelize);
 
+User.hasOne(UserPassword, {
+  as: 'password',
+  foreignKey: 'userId'
+});
+
 User.belongsToMany(Role, {
   as: 'roles',
   through: RoleXUser,

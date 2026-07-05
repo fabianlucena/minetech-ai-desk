@@ -15,6 +15,7 @@ export class UserDTO {
     this.displayName = user.displayName;
     this.isActive = user.isActive;
     this.canLogin = user.canLogin;
+    this.hasPassword = !!user.password;
     this.roles = user.roles?.map(role => new RoleMinDTO(role));
     this.createdAt = user.createdAt;
     this.updatedAt = user.updatedAt;

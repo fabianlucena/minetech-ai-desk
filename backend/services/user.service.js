@@ -9,15 +9,24 @@ export default class UserService extends ModelService {
   getModelOptions(options) {
     options = super.getModelOptions(options);
     if (options.includeRoles) {
-      options.include = [{
+      options.include = options.include || [];
+      options.include.push({
         model: getDependency('roleModel'),
         as: 'roles',
         through: {
           where: { deletedAt: null },
         },
-      }],
-
+      }),
       delete options.includeRoles;
+    }
+
+    if (options.includePassword) {
+      options.include = options.include || [];
+      options.include.push({
+        model: getDependency('userPasswordModel'),
+        as: 'password',
+      });
+      delete options.includePassword;
     }
 
     return options;
