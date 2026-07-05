@@ -1,14 +1,14 @@
 import { Switch } from '@mui/material';
 import FormControlLabel from '@mui/material/FormControlLabel';
 
-export default function SwitchField(props) {
+export default function SwitchField({ onChange, checked, label }) {
   return <FormControlLabel
       control={
         <Switch
-          checked={props.checked}
-          onChange={(e) => props.onChange(e)}
+          checked={checked}
+          onChange={(e) => onChange?.(e)}
         />
     }
-    label={props.label}
+    label={label}
   />;
 }
