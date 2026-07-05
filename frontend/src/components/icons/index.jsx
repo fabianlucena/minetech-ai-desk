@@ -6,4 +6,5 @@ export { default as HomeIcon } from './home.icon.jsx';
 export { default as LoginIcon } from './login.icon.jsx';
 export { default as LogoutIcon } from './logout.icon.jsx';
 export { default as PasswordIcon } from './password.icon.jsx';
+export { default as RestoreIcon } from './restore.icon.jsx';
 export { default as UsersIcon } from './users.icon.jsx';

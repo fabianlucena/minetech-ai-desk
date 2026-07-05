@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
 import { Box, Typography } from '@mui/material';
 import { ReloadButton, CreateButton } from './buttons';
-import { DeleteIcon, EditIcon } from './icons';
+import { DeleteIcon, EditIcon, RestoreIcon } from './icons';
 import ConfirmDialog from './ConfirmDialog.jsx';
 
 export default function Grid({
@@ -20,11 +20,11 @@ export default function Grid({
   onDelete,
   onEdit,
   editPath,
+  onRestore,
   deleteConfirmationMessage = '¿Está seguro de que desea eliminar este elemento?',
   getRowClassName,
 }) {
   const navigate = useNavigate();
-  const [effectiveColumns, setEffectiveColumns] = useState(columns);
   const [confirmation, setConfirmation] = useState({
     open: false,
     onClose: () => setConfirmation({...confirmation, open: false}),
@@ -52,9 +52,9 @@ export default function Grid({
     });
   }
 
-  useEffect(() => {
+  const effectiveColumns = useMemo(() => {
     const effectiveColumns = [...columns];
-    if (onDelete || onEdit || editPath) {
+    if (onDelete || onEdit || editPath || onRestore) {
       let actionsField = effectiveColumns.find(col => col.field === 'actions');
       if (!actionsField) {
         actionsField = {
@@ -68,25 +68,31 @@ export default function Grid({
       const previousGetActions = actionsField.getActions;
       actionsField.getActions = (params) => [
         ...rowsActions?.(params) || [],
-        onDelete && <GridActionsCellItem
+        onDelete && !params.row.deletedAt && <GridActionsCellItem
           icon={<DeleteIcon />}
           label="Eliminar"
           onClick={() => handleDelete(params.row)}
         />,
-        onEdit && <GridActionsCellItem
+        onEdit && !params.row.deletedAt && <GridActionsCellItem
           icon={<EditIcon />}
           label="Editar"
           onClick={() => onEdit(params.row)}
         />,
-        editPath && <GridActionsCellItem
+        editPath && !params.row.deletedAt && <GridActionsCellItem
           icon={<EditIcon />}
           label="Editar"
           onClick={() => navigate(editPath.replace(':uuid', params.row[columnIdName]))}
         />,
+        onRestore && params.row.deletedAt && <GridActionsCellItem
+          icon={<RestoreIcon />}
+          label="Restaurar"
+          onClick={() => onRestore(params.row)}
+        />,
       ];
     }
-    setEffectiveColumns(effectiveColumns);
-  }, [columns, onDelete, onEdit, editPath]);
+
+    return effectiveColumns;
+  }, [columns, onDelete, onEdit, editPath, onRestore]);
 
   return <Box
     sx={{

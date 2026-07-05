@@ -98,6 +98,10 @@ export default function Usuarios() {
     }
   }
 
+  async function restoreUserHandler({ uuid }) {
+    alert('Restaurar usuario\nEsta funcionalidad aún no está implementada');
+  }
+
   useEffect(() => {
     load();
   }, [includeDeleted]);
@@ -108,8 +112,9 @@ export default function Usuarios() {
     rows={data}
     onReload={() => load()}
     createPath={hasPermission('users.create') && "/users/new"}
-    onDelete={hasPermission('users.delete') && ((param) => deleteUserHandler(param))}
+    onDelete={hasPermission('users.delete') && deleteUserHandler}
     editPath={hasPermission('users.update') && "/users/:uuid/edit"}
+    onRestore={hasPermission('users.restore') && restoreUserHandler}
     tools={<>
       {hasPermission('users.restore') && 
         <SwitchField
@@ -120,7 +125,7 @@ export default function Usuarios() {
       }
     </>}
     rowsActions={({row}) => [
-      hasPermission('users.update') && <GridActionsCellItem
+      hasPermission('users.update') && !row.deletedAt && <GridActionsCellItem
         icon={<PasswordIcon />}
         label="Cambiar contraseña"
         onClick={() => navigate(`/users/${row.uuid}/change-password`)}
