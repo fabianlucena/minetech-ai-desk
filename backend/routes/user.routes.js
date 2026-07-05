@@ -10,5 +10,6 @@ router.get('/:uuid', checkPermissionMiddleware('users.read'), (...args) => getDe
 router.post('/', checkPermissionMiddleware('users.create'), (...args) => getDependency('userController').create(...args));
 router.put('/:uuid', checkPermissionMiddleware('users.update'), (...args) => getDependency('userController').updateByUuid(...args));
 router.delete('/:uuid', checkPermissionMiddleware('users.delete'), (...args) => getDependency('userController').deleteByUuid(...args));
+router.patch('/:uuid/restore', checkPermissionMiddleware('users.restore'), (...args) => getDependency('userController').restoreByUuid(...args));
 
 export default router;

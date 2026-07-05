@@ -211,7 +211,7 @@ export default class ModelService {
 
     const obj = await this.getById(id);
     if (!obj)
-      throw new Error('Elemento no encontrado');
+      throw new Error('Elemento a eliminar no encontrado');
 
     return await this.deleteByWhere({ id }, options);
   }
@@ -222,8 +222,48 @@ export default class ModelService {
 
     const obj = await this.getByUuid(uuid);
     if (!obj)
-      throw new Error('Elemento no encontrado');
+      throw new Error('Elemento a eliminar no encontrado');
 
     return await this.deleteByWhere({ uuid }, options);
+  }
+
+  async restoreByWhere(where, options) {
+    if (!where || typeof where !== 'object')
+      throw new Error('La cláusula where del objeto a restaurar es obligatoria y debe ser un objeto');
+
+    options = this.getModelOptions({ ...options, includeDeleted: true });
+
+    if (!this.softDelete)
+      throw new Error('El modelo no soporta restauración');
+
+    const data = {
+      deletedAt: null,
+      deletedById: null,
+      updatedAt: new Date(),
+      updatedById: await this.getCurrentUserId(options),
+    };
+    return await this.model.update(data, { ...options, where: { ...where, ...options?.where } });
+  }
+
+  async restoreById(id, options) {
+    if (!id)
+      throw new Error('El ID del elemento a restaurar es obligatorio');
+
+    const obj = await this.getById(id, { ...options, includeDeleted: true });
+    if (!obj)
+      throw new Error('Elemento a restaurar no encontrado');
+
+    return await this.restoreByWhere({ id }, options);
+  }
+
+  async restoreByUuid(uuid, options) {
+    if (!uuid)
+      throw new Error('El UUID del elemento a restaurar es obligatorio');
+
+    const obj = await this.getByUuid(uuid, { ...options, includeDeleted: true });
+    if (!obj)
+      throw new Error('Elemento a restaurar no encontrado');
+
+    return await this.restoreByWhere({ uuid }, options);
   }
 }

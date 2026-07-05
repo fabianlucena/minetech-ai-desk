@@ -58,3 +58,12 @@ export async function deleteByUuid(req, res) {
   );
   res.status(204).end();
 }
+
+export async function restoreByUuid(req, res) {
+  const userService = getDependency('userService');
+  await userService.restoreByUuid(
+    req.params.uuid,
+    { session: req.session }
+  );
+  res.status(204).end();
+}

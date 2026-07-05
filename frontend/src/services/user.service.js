@@ -23,3 +23,7 @@ export async function updateUser(uuid, data) {
 export async function deleteUser(uuid) {
   return await Api.deleteJson(`users/${uuid}`);
 }
+
+export async function restoreUser(uuid) {
+  return await Api.patchJson(`users/${uuid}/restore`);
+}

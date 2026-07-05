@@ -144,4 +144,12 @@ export default class Api {
       json: true,
     });
   }
+
+  static async patchJson(service, options) {
+    return await this.fetch(service, {
+      ...options,
+      method: 'PATCH',
+      json: true,
+    });
+  }
 }

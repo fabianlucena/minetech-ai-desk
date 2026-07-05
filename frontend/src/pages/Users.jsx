@@ -6,7 +6,7 @@ import { useToast } from '../state/toast.jsx';
 import { hasPermission } from '../state/global.jsx';
 import { formatDate } from '../utils/date.js';
 import Chips from '../components/Chips.jsx';
-import { getUsers, deleteUser } from '../services/user.service.js';
+import { getUsers, deleteUser, restoreUser } from '../services/user.service.js';
 import { PasswordIcon } from '../components/icons';
 import SwitchField from '../components/fields/SwitchField.jsx';
 
@@ -99,7 +99,14 @@ export default function Usuarios() {
   }
 
   async function restoreUserHandler({ uuid }) {
-    alert('Restaurar usuario\nEsta funcionalidad aún no está implementada');
+    try {
+      await restoreUser(uuid);
+      addMessage('Usuario restaurado correctamente');
+      load();
+    } catch (error) {
+      addError('Error al restaurar el usuario');
+      console.error('Error al restaurar el usuario:', error);
+    }
   }
 
   useEffect(() => {
