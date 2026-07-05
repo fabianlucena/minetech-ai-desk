@@ -6,6 +6,9 @@ export default function Form({
   description,
   footer,
   children,
+  canSubmit = true,
+  validationError,
+  unchangedData = false,
   onSubmit,
   submitText = 'Enviar',
   onCancel,
@@ -68,6 +71,13 @@ export default function Form({
       </Typography>}
     </Box>}
 
+    <Typography
+      variant="body2"
+      color={validationError ? "error" : unchangedData ? "warning" : "text.secondary" }
+    >
+      {validationError || (unchangedData ? "No se han realizado cambios" : "Listo para enviar")}
+    </Typography>
+
     <form onSubmit={(e) => { e.preventDefault(); onSubmit(e); }}>
       <Stack spacing={2}>
         {children}
@@ -90,7 +100,7 @@ export default function Form({
         {(onCancelGoBack) && <Button variant="outlined" onClick={() => navigate(-1)}>
           {cancelText || "Cancelar"}
         </Button>}
-        {(onSubmit || submitText) && <Button variant="contained" type="submit" >
+        {(onSubmit || submitText) && <Button variant="contained" type="submit" disabled={!canSubmit || validationError || unchangedData || disabled}>
           {submitText || "Enviar"}
         </Button>}
       </Box> }

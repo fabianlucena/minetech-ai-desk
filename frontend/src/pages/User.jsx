@@ -21,11 +21,12 @@ export default function User() {
   const { addInfo, addError } = useToast();
   const [disabled, setDisabled] = useState(false);
   const [data, setData] = useState({...defaultData});
+  const [unchangedData, setUnchangedData] = useState({...defaultData});
   const [roles, setRoles] = useState([]);
   
   const [formConfig, setFormConfig] = useState({
     title: 'Crear nuevo usuario',
-    description: 'Por favor, ingrese los datos del nuevo usuario',
+    description: 'Ingrese los datos del nuevo usuario',
     disabledMessage: 'Creando usuario...',
   });
 
@@ -41,11 +42,13 @@ export default function User() {
   async function load() {
     try {
       const res = await getUser(uuid);
-      setData({
+      const data = {
         ...defaultData,
         ...res,
         roles: res.roles.map(role => role.uuid) || [],
-      });
+      };
+      setData(data);
+      setUnchangedData(data);
     } catch (error) {
       addError('Error al obtener el usuario');
       console.error('Error al obtener el usuario:', error);
@@ -58,7 +61,7 @@ export default function User() {
     if (uuid) {
       setFormConfig({
         title: 'Editar usuario',
-        description: 'Por favor, modifique los datos del usuario',
+        description: 'Modifique los datos del usuario',
         disabledMessage: 'Actualizando usuario...',
       });
 
@@ -96,10 +99,20 @@ export default function User() {
     setDisabled(false);
   }
 
+  function getValidationError() {
+    if (!data.displayName)
+      return 'Debe proporcionar un nombre completo'
+
+    if (!data.username)
+      return 'Debe proporcionar un nombre de usuario';
+  }
+
   return <Form
     disabled={disabled}
     onSubmit={onSubmit}
     onCancelGoBack={true}
+    validationError={getValidationError()}
+    unchangedData={JSON.stringify(data) === JSON.stringify(unchangedData)}
     {...formConfig}
   >
     <SwitchField
@@ -112,6 +125,7 @@ export default function User() {
       label="Nombre completo"
       disabled={disabled}
       required
+      autoFocus
       value={data.displayName}
       onChange={(e) => setData({...data, displayName: e.target.value})}
     />
@@ -119,7 +133,6 @@ export default function User() {
       label="Nombre de usuario"
       disabled={disabled}
       required
-      autoFocus
       value={data.username}
       onChange={(e) => setData({...data, username: e.target.value})}
     />
