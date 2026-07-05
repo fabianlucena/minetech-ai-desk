@@ -3,10 +3,7 @@ import ModelService from './model.service.js';
 
 export default class RoleXUserService extends ModelService {
   constructor() {
-    super({
-      model: getDependency('roleXUserModel'),
-      traceable: false,
-    });
+    super({ model: getDependency('roleXUserModel') });
     this.roleService = getDependency('roleService');
     this.roleIncludeService = getDependency('roleIncludeService');
   }

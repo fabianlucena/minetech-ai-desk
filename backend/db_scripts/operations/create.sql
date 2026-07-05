@@ -260,7 +260,7 @@ create table if not exists auth.roles (
 insert into auth.roles (
   uuid,
   name, title, description,
-  is_selectable,
+  is_asignable,
   created_at, created_by_id,
   updated_at, updated_by_id,
   deleted_at, deleted_by_id
@@ -282,6 +282,9 @@ create table if not exists auth.roles_x_users (
 
   created_at timestamp not null default now(),
   created_by_id bigint not null,
+  
+  updated_at timestamp not null,
+  updated_by_id bigint not null,
 
   deleted_at timestamp null,
   deleted_by_id bigint null,
@@ -295,6 +298,9 @@ create table if not exists auth.roles_x_users (
     references auth.users(id) on delete restrict,
 
   constraint fk_auth_roles_x_users_created_by_id foreign key (created_by_id)
+    references auth.users(id) on delete restrict,
+
+  constraint fk_auth_roles_x_users_updated_by_id foreign key (updated_by_id)
     references auth.users(id) on delete restrict,
 
   constraint fk_auth_roles_x_users_deleted_by_id foreign key (deleted_by_id)
