@@ -37,23 +37,25 @@ export default class UserService extends ModelService {
     await this.updateById(userId, { lastLoginAt: new Date() });
   }
 
-  async create(data) {
+  async create(data, options) {
     if (!data.username)
       throw new Error('El nombre de usuario es obligatorio');
 
     if (!data.displayName)
       throw new Error('El nombre para mostrar es obligatorio');
 
-    const user = await super.create(data);
+    const user = await super.create(data, options);
+
+    const globalOptions = { session: options?.session };
 
     if (data.password) {
       const userPasswordService = getDependency('userPasswordService');
-      await userPasswordService.setPasswordForUser(user.id, data.password);
+      await userPasswordService.setPasswordForUser(user.id, data.password, globalOptions);
     }
 
     if (data.roles && Array.isArray(data.roles)) {
       const roleXUserService = getDependency('roleXUserService');
-      await roleXUserService.updateRolesUuidById(user.id, data.roles);
+      await roleXUserService.updateRolesUuidById(user.id, data.roles, globalOptions);
     }
 
     return await this.getById(user.id);
@@ -91,6 +93,9 @@ export default class UserService extends ModelService {
     if (!user)
       throw new Error('Usuario no encontrado');
 
-    return await this.update(user.id, { deletedAt: new Date() });
+    return await this.update(user.id, {
+      deletedAt: new Date(),
+      deletedById: await this.getCurrentUserId(),
+    });
   }
 }
