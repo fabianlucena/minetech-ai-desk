@@ -42,13 +42,29 @@ export default class ModelService {
     return this.currentUserId;
   }
 
+  getModelOptions(options) {
+    options = { ...options };
+    if (this.softDelete && !options.includeDeleted)
+      options.where = { ...options.where, deletedAt: null };
+
+    if (options.attributes)
+      options.attributes = options.attributes;
+
+    return options;
+  }
+
   async create(data, options = {}) {
     if (!data || typeof data !== 'object')
       throw new Error('Data es obligatorio y debe ser un objeto');
 
-    if (this.traceable && !options?.skipTraceable) {
+    if (this.traceable) {
       data.createdAt ??= new Date();
       data.createdById ??= await this.getCurrentUserId(options);
+    }
+
+    if (this.auditable) {
+      data.updatedAt ??= new Date();
+      data.updatedById ??= await this.getCurrentUserId(options);
     }
 
     const result = await this.model.create(data, options);
@@ -59,7 +75,7 @@ export default class ModelService {
     if (!Array.isArray(dataList))
       throw new Error('DataList es obligatorio y debe ser un arreglo');
 
-    if (this.traceable && !options?.skipTraceable) {
+    if (this.traceable) {
       const date = new Date();
       const creatorId = await this.getCurrentUserId(options);
       dataList = dataList.map(data => {
@@ -68,19 +84,18 @@ export default class ModelService {
         return data;
       });
     }
+
+    if (this.auditable) {
+      const date = new Date();
+      const updaterId = await this.getCurrentUserId(options);
+      dataList = dataList.map(data => {
+        data.updatedAt ??= date;
+        data.updatedById ??= updaterId;
+        return data;
+      });
+    }
   
-    await this.model.bulkCreate(dataList, options);
-  }
-
-  getModelOptions(options) {
-    options = { ...options };
-    if (this.softDelete && !options.includeDeleted)
-      options.where = { ...options.where, deletedAt: null };
-
-    if (options.attributes)
-      options.attributes = options.attributes;
-
-    return options;
+    return await this.model.bulkCreate(dataList, options);
   }
 
   async getFirstOrDefault(options) {
