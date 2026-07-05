@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Grid from '../components/Grid.jsx';
 import { GridActionsCellItem } from '@mui/x-data-grid';
 import { useNavigate } from 'react-router-dom';
@@ -8,11 +8,13 @@ import { formatDate } from '../utils/date.js';
 import Chips from '../components/Chips.jsx';
 import { getUsers, deleteUser } from '../services/user.service.js';
 import { PasswordIcon } from '../components/icons';
+import SwitchField from '../components/fields/SwitchField.jsx';
 
 export default function Usuarios() {
   const navigate = useNavigate();
   const { addMessage, addError } = useToast();
   const [data, setData] = useState([]);
+  const [includeDeleted, setIncludeDeleted] = useState(false);
 
   const columns = [
     {
@@ -59,7 +61,12 @@ export default function Usuarios() {
 
   async function load() {
     try {
-      const res = await getUsers();
+      const query = {};
+      if (includeDeleted) {
+        query.includeDeleted = 1;
+      }
+
+      const res = await getUsers({ query });
       setData(res);
     } catch (error) {
       addError('Error al obtener los usuarios');
@@ -78,9 +85,9 @@ export default function Usuarios() {
     }
   }
 
-  useState(() => {
+  useEffect(() => {
     load();
-  }, []);
+  }, [includeDeleted]);
 
   return <Grid
     title="Usuarios"
@@ -90,6 +97,15 @@ export default function Usuarios() {
     createPath={hasPermission('users.create') && "/users/new"}
     onDelete={hasPermission('users.delete') && ((param) => deleteUserHandler(param))}
     editPath={hasPermission('users.update') && "/users/:uuid/edit"}
+    tools={<>
+      {hasPermission('users.restore') && 
+        <SwitchField
+          label="Incluir eliminados"
+          checked={includeDeleted}
+          onChange={(e) => setIncludeDeleted(e.target.checked)}
+        />
+      }
+    </>}
     rowsActions={({row}) => [
       hasPermission('users.delete') && <GridActionsCellItem
         icon={<PasswordIcon />}
