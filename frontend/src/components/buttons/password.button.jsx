@@ -1,7 +1,10 @@
+import IconButton from '@mui/material/IconButton';
 import KeyIcon from '@mui/icons-material/KeyTwoTone';
 
 export default function PasswordButton(props) {
-  return <button {...{title: 'Cambiar contraseña', ...props}}>
+  return <IconButton
+    {...{title: 'Cambiar contraseña', ...props}}
+  >
     <KeyIcon />
-  </button>;
+  </IconButton>;
 }
