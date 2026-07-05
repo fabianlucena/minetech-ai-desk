@@ -59,7 +59,7 @@ export default class UserService extends ModelService {
     return await this.getById(user.id);
   }
 
-  async updateByUuid(uuid, data) {
+  async updateByUuid(uuid, data, options) {
     if (!uuid)
       throw new Error('El UUID de usuario es obligatorio');
 
@@ -67,16 +67,17 @@ export default class UserService extends ModelService {
     if (!user)
       throw new Error('Usuario no encontrado');
 
-    const result = await this.updateById(user.id, data);
+    const globalOptions = { session: options?.session };
+    const result = await this.updateById(user.id, data, globalOptions);
 
     if (data.password) {
       const userPasswordService = getDependency('userPasswordService');
-      await userPasswordService.setPasswordForUser(user.id, data.password);
+      await userPasswordService.setPasswordForUser(user.id, data.password, globalOptions);
     }
 
     if (data.roles && Array.isArray(data.roles)) {
       const roleXUserService = getDependency('roleXUserService');
-      await roleXUserService.updateRolesUuidById(user.id, data.roles);
+      await roleXUserService.updateRolesUuidById(user.id, data.roles, globalOptions);
     }
 
     return result;

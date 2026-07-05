@@ -11,11 +11,11 @@ export default class RoleXUserService extends ModelService {
     this.roleIncludeService = getDependency('roleIncludeService');
   }
 
-  async getRoleIdsByUserId(userId) {
+  async getRoleIdsByUserId(userId, options) {
     if (!userId)
       throw new Error('El ID de usuario es obligatorio');
 
-    return (await this.getList({ where: { userId }, attributes: ['roleId'] }))
+    return (await this.getList({ ...options, where: { userId }, attributes: ['roleId'] }))
       .map(r => r.roleId);
   }
 
@@ -36,12 +36,14 @@ export default class RoleXUserService extends ModelService {
     return await this.roleService.getByIds(rolesIds);
   }
 
-  async updateRoleIdsByUserId(userId, roleIds) {
+  async updateRoleIdsByUserId(userId, roleIds, options) {
     if (!userId)
       throw new Error('El ID de usuario es obligatorio');
 
     if (!Array.isArray(roleIds))
       throw new Error('Los IDs de roles deben ser un arreglo');
+
+    const globalOptions = { session: options?.session };
 
     await this.updateByWhere(
       {
@@ -53,33 +55,36 @@ export default class RoleXUserService extends ModelService {
         roleId: roleIds,
       },
       {
+        ...globalOptions,
         includeDeleted: true,
       }
     );
 
-    const existingRoleIds = await this.getRoleIdsByUserId(userId);
+    const existingRoleIds = await this.getRoleIdsByUserId(userId, globalOptions,);
     const deleteingRoleIds = existingRoleIds.filter(roleId => !roleIds.includes(roleId));
     const addingRoleIds = roleIds.filter(roleId => !existingRoleIds.includes(roleId));
 
     if (deleteingRoleIds.length > 0)
-      await this.deleteByWhere({ userId, roleId: deleteingRoleIds });
+      await this.deleteByWhere({ userId, roleId: deleteingRoleIds }, globalOptions);
 
     const roleXUserList = roleIds
       .filter(roleId => !existingRoleIds.includes(roleId))
       .map(roleId => ({ userId, roleId }));
 
-    await this.bulkCreate(roleXUserList);
+    await this.bulkCreate(roleXUserList, globalOptions);
   }
 
-  async updateRolesUuidById(userId, roleUuids) {
+  async updateRolesUuidById(userId, roleUuids, options) {
     if (!userId)
       throw new Error('El ID de usuario es obligatorio');
 
     if (!Array.isArray(roleUuids))
       throw new Error('Los UUIDs de roles deben ser un arreglo');
 
+    const globalOptions = { session: options?.session };
+
     const roleService = getDependency('roleService');
-    const roleIds = await roleService.getIdByUuid(roleUuids);
-    await this.updateRoleIdsByUserId(userId, roleIds);
+    const roleIds = await roleService.getIdByUuid(roleUuids, globalOptions);
+    await this.updateRoleIdsByUserId(userId, roleIds, globalOptions);
   }
 }
