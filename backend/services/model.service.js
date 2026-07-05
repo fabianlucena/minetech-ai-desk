@@ -44,8 +44,12 @@ export default class ModelService {
 
   getModelOptions(options) {
     options = { ...options };
+
     if (this.softDelete && !options.includeDeleted)
       options.where = { ...options.where, deletedAt: null };
+
+    if (options.includeDeleted !== undefined)
+      delete options.includeDeleted;
 
     if (options.attributes)
       options.attributes = options.attributes;
