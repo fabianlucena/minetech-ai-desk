@@ -23,16 +23,20 @@ export default class Api {
         queryParams = options.query.toString();
       } else if (typeof options.query === 'object') {
         queryParams = new URLSearchParams(options.query);
+        if (!queryParams.size)
+          queryParams = null;
       } else if (typeof options.query === 'string') {
         queryParams = options.query;
       } else {
         throw new Error('El parámetro "query" debe ser un objeto, una cadena o una instancia de URLSearchParams.');
       }
 
-      if (queryParams[0] !== '?')
-        queryParams = `?${queryParams}`;
+      if (queryParams) {
+        if (queryParams[0] !== '?')
+          queryParams = `?${queryParams}`;
 
-      url += queryParams;
+        url += queryParams;
+      }
     }
 
     if (typeof options.Authorization !== 'undefined') {
