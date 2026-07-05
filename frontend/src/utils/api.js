@@ -132,4 +132,12 @@ export default class Api {
       json: true,
     });
   }
+
+  static async deleteJson(service, options) {
+    return await this.fetch(service, {
+      ...options,
+      method: 'DELETE',
+      json: true,
+    });
+  }
 }

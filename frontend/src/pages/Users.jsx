@@ -1,15 +1,17 @@
 import { useState } from 'react';
 import Grid from '../components/Grid.jsx';
 import { GridActionsCellItem } from '@mui/x-data-grid';
+import { useNavigate } from 'react-router-dom';
 import { useToast } from '../state/toast.jsx';
 import { hasPermission } from '../state/global.jsx';
 import { formatDate } from '../utils/date.js';
 import Chips from '../components/Chips.jsx';
-import { getUsers } from '../services/user.service.js';
+import { getUsers, deleteUser } from '../services/user.service.js';
 import { PasswordIcon } from '../components/icons';
 
 export default function Usuarios() {
-  const { addError } = useToast();
+  const navigate = useNavigate();
+  const { addMessage, addError } = useToast();
   const [data, setData] = useState([]);
 
   const columns = [
@@ -65,6 +67,17 @@ export default function Usuarios() {
     }
   }
 
+  async function deleteUserHandler({ uuid }) {
+    try {
+      await deleteUser(uuid);
+      addMessage('Usuario eliminado correctamente');
+      load();
+    } catch (error) {
+      addError('Error al eliminar el usuario');
+      console.error('Error al eliminar el usuario:', error);
+    }
+  }
+
   useState(() => {
     load();
   }, []);
@@ -74,14 +87,14 @@ export default function Usuarios() {
     columns={columns}
     rows={data}
     onReload={() => load()}
-    createPath={hasPermission('users.create') ? "/users/new" : null}
-    onDelete={hasPermission('users.delete') ? () => load() : null}
-    editPath={hasPermission('users.update') ? "/users/:uuid/edit" : null}
+    createPath={hasPermission('users.create') && "/users/new"}
+    onDelete={hasPermission('users.delete') && ((param) => deleteUserHandler(param))}
+    editPath={hasPermission('users.update') && "/users/:uuid/edit"}
     rowsActions={({row}) => [
-      <GridActionsCellItem
+      hasPermission('users.delete') && <GridActionsCellItem
         icon={<PasswordIcon />}
         label="Cambiar contraseña"
-        onClick={() => console.log(row)}
+        onClick={() => navigate(`/users/${row.uuid}/change-password`)}
       />
     ]}
   />;

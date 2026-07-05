@@ -19,3 +19,7 @@ export async function createUser(data) {
 export async function updateUser(uuid, data) {
   return await Api.putJson(`users/${uuid}`, { body: data });
 }
+
+export async function deleteUser(uuid) {
+  return await Api.deleteJson(`users/${uuid}`);
+}

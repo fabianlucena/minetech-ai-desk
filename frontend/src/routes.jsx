@@ -1,4 +1,5 @@
 import { useGlobal } from './state/global.jsx';
+import { HomeIcon, DashboardIcon, UsersIcon, AboutIcon, LoginIcon, LogoutIcon } from './components/icons/index.jsx';
 import Layout from './components/Layout.jsx';
 import Home from './pages/Home.jsx';
 import Login from './pages/Login.jsx';
@@ -8,7 +9,7 @@ import NotFound from './pages/NotFound.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import Users from './pages/Users.jsx';
 import User from './pages/User.jsx';
-import { HomeIcon, DashboardIcon, UsersIcon, AboutIcon, LoginIcon, LogoutIcon } from './components/icons/index.jsx';
+import UserChangePassword from './pages/UserChangePassword.jsx';
 
 export const allRoutes = [
   {
@@ -42,6 +43,11 @@ export const allRoutes = [
         path: '/users/new',
         element: <User />,
         condition: ({ permissions }) => permissions.includes('users.create'),
+      },
+      {
+        path: '/users/:uuid/change-password',
+        element: <UserChangePassword />,
+        condition: ({ permissions }) => permissions.includes('users.update'),
       },
       {
         path: '/users/:uuid/edit',
