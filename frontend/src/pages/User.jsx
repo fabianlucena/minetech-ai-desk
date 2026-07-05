@@ -109,19 +109,19 @@ export default function User() {
       onChange={(e) => setData({...data, isActive: e.target.checked})}
     />
     <TextField
+      label="Nombre completo"
+      disabled={disabled}
+      required
+      value={data.displayName}
+      onChange={(e) => setData({...data, displayName: e.target.value})}
+    />
+    <TextField
       label="Nombre de usuario"
       disabled={disabled}
       required
       autoFocus
       value={data.username}
       onChange={(e) => setData({...data, username: e.target.value})}
-    />
-    <TextField
-      label="Nombre completo"
-      disabled={disabled}
-      required
-      value={data.displayName}
-      onChange={(e) => setData({...data, displayName: e.target.value})}
     />
     <SwitchField
       label="Permitir inicio de sesión"

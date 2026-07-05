@@ -19,13 +19,13 @@ export default function Usuarios() {
   const columns = useMemo(() => {
     const baseColumns = [
       {
-        field: 'username',
-        headerName: 'Usuario',
+        field: 'displayName',
+        headerName: 'Nombre completo',
         flex: 1,
       },
       {
-        field: 'displayName',
-        headerName: 'Nombre',
+        field: 'username',
+        headerName: 'Usuario',
         flex: 1,
       },
       {
