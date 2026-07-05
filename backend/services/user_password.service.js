@@ -37,6 +37,6 @@ export default class UserPasswordService extends ModelService {
 
     this.passwordService = getDependency('passwordService');
 
-    return await this.setPasswordHashForUser(userId, this.passwordService.hashPassword(password));
+    return await this.setPasswordHashForUser(userId, await this.passwordService.hashPassword(password));
   }
 }
