@@ -1,5 +1,5 @@
-import MUIBusinessCenterIcon from '@mui/icons-material/BusinessCenterTwoTone';
+import MUISupervisorAccountIcon from '@mui/icons-material/BusinessCenterTwoTone';
   
 export default function ClientIcon(props) {
-  return <MUIBusinessCenterIcon {...{title: 'Cliente', ...props}} />;
+  return <MUISupervisorAccountIcon {...{title: 'Cliente', ...props}} />;
 }

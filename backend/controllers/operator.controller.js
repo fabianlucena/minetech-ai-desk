@@ -1,6 +1,5 @@
 import getDependency from '../dependency.js';
 import { OperatorDTO } from '../dto/operator.dto.js';
-import { operatorStatus } from '../categories/operator_status.js';
 
 export async function getList(req, res) {
   const operatorService = getDependency('operatorService');

@@ -24,10 +24,6 @@ export async function restoreClient(uuid) {
   return await Api.patchJson(`clients/${uuid}/restore`);
 }
 
-export async function getRoles(params) {
-  return await Api.getJson('users/roles', params);
-}
-
 export async function getStatus(params) {
   return await Api.getJson('clients/status', params);
 }
