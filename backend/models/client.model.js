@@ -17,7 +17,7 @@ export default (sequelize) => {
     isActive: { field: 'is_active', type: DataTypes.BOOLEAN, defaultValue: true },
     status: { field: 'status', type: DataTypes.ENUM(...clientStatusValues), allowNull: false },
   }, {
-    tableName: 'companies',
+    tableName: 'clients',
     schema: 'ia_desk',
     timestamps: false,
   });
