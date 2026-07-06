@@ -1,5 +1,5 @@
 import { useGlobal } from './state/global.jsx';
-import { HomeIcon, DashboardIcon, UsersIcon, AboutIcon, LoginIcon, LogoutIcon } from './components/icons/index.jsx';
+import { HomeIcon, DashboardIcon, UsersIcon, AboutIcon, LoginIcon, LogoutIcon, TechnicianIcon } from './components/icons/index.jsx';
 import Layout from './components/Layout.jsx';
 import Home from './pages/Home.jsx';
 import Login from './pages/Login.jsx';
@@ -10,6 +10,8 @@ import Dashboard from './pages/Dashboard.jsx';
 import Users from './pages/Users.jsx';
 import User from './pages/User.jsx';
 import UserChangePassword from './pages/UserChangePassword.jsx';
+import Technicians from './pages/Technicians.jsx';
+import Technician from './pages/Technician.jsx';
 
 export const allRoutes = [
   {
@@ -45,14 +47,32 @@ export const allRoutes = [
         condition: ({ permissions }) => permissions.includes('users.create'),
       },
       {
+        path: '/users/:uuid/edit',
+        element: <User />,
+        condition: ({ permissions }) => permissions.includes('users.update'),
+      },
+      {
         path: '/users/:uuid/change-password',
         element: <UserChangePassword />,
         condition: ({ permissions }) => permissions.includes('users.update'),
       },
       {
-        path: '/users/:uuid/edit',
-        element: <User />,
-        condition: ({ permissions }) => permissions.includes('users.update'),
+        path: '/technicians',
+        label: 'Técnicos',
+        icon: <TechnicianIcon />,
+        menuItemOrder: 3,
+        element: <Technicians />,
+        condition: ({ permissions }) => permissions.includes('technicians.list'),
+      },
+      {
+        path: '/technicians/new',
+        element: <Technician />,
+        condition: ({ permissions }) => permissions.includes('technicians.create'),
+      },
+      {
+        path: '/technicians/:uuid/edit',
+        element: <Technician />,
+        condition: ({ permissions }) => permissions.includes('technicians.update'),
       },
       {
         path: '/about',
