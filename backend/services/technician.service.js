@@ -37,6 +37,7 @@ export default class TechnicianService extends ModelService {
     if (!technician)
       throw new Error('Técnico no encontrado');
 
+    const globalOptions = { session: options?.session };
     return await this.updateById(technician.id, data, globalOptions);
   }
 }
