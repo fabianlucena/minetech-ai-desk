@@ -413,7 +413,8 @@ insert into auth.permissions (
     null, null
   from (values
     ('users.create'),('users.delete'),('users.update'),('users.list'),('users.read'),('users.restore'),
-    ('technicians.create'),('technicians.delete'),('technicians.update'),('technicians.list'),('technicians.read'),('technicians.restore')
+    ('technicians.create'),('technicians.delete'),('technicians.update'),('technicians.list'),('technicians.read'),('technicians.restore'),
+    ('clients.create'),('clients.delete'),('clients.update'),('clients.list'),('clients.read'),('clients.restore')
   ) as p(name)
   join auth.users system on system.username = 'system'
 on conflict (name) do nothing;
@@ -465,8 +466,8 @@ create table if not exists ia_desk.technicians(
       references auth.users(id) on delete restrict
 );
 
--- Table companies
-create table if not exists ia_desk.companies(
+-- Table clients
+create table if not exists ia_desk.clients(
     id bigint generated always as identity primary key,
     uuid uuid not null default gen_random_uuid(),
 
@@ -485,22 +486,22 @@ create table if not exists ia_desk.companies(
     is_active boolean not null,
     status varchar(64) not null,
     
-    constraint uk_ia_desk_companies_uuid unique (uuid),
-    constraint uk_ia_desk_companies_name unique (name),
-    constraint uk_ia_desk_companies_token unique (token),
+    constraint uk_ia_desk_clients_uuid unique (uuid),
+    constraint uk_ia_desk_clients_name unique (name),
+    constraint uk_ia_desk_clients_token unique (token),
     
-    constraint uk_ia_desk_companies_created_by_id foreign key (created_by_id)
+    constraint uk_ia_desk_clients_created_by_id foreign key (created_by_id)
       references auth.users(id) on delete restrict,
     
-    constraint uk_ia_desk_companies_updated_by_id foreign key (updated_by_id)
+    constraint uk_ia_desk_clients_updated_by_id foreign key (updated_by_id)
       references auth.users(id) on delete restrict,
     
-    constraint uk_ia_desk_companies_deleted_by_id foreign key (deleted_by_id)
+    constraint uk_ia_desk_clients_deleted_by_id foreign key (deleted_by_id)
       references auth.users(id) on delete restrict
 );
 
 -- Table operator
-create table if not exists ia_desk.operator(
+create table if not exists ia_desk.operators(
     id bigint generated always as identity primary key,
     uuid uuid not null default gen_random_uuid(),
 
@@ -513,27 +514,27 @@ create table if not exists ia_desk.operator(
     deleted_at timestamp null,
     deleted_by_id bigint null,
     
-    company_id bigint not null,
+    client_id bigint not null,
 
     full_name varchar(128) not null,
     phone varchar(64) not null,
     email varchar(64) null,
     is_active boolean not null,
     
-    constraint uk_ia_desk_operator_uuid unique (uuid),
-    constraint uk_ia_desk_operator_full_name unique (full_name),
-    constraint uk_ia_desk_operator_phone unique (full_name),
-    constraint uk_ia_desk_operator_email unique (full_name),
+    constraint uk_ia_desk_operators_uuid unique (uuid),
+    constraint uk_ia_desk_operators_full_name unique (full_name),
+    constraint uk_ia_desk_operators_phone unique (full_name),
+    constraint uk_ia_desk_operators_email unique (full_name),
     
-    constraint uk_ia_desk_operator_company_id foreign key (company_id)
-      references ia_desk.companies(id) on delete restrict,
+    constraint uk_ia_desk_operators_client_id foreign key (client_id)
+      references ia_desk.clients(id) on delete restrict,
     
-    constraint uk_ia_desk_operator_created_by_id foreign key (created_by_id)
+    constraint uk_ia_desk_operators_created_by_id foreign key (created_by_id)
       references auth.users(id) on delete restrict,
     
-    constraint uk_ia_desk_operator_updated_by_id foreign key (updated_by_id)
+    constraint uk_ia_desk_operators_updated_by_id foreign key (updated_by_id)
       references auth.users(id) on delete restrict,
     
-    constraint uk_ia_desk_operator_deleted_by_id foreign key (deleted_by_id)
+    constraint uk_ia_desk_operators_deleted_by_id foreign key (deleted_by_id)
       references auth.users(id) on delete restrict
 );

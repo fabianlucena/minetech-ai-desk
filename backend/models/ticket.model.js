@@ -11,7 +11,7 @@ export default (sequelize) => {
     updatedById: { field: 'updated_by_id', type: DataTypes.BIGINT, allowNull: false },
     deletedAt: { field: 'deleted_at', type: DataTypes.DATE, allowNull: true },
     deletedById: { field: 'deleted_by_id', type: DataTypes.BIGINT, allowNull: true },
-    companyId: { field: 'company_id', type: DataTypes.BIGINT, allowNull: false },
+    clientId: { field: 'client_id', type: DataTypes.BIGINT, allowNull: false },
     operatorId: { field: 'operator_id', type: DataTypes.BIGINT, allowNull: false },
     technicianId: { field: 'technician_id', type: DataTypes.BIGINT, allowNull: true },
     turnId: { field: 'turn_id', type: DataTypes.BIGINT, allowNull: true },
@@ -40,9 +40,9 @@ export default (sequelize) => {
       as: 'deletedBy',
     });
 
-    Ticket.belongsTo(models.Company, {
-      foreignKey: 'companyId',
-      as: 'company',
+    Ticket.belongsTo(models.Client, {
+      foreignKey: 'clientId',
+      as: 'client',
     });
 
     Ticket.belongsTo(models.Operator, {

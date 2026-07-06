@@ -10,7 +10,7 @@ export default (sequelize) => {
     updatedById: { field: 'updated_by_id', type: DataTypes.BIGINT, allowNull: false },
     deletedAt: { field: 'deleted_at', type: DataTypes.DATE, allowNull: true },
     deletedById: { field: 'deleted_by_id', type: DataTypes.BIGINT, allowNull: true },
-    companyId: { field: 'company_id', type: DataTypes.BIGINT, primaryKey: true },
+    clientId: { field: 'client_id', type: DataTypes.BIGINT, primaryKey: true },
     fullName: { field: 'full_name', type: DataTypes.STRING, allowNull: false, unique: true },
     phone: { field: 'phone', type: DataTypes.STRING, allowNull: false, unique: true },
     email: { field: 'email', type: DataTypes.STRING, allowNull: true, unique: true },
@@ -37,9 +37,9 @@ export default (sequelize) => {
       as: 'deletedBy',
     });
 
-    Operator.belongsTo(models.Company, {
-      foreignKey: 'companyId',
-      as: 'company',
+    Operator.belongsTo(models.Client, {
+      foreignKey: 'clientId',
+      as: 'client',
     });
   };
 

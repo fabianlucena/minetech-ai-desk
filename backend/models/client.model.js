@@ -1,8 +1,8 @@
 import sequelize, { DataTypes } from 'sequelize';
-import { companyStatusValues } from '../categories/company_status.js';
+import { clientStatusValues } from '../categories/client_status.js';
 
 export default (sequelize) => {
-  const Company = sequelize.define('Company', {
+  const Client = sequelize.define('Client', {
     id: { type: DataTypes.BIGINT, autoIncrement: true, primaryKey: true },
     uuid: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4 },
     createdAt: { field: 'created_at', type: DataTypes.DATE, defaultValue: DataTypes.NOW, allowNull: false },
@@ -15,29 +15,29 @@ export default (sequelize) => {
     clientCode: { field: 'client_code', type: DataTypes.STRING, allowNull: false, unique: true },
     token: { field: 'token', type: DataTypes.STRING, allowNull: false, unique: true },
     isActive: { field: 'is_active', type: DataTypes.BOOLEAN, defaultValue: true },
-    status: { field: 'status', type: DataTypes.ENUM(...companyStatusValues), allowNull: false },
+    status: { field: 'status', type: DataTypes.ENUM(...clientStatusValues), allowNull: false },
   }, {
     tableName: 'companies',
     schema: 'ia_desk',
     timestamps: false,
   });
 
-  Company.associate = (models) => {
-    Company.belongsTo(models.User, {
+  Client.associate = (models) => {
+    Client.belongsTo(models.User, {
       foreignKey: 'createdById',
       as: 'createdBy',
     });
 
-    Company.belongsTo(models.User, {
+    Client.belongsTo(models.User, {
       foreignKey: 'updatedById',
       as: 'updatedBy',
     });
 
-    Company.belongsTo(models.User, {
+    Client.belongsTo(models.User, {
       foreignKey: 'deletedById',
       as: 'deletedBy',
     });
   };
 
-  return Company;
+  return Client;
 };

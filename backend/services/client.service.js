@@ -1,9 +1,9 @@
 import { getDependency } from '../dependency.js';
 import ModelService from './model.service.js';
 
-export default class CompanyService extends ModelService {
+export default class ClientService extends ModelService {
   constructor() {
-    super({ model: getDependency('companyModel') });
+    super({ model: getDependency('clientModel') });
   }
 
   getModelOptions(options) {
@@ -28,6 +28,9 @@ export default class CompanyService extends ModelService {
 
     if (!data.token)
       throw new Error('El token es obligatorio');
+    
+    if (!data.isActive)
+      data.isActive = false;
 
     if (!data.status)
       data.status = 'inactivo';
@@ -39,11 +42,11 @@ export default class CompanyService extends ModelService {
     if (!uuid)
       throw new Error('El UUID del cliente es obligatorio');
 
-    const company = await this.getByUuid(uuid);
-    if (!company)
+    const client = await this.getByUuid(uuid);
+    if (!client)
       throw new Error('Cliente no encontrado');
 
     const globalOptions = { session: options?.session };
-    return await this.updateById(company.id, data, globalOptions);
+    return await this.updateById(client.id, data, globalOptions);
   }
 }
