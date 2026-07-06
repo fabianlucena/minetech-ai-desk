@@ -1,15 +1,18 @@
 import config from './config.js';
 import express from 'express';
-import routes from './routes/index.js';
-import './dependencies.js';
-import sequelize from './database.js';
+import { addDependency } from './dependency.js';
 import errorMiddleware from './middlewares/error.middleware.js';
 import logMiddleware from './middlewares/log.middleware.js';
 import checkAuthorizationTokenMiddleware from './middlewares/check_authorization_token_middleware.js';
 import logger from './logger.js';
 import cors from 'cors';
-import './models/index.js';
-import './controllers/index.js';
+
+await import('./models/index.js');
+await import('./services/index.js');
+await import('./controllers/index.js');
+const routes = (await import('./routes/index.js')).default;
+
+addDependency('config', config);
 
 try {
   const app = express();

@@ -15,25 +15,25 @@ export function snakeToCamel(str) {
 
 async function run() {
   try {
-    logger.info('🎛️  Configurando controladores');
+    logger.info('🛠️  Configurando servicios');
 
     const files = fs.readdirSync(__dirname)
-      .filter(file => file.endsWith('.controller.js') && file !== 'index.js');
+      .filter(file => file.endsWith('.service.js') && file !== 'index.js');
 
     for (const file of files) {
-      const controllerName = snakeToCamel(file.replace('.controller.js', ''))
-        + 'Controller';
+      const serviceName = snakeToCamel(file.replace('.service.js', ''))
+        + 'Service';
 
-      logger.info(`    ${controllerName} -> ${file}`);
+      logger.info(`    ${serviceName} -> ${file}`);
       const fullPath = path.join(__dirname, file);
       const fileUrl = pathToFileURL(fullPath).href;
-      const controller = await import(fileUrl);
-      addDependency(controllerName, () => controller);
+      const service = await import(fileUrl);
+      addDependency(serviceName, () => new service.default());
     }
 
-    logger.info('🎛️  Controladores configurados OK ✔️');
+    logger.info('🛠️  Servicios configurados OK ✔️');
   } catch (error) {
-    logger.error('❌ Error al configurar controladores:', error);
+    logger.error('❌ Error al configurar servicios:', error);
     process.exit(1);
   }
 }
