@@ -1,5 +1,5 @@
 import { useGlobal } from './state/global.jsx';
-import { HomeIcon, DashboardIcon, UsersIcon, AboutIcon, LoginIcon, LogoutIcon, TechnicianIcon, ClientIcon, OperatorIcon } from './components/icons/index.jsx';
+import { HomeIcon, DashboardIcon, UsersIcon, AboutIcon, LoginIcon, LogoutIcon, TechnicianIcon, ClientIcon, OperatorIcon, TurnIcon } from './components/icons/index.jsx';
 import Layout from './components/Layout.jsx';
 import Home from './pages/Home.jsx';
 import Login from './pages/Login.jsx';
@@ -15,6 +15,7 @@ import Technician from './pages/Technician.jsx';
 import Clients from './pages/Clients.jsx';
 import Client from './pages/Client.jsx';
 import Operators from './pages/Operators.jsx';
+import Turns from './pages/Turns.jsx';
 
 export const allRoutes = [
   {
@@ -76,6 +77,14 @@ export const allRoutes = [
         path: '/technicians/:uuid/edit',
         element: <Technician />,
         condition: ({ permissions }) => permissions.includes('technicians.update'),
+      },
+      {
+        path: '/turns',
+        label: 'Turnos',
+        icon: <TurnIcon />,
+        menuItemOrder: 3,
+        element: <Turns />,
+        condition: ({ permissions }) => permissions.includes('turns.list'),
       },
       {
         path: '/clients',

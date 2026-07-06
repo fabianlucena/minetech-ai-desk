@@ -1,4 +1,5 @@
 export { default as AboutIcon } from './about.icon.jsx';
+export { default as ClientIcon } from './client.icon.jsx';
 export { default as DashboardIcon } from './dashboard.icon.jsx';
 export { default as DeleteIcon } from './delete.icon.jsx';
 export { default as EditIcon } from './edit.icon.jsx';
@@ -10,4 +11,4 @@ export { default as PasswordIcon } from './password.icon.jsx';
 export { default as RestoreIcon } from './restore.icon.jsx';
 export { default as UsersIcon } from './users.icon.jsx';
 export { default as TechnicianIcon } from './technicians.icon.jsx';
-export { default as ClientIcon } from './client.icon.jsx';
+export { default as TurnIcon } from './turn.icon.jsx';
