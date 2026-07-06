@@ -5,6 +5,7 @@ import { TextField, SwitchField, PasswordField, ChippedCheckboxSelectField } fro
 import { useToast } from '../state/toast.jsx';
 import { getClient, getStatus, updateClient, createClient } from '../services/client.service.js';
 import { generateClientIdentifiers } from '../utils/client.js';
+import RenewButton from '../components/buttons/renew.button.jsx';
 
 export default function Client() {
   const defaultData = {
@@ -156,6 +157,12 @@ export default function Client() {
       required
       value={data.accessCode}
       onChange={(e) => setData({...data, accessCode: e.target.value})}
+      tools={<RenewButton
+        onClick={() => {
+          const { accessCode } = generateClientIdentifiers(data.name);
+          setData({...data, accessCode});
+        }}
+      />}
     />
     <ChippedCheckboxSelectField
       label="Estado"
