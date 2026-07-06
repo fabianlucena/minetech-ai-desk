@@ -6,6 +6,7 @@ export default function ChippedCheckboxSelectField({
   onChange,
   options = [],
   renderValue,
+  multiple = false,
 }) {
   const defaultRenderValue = selected => <Chips
     chips={options.filter((option) => selected.includes(option.value))}
@@ -17,5 +18,6 @@ export default function ChippedCheckboxSelectField({
     onChange={onChange}
     options={options}
     renderValue={renderValue || defaultRenderValue}
+    multiple={multiple}
   />;
 }

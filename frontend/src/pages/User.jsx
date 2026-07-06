@@ -152,6 +152,7 @@ export default function User() {
       label="Roles"
       disabled={disabled}
       value={data.roles}
+      multiple
       onChange={(e) => setData({...data, roles: e.target.value})}
       options={roles.map((role) => ({
         value: role.uuid,

@@ -5,11 +5,12 @@ export default function CheckboxSelectField({
   onChange,
   options = [],
   renderValue,
+  multiple = false,
 }) {
   const defaultRenderValue = (selected) => options.filter((option) => selected.includes(option.value)).map((option) => option.label).join(', ');
 
   return <Select
-    multiple
+    multiple={multiple}
     value={value}
     onChange={onChange}
     renderValue={renderValue || defaultRenderValue}
