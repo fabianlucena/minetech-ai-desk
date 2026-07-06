@@ -4,24 +4,25 @@ import {ShowButton, HideButton } from '../buttons';
 
 export default function PasswordField({
   showHidePassword,
+  showPassword = false,
   type = 'password',
   tools,
   ...props
 }) {
   const [effectiveType, setEffectiveType] = useState(type || 'password');
-  const [showPassword, setShowPassword] = useState(false);
+  const [effectiveShowPassword, setEffectiveShowPassword] = useState(showPassword);
   const [effectiveTools, setEffectiveTools] = useState(null);
 
   useEffect(() => {
     if (!showHidePassword)
       return;
 
-    if (showPassword) {
+    if (effectiveShowPassword) {
       setEffectiveType('text');
       setEffectiveTools(<>
         {tools}
         <HideButton
-          onClick={() => setShowPassword(false)}
+          onClick={() => setEffectiveShowPassword(false)}
         />
       </>);
     } else {
@@ -29,11 +30,11 @@ export default function PasswordField({
       setEffectiveTools(<>
         {tools}
         <ShowButton
-          onClick={() => setShowPassword(true)}
+          onClick={() => setEffectiveShowPassword(true)}
         />
       </>);
     }
-  }, [showHidePassword, showPassword]);
+  }, [showHidePassword, effectiveShowPassword]);
 
   return <TextField
     type={effectiveType}
