@@ -23,8 +23,8 @@ export default class ClientService extends ModelService {
     if (!data.name)
       throw new Error('El nombre es obligatorio');
 
-    if (!data.clientCode)
-      throw new Error('El código de cliente es obligatorio');
+    if (!data.code)
+      throw new Error('El código es obligatorio');
 
     if (!data.token)
       throw new Error('El token es obligatorio');

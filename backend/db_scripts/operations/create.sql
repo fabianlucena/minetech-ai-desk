@@ -481,7 +481,7 @@ create table if not exists ia_desk.clients(
     deleted_by_id bigint null,
 
     name varchar(128) not null,
-    client_code varchar(128) not null,
+    code varchar(128) not null,
     token varchar(64) not null,
     is_active boolean not null,
     status varchar(64) not null,

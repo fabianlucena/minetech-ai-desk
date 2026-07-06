@@ -9,7 +9,7 @@ export class ClientDTO {
   constructor(client) {
     this.uuid = client.uuid;
     this.name = client.name;
-    this.clientCode = client.clientCode;
+    this.code = client.code;
     this.token = client.token;
     this.isActive = client.isActive;
     this.status = client.status;
