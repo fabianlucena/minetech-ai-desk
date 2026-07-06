@@ -11,7 +11,7 @@ export default (sequelize) => {
     deletedAt: { field: 'deleted_at', type: DataTypes.DATE, allowNull: true },
     deletedById: { field: 'deleted_by_id', type: DataTypes.BIGINT, allowNull: true },
     fullName: { field: 'full_name', type: DataTypes.STRING, allowNull: false, unique: true },
-    phone: { field: 'phone', type: DataTypes.STRING, allowNull: false },
+    phone: { field: 'phone', type: DataTypes.STRING, allowNull: false, unique: true },
     isActive: { field: 'is_active', type: DataTypes.BOOLEAN, defaultValue: true },
   }, {
     tableName: 'technicians',

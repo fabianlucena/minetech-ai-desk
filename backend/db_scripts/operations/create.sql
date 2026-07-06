@@ -429,10 +429,12 @@ insert into auth.permissions_x_roles (
   from auth.permissions p
   join auth.users system on system.username = 'system'
   join auth.roles r on r.name = 'admin'
-on conflict (name) do nothing;
+on conflict (permission_id, role_id) do nothing;
 
+-- Schema  ia_desk
 create schema if not exists ia_desk;
 
+-- Table technicians
 create table if not exists ia_desk.technicians(
     id bigint generated always as identity primary key,
     uuid uuid not null default gen_random_uuid(),
@@ -460,5 +462,78 @@ create table if not exists ia_desk.technicians(
       references auth.users(id) on delete restrict,
     
     constraint uk_ia_desk_technicians_deleted_by_id foreign key (deleted_by_id)
+      references auth.users(id) on delete restrict
+);
+
+-- Table companies
+create table if not exists ia_desk.companies(
+    id bigint generated always as identity primary key,
+    uuid uuid not null default gen_random_uuid(),
+
+    created_at timestamp not null default now(),
+    created_by_id bigint not null,
+
+    updated_at timestamp not null default now(),
+    updated_by_id bigint not null,
+
+    deleted_at timestamp null,
+    deleted_by_id bigint null,
+
+    name varchar(128) not null,
+    client_code varchar(128) not null,
+    token varchar(64) not null,
+    is_active boolean not null,
+    status varchar(64) not null,
+    
+    constraint uk_ia_desk_companies_uuid unique (uuid),
+    constraint uk_ia_desk_companies_name unique (name),
+    constraint uk_ia_desk_companies_token unique (token),
+    
+    constraint uk_ia_desk_companies_created_by_id foreign key (created_by_id)
+      references auth.users(id) on delete restrict,
+    
+    constraint uk_ia_desk_companies_updated_by_id foreign key (updated_by_id)
+      references auth.users(id) on delete restrict,
+    
+    constraint uk_ia_desk_companies_deleted_by_id foreign key (deleted_by_id)
+      references auth.users(id) on delete restrict
+);
+
+-- Table operator
+create table if not exists ia_desk.operator(
+    id bigint generated always as identity primary key,
+    uuid uuid not null default gen_random_uuid(),
+
+    created_at timestamp not null default now(),
+    created_by_id bigint not null,
+
+    updated_at timestamp not null default now(),
+    updated_by_id bigint not null,
+
+    deleted_at timestamp null,
+    deleted_by_id bigint null,
+    
+    company_id bigint not null,
+
+    full_name varchar(128) not null,
+    phone varchar(64) not null,
+    email varchar(64) null,
+    is_active boolean not null,
+    
+    constraint uk_ia_desk_operator_uuid unique (uuid),
+    constraint uk_ia_desk_operator_full_name unique (full_name),
+    constraint uk_ia_desk_operator_phone unique (full_name),
+    constraint uk_ia_desk_operator_email unique (full_name),
+    
+    constraint uk_ia_desk_operator_company_id foreign key (company_id)
+      references ia_desk.companies(id) on delete restrict,
+    
+    constraint uk_ia_desk_operator_created_by_id foreign key (created_by_id)
+      references auth.users(id) on delete restrict,
+    
+    constraint uk_ia_desk_operator_updated_by_id foreign key (updated_by_id)
+      references auth.users(id) on delete restrict,
+    
+    constraint uk_ia_desk_operator_deleted_by_id foreign key (deleted_by_id)
       references auth.users(id) on delete restrict
 );
