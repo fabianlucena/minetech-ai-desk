@@ -9,6 +9,7 @@ import checkAuthorizationTokenMiddleware from './middlewares/check_authorization
 import logger from './logger.js';
 import cors from 'cors';
 import './models/index.js';
+import './controllers/index.js';
 
 try {
   const app = express();

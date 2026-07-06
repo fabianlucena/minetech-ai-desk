@@ -1,12 +1,6 @@
 import { addDependency } from './dependency.js';
 import config from './config.js';
 
-import * as helloController from './controller/hello.controller.js';
-import * as userController from './controller/user.controller.js';
-import * as loginController from './controller/login.controller.js';
-
-import * as technicianController from './controller/technician.controller.js';
-
 import UserService from './services/user.service.js';
 import UserPasswordService from './services/user_password.service.js';
 import PasswordService from './services/password.service.js';
@@ -22,12 +16,6 @@ import PermissionXRoleService from './services/permission_x_role.service.js';
 import TechnicianService from './services/technician.service.js';
 
 addDependency('config', config);
-
-addDependency('helloController', () => helloController);
-addDependency('userController', () => userController);
-addDependency('loginController', () => loginController);
-
-addDependency('technicianController', () => technicianController);
 
 addDependency('userService', () => new UserService());
 addDependency('userPasswordService', () => new UserPasswordService());

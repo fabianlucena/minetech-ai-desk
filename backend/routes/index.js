@@ -14,26 +14,30 @@ export function snakeToCamel(str) {
   return str.replace(/[_-]([a-z])/g, (_, letter) => letter.toUpperCase());
 }
 
-try {
-  logger.info('🛢️  Configurando rutas');
+async function run() {
+  try {
+    logger.info('↗️  Configurando rutas');
 
-  const files = fs.readdirSync(__dirname)
-    .filter(file => file.endsWith('.routes.js') && file !== 'index.js');
+    const files = fs.readdirSync(__dirname)
+      .filter(file => file.endsWith('.routes.js') && file !== 'index.js');
 
-  for (const file of files) {
-    const endPointPath = '/' + file.replace('.routes.js', '');
+    for (const file of files) {
+      const endPointPath = '/' + file.replace('.routes.js', '');
 
-    logger.info(`    ${endPointPath} -> ${file}`);
-    const fullPath = path.join(__dirname, file);
-    const fileUrl = pathToFileURL(fullPath).href;
-    const { default: routes } = await import(fileUrl);
-    router.use(endPointPath, routes);
+      logger.info(`    ${endPointPath} -> ${file}`);
+      const fullPath = path.join(__dirname, file);
+      const fileUrl = pathToFileURL(fullPath).href;
+      const { default: routes } = await import(fileUrl);
+      router.use(endPointPath, routes);
+    }
+
+    logger.info('↗️  Rutas configuradas OK ✔️');
+  } catch (error) {
+    logger.error('❌ Error al configurar rutas:', error);
+    process.exit(1);
   }
-
-  logger.info('🛢️  Rutas configuradas OK ✔️');
-} catch (error) {
-  logger.error('❌ Error al configurar rutas:', error);
-  process.exit(1);
 }
+
+await run();
 
 export default router;
