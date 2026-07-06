@@ -1,15 +1,19 @@
 import { Select, MenuItem, Checkbox } from '@mui/material';
 
 export default function CheckboxSelectField({
+  label,
   value,
   onChange,
   options = [],
   renderValue,
   multiple = false,
 }) {
-  const defaultRenderValue = (selected) => options.filter((option) => selected.includes(option.value)).map((option) => option.label).join(', ');
+  const defaultRenderValue = multiple
+    ? (selected) => options.filter((option) => selected.includes(option.value)).map((option) => option.label).join(', ')
+    : (selected) => options.find((option) => option.value === selected)?.label ?? selected;
 
   return <Select
+    label={label}
     multiple={multiple}
     value={value}
     onChange={onChange}
