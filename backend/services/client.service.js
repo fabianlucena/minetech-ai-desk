@@ -26,8 +26,8 @@ export default class ClientService extends ModelService {
     if (!data.code)
       throw new Error('El código es obligatorio');
 
-    if (!data.token)
-      throw new Error('El token es obligatorio');
+    if (!data.accessCode)
+      throw new Error('El código de acceso es obligatorio');
     
     if (!data.isActive)
       data.isActive = false;

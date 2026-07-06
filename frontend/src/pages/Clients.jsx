@@ -15,6 +15,7 @@ export default function Clients() {
   const { addMessage, addError } = useToast();
   const [data, setData] = useState([]);
   const [includeDeleted, setIncludeDeleted] = useState(false);
+  const [showAccessCode, setShowAccessCode] = useState(false);
 
   const columns = useMemo(() => {
     const baseColumns = [
@@ -24,9 +25,15 @@ export default function Clients() {
         flex: 1,
       },
       {
-        field: 'clientCode',
+        field: 'code',
         headerName: 'Código',
         flex: 1,
+      },
+      {
+        field: 'accessCode',
+        headerName: 'Código de acceso',
+        flex: 1,
+        renderCell: ({value}) => showAccessCode ? value : '****',
       },
       {
         field: 'isActive',
@@ -38,19 +45,17 @@ export default function Clients() {
         headerName: 'Estado',
         flex: 1,
       },
-    ];
-
-    if (includeDeleted) {
-      baseColumns.push({
+      {
         field: 'deletedAt',
         headerName: 'Eliminado',
         renderCell: ({value}) => formatDate(value) || 'No eliminado',
         width: 130,
-      });
-    }
+        condition: () => includeDeleted,
+      },
+    ];
 
-    return baseColumns;
-  }, [includeDeleted]);
+    return baseColumns.filter(col => !col.condition || col.condition());
+  }, [includeDeleted, showAccessCode]);
 
   async function load() {
     try {
@@ -103,6 +108,11 @@ export default function Clients() {
     editPath={hasPermission('clients.update') && "/clients/:uuid/edit"}
     onRestore={hasPermission('clients.restore') && restoreClientHandler}
     tools={<>
+      <SwitchField
+        label="Mostrar código de acceso"
+        checked={showAccessCode}
+        onChange={(e) => setShowAccessCode(e.target.checked)}
+      />
       {hasPermission('clients.restore') && 
         <SwitchField
           label="Incluir eliminados"

@@ -13,7 +13,7 @@ export default (sequelize) => {
     deletedById: { field: 'deleted_by_id', type: DataTypes.BIGINT, allowNull: true },
     name: { field: 'name', type: DataTypes.STRING, allowNull: false, unique: true },
     code: { field: 'code', type: DataTypes.STRING, allowNull: false, unique: true },
-    token: { field: 'token', type: DataTypes.STRING, allowNull: false, unique: true },
+    accessCode: { field: 'access_code', type: DataTypes.STRING, allowNull: false, unique: true },
     isActive: { field: 'is_active', type: DataTypes.BOOLEAN, defaultValue: true },
     status: { field: 'status', type: DataTypes.ENUM(...clientStatusValues), allowNull: false },
   }, {

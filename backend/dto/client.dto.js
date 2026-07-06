@@ -10,7 +10,7 @@ export class ClientDTO {
     this.uuid = client.uuid;
     this.name = client.name;
     this.code = client.code;
-    this.token = client.token;
+    this.accessCode = client.accessCode;
     this.isActive = client.isActive;
     this.status = client.status;
     this.createdAt = client.createdAt;

@@ -8,8 +8,8 @@ import { getClient, getStatus, updateClient, createClient } from '../services/cl
 export default function Client() {
   const defaultData = {
     name: '',
-    clientCode: '',
-    token: '',
+    code: '',
+    accessCode: '',
     isActive: true,
     status: '',
   };
@@ -100,11 +100,11 @@ export default function Client() {
     if (!data.name)
       return 'Debe proporcionar el nombre del cliente';
 
-    if (!data.clientCode)
+    if (!data.code)
       return 'Debe proporcionar el código de cliente';
 
-    if (!data.token)
-      return 'Debe proporcionar el token del cliente';
+    if (!data.accessCode)
+      return 'Debe proporcionar el código de acceso del cliente';
 
     if (!data.status)
       return 'Debe seleccionar un estado para el cliente';
@@ -133,18 +133,18 @@ export default function Client() {
       onChange={(e) => setData({...data, name: e.target.value})}
     />
     <TextField
-      label="Código de cliente"
+      label="Código"
       disabled={disabled}
       required
-      value={data.clientCode}
-      onChange={(e) => setData({...data, clientCode: e.target.value})}
+      value={data.code}
+      onChange={(e) => setData({...data, code: e.target.value})}
     />
     <TextField
-      label="Token"
+      label="Código de acceso"
       disabled={disabled}
       required
-      value={data.token}
-      onChange={(e) => setData({...data, token: e.target.value})}
+      value={data.accessCode}
+      onChange={(e) => setData({...data, accessCode: e.target.value})}
     />
     <ChippedCheckboxSelectField
       label="Estado"
