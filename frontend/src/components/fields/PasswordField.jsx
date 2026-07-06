@@ -9,7 +9,7 @@ export default function PasswordField({
   ...props
 }) {
   const [effectiveType, setEffectiveType] = useState(type || 'password');
-  const [showPassword, setShowPassword] = useState(effectiveType === 'text');
+  const [showPassword, setShowPassword] = useState(false);
   const [effectiveTools, setEffectiveTools] = useState(null);
 
   useEffect(() => {
@@ -17,7 +17,7 @@ export default function PasswordField({
       return;
 
     if (showPassword) {
-      setEffectiveType(type);
+      setEffectiveType('text');
       setEffectiveTools(<>
         {tools}
         <HideButton
@@ -25,7 +25,7 @@ export default function PasswordField({
         />
       </>);
     } else {
-      setEffectiveType('text');
+      setEffectiveType(type);
       setEffectiveTools(<>
         {tools}
         <ShowButton

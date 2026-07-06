@@ -58,6 +58,7 @@ export default function Login() {
       label="Contraseña"
       disabled={disabled}
       required
+      showHidePassword
       value={data.password}
       onChange={(e) => setData({...data, password: e.target.value})}
     />
