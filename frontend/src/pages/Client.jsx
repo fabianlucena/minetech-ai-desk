@@ -4,6 +4,7 @@ import Form from '../components/Form.jsx';
 import { TextField, SwitchField, PasswordField, ChippedCheckboxSelectField } from '../components/fields/index.jsx';
 import { useToast } from '../state/toast.jsx';
 import { getClient, getStatus, updateClient, createClient } from '../services/client.service.js';
+import { generateClientIdentifiers } from '../utils/client.js';
 
 export default function Client() {
   const defaultData = {
@@ -11,7 +12,7 @@ export default function Client() {
     code: '',
     accessCode: '',
     isActive: true,
-    status: '',
+    status: 'active',
   };
 
   const navigate = useNavigate();
@@ -95,6 +96,16 @@ export default function Client() {
     }
     setDisabled(false);
   }
+
+  useEffect(() => {
+    if (!uuid) {
+      let { code, accessCode } = generateClientIdentifiers(data.name);
+      if (accessCode.substring(0, 3) === data.accessCode.substring(0, 3))
+        accessCode = data.accessCode;
+
+      setData({...data, code, accessCode});
+    }
+  }, [data.name, uuid]);
 
   function getValidationError() {
     if (!data.name)
