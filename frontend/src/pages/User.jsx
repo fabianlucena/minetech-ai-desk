@@ -146,6 +146,7 @@ export default function User() {
       disabled={disabled}
       required={data.canLogin}
       value={data.password}
+      showHidePassword
       onChange={(e) => setData({...data, password: e.target.value})}
     />}
     <ChippedCheckboxSelectField

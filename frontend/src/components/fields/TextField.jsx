@@ -7,6 +7,7 @@ export default function TextField({ tools, ...props }) {
     sx={{
       display: 'flex',
       alignItems: 'center',
+      position: 'relative',
     }}
   >
     <MuiTextField
