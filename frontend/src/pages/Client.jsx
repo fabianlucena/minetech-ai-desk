@@ -22,7 +22,7 @@ export default function Client() {
   const [disabled, setDisabled] = useState(false);
   const [data, setData] = useState({...defaultData});
   const [unchangedData, setUnchangedData] = useState({...defaultData});
-  const [status, setStatus] = useState([{label: 'uno', value: 'uno'}, {label: 'dos', value: 'dos'}, {label: 'tres', value: 'tres'}]);
+  const [status, setStatus] = useState([]);
   
   const [formConfig, setFormConfig] = useState({
     title: 'Crear nuevo cliente',
@@ -168,7 +168,7 @@ export default function Client() {
       label="Estado"
       disabled={disabled}
       required
-      value={data.status}
+      value={status?.length ? data.status : ''}
       onChange={(e) => setData({...data, status: e.target.value})}
       options={status.map((status) => ({
         value: status.value,
