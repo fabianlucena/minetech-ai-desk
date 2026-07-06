@@ -310,12 +310,14 @@ create table if not exists auth.roles_x_users (
 -- Insert default admin user's role
 insert into auth.roles_x_users (
   role_id, user_id,
-  created_at, deleted_at,
-  created_by_id, deleted_by_id
+  created_at, created_by_id,
+  updated_at, updated_by_id,
+  deleted_at, deleted_by_id
 ) select 
     role_admin.id, user_admin.id,
-    now(), null,
-    user_system.id, null
+    now(), user_system.id,
+    now(), user_system.id,
+    null, null
   from auth.roles role_admin,
     auth.users user_admin,
     auth.users user_system
@@ -398,4 +400,52 @@ create table if not exists auth.permissions_x_roles (
     references auth.users(id) on delete restrict
 );
 
+-- Insert permissions
+insert into auth.permissions (
+  uuid,
+  name,
+  created_at, created_by_id,
+  deleted_at, deleted_by_id
+) select 
+    gen_random_uuid(),
+    p.name,
+    now(), system.id,
+    null, null
+  from (values
+    ('users.create'),('users.delete'),('users.update'),('users.list'),('users.read'),('users.restore'),
+    ('technicians.create'),('technicians.delete'),('technicians.update'),('technicians.list'),('technicians.read'),('technicians.restore')
+  ) as p(name)
+  join auth.users system on system.username = 'system'
+on conflict (name) do nothing;
+
 create schema if not exists ia_desk;
+
+create table if not exists ia_desk.technicians(
+    id bigint generated always as identity primary key,
+    uuid uuid not null default gen_random_uuid(),
+
+    created_at timestamp not null default now(),
+    created_by_id bigint not null,
+
+    updated_at timestamp not null default now(),
+    updated_by_id bigint not null,
+
+    deleted_at timestamp null,
+    deleted_by_id bigint null,
+
+    full_name varchar(128) not null,
+    phone varchar(64) not null,
+    is_active boolean not null,
+    
+    constraint uk_ia_desk_technicians_uuid unique (uuid),
+    constraint uk_ia_desk_technicians_full_name unique (full_name),
+    
+    constraint uk_ia_desk_technicians_created_by_id foreign key (created_by_id)
+      references auth.users(id) on delete restrict,
+    
+    constraint uk_ia_desk_technicians_updated_by_id foreign key (updated_by_id)
+      references auth.users(id) on delete restrict,
+    
+    constraint uk_ia_desk_technicians_deleted_by_id foreign key (deleted_by_id)
+      references auth.users(id) on delete restrict
+);

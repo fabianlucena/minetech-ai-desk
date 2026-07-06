@@ -5,6 +5,8 @@ import * as helloController from './controller/hello.controller.js';
 import * as userController from './controller/user.controller.js';
 import * as loginController from './controller/login.controller.js';
 
+import * as technicianController from './controller/technician.controller.js';
+
 import UserService from './services/user.service.js';
 import UserPasswordService from './services/user_password.service.js';
 import PasswordService from './services/password.service.js';
@@ -17,11 +19,15 @@ import RoleIncludeService from './services/role_include.service.js';
 import PermissionService from './services/permission.service.js';
 import PermissionXRoleService from './services/permission_x_role.service.js';
 
+import TechnicianService from './services/technician.service.js';
+
 addDependency('config', config);
 
 addDependency('helloController', () => helloController);
 addDependency('userController', () => userController);
 addDependency('loginController', () => loginController);
+
+addDependency('technicianController', () => technicianController);
 
 addDependency('userService', () => new UserService());
 addDependency('userPasswordService', () => new UserPasswordService());
@@ -34,3 +40,5 @@ addDependency('roleXUserService', () => new RoleXUserService());
 addDependency('roleIncludeService', () => new RoleIncludeService());
 addDependency('permissionService', () => new PermissionService());
 addDependency('permissionXRoleService', () => new PermissionXRoleService());
+
+addDependency('technicianService', () => new TechnicianService());
