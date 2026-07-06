@@ -1,5 +1,6 @@
 import getDependency from '../dependency.js';
 import { ClientDTO } from '../dto/client.dto.js';
+import { clientStatus } from '../categories/client_status.js';
 
 export async function getList(req, res) {
   const clientService = getDependency('clientService');
@@ -53,4 +54,8 @@ export async function restoreByUuid(req, res) {
     { session: req.session }
   );
   res.status(204).end();
+}
+
+export async function getStatus(req, res) {
+  res.json(clientStatus);
 }

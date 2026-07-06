@@ -16,7 +16,7 @@ export default function CheckboxSelectField({
     renderValue={renderValue || defaultRenderValue}
   >
     {options.map((option) => (
-      <MenuItem key={option.value} value={option.value}>
+      <MenuItem key={option.value} value={option.value} title={option.title}>
         <Checkbox checked={value?.includes?.(option.value)} />
         {option.label}
       </MenuItem>

@@ -105,7 +105,7 @@ export default function Technician() {
       onChange={(e) => setData({...data, isActive: e.target.checked})}
     />
     <TextField
-      label="Nombre de técnico"
+      label="Nombre"
       disabled={disabled}
       required
       autoFocus

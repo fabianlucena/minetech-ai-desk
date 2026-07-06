@@ -1,5 +1,5 @@
 import { useGlobal } from './state/global.jsx';
-import { HomeIcon, DashboardIcon, UsersIcon, AboutIcon, LoginIcon, LogoutIcon, TechnicianIcon } from './components/icons/index.jsx';
+import { HomeIcon, DashboardIcon, UsersIcon, AboutIcon, LoginIcon, LogoutIcon, TechnicianIcon, ClientIcon } from './components/icons/index.jsx';
 import Layout from './components/Layout.jsx';
 import Home from './pages/Home.jsx';
 import Login from './pages/Login.jsx';
@@ -12,6 +12,8 @@ import User from './pages/User.jsx';
 import UserChangePassword from './pages/UserChangePassword.jsx';
 import Technicians from './pages/Technicians.jsx';
 import Technician from './pages/Technician.jsx';
+import Clients from './pages/Clients.jsx';
+import Client from './pages/Client.jsx';
 
 export const allRoutes = [
   {
@@ -73,6 +75,24 @@ export const allRoutes = [
         path: '/technicians/:uuid/edit',
         element: <Technician />,
         condition: ({ permissions }) => permissions.includes('technicians.update'),
+      },
+      {
+        path: '/clients',
+        label: 'Clientes',
+        icon: <ClientIcon />,
+        menuItemOrder: 3,
+        element: <Clients />,
+        condition: ({ permissions }) => permissions.includes('clients.list'),
+      },
+      {
+        path: '/clients/new',
+        element: <Client />,
+        condition: ({ permissions }) => permissions.includes('clients.create'),
+      },
+      {
+        path: '/clients/:uuid/edit',
+        element: <Client />,
+        condition: ({ permissions }) => permissions.includes('clients.update'),
       },
       {
         path: '/about',

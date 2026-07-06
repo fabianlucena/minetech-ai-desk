@@ -5,6 +5,7 @@ import checkPermissionMiddleware from '../middlewares/check_permission_middlewar
 const router = Router();
 
 router.get('/', checkPermissionMiddleware('clients.list'), (...args) => getDependency('clientController').getList(...args));
+router.get('/status', checkPermissionMiddleware('clients.list', 'users.read'), (...args) => getDependency('clientController').getStatus(...args));
 router.get('/:uuid', checkPermissionMiddleware('clients.read'), (...args) => getDependency('clientController').getByUuid(...args));
 router.post('/', checkPermissionMiddleware('clients.create'), (...args) => getDependency('clientController').create(...args));
 router.put('/:uuid', checkPermissionMiddleware('clients.update'), (...args) => getDependency('clientController').updateByUuid(...args));

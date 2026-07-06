@@ -5,13 +5,13 @@ export default function Chips({
   chips,
   mapper,
 }) {
-  const defaultMapper = chip => ({ id: chip.id || chip.uuid || chip.value || chip.label, label: chip.label });
+  const defaultMapper = chip => ({ id: chip.id || chip.uuid || chip.value || chip.label, label: chip.label, title: chip.title });
 
   return <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.2 }}>
     {chips
       .map(mapper || defaultMapper)
       .map(chip =>
-        <Chip key={chip.id} label={chip.label} />
+        <Chip key={chip.id} label={chip.label} title={chip.title} />
       )}
   </Box>;
 }
