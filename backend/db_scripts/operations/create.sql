@@ -397,3 +397,5 @@ create table if not exists auth.permissions_x_roles (
   constraint fk_auth_permissions_x_roles_deleted_by_id foreign key (deleted_by_id)
     references auth.users(id) on delete restrict
 );
+
+create schema if not exists ia_desk;

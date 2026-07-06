@@ -20,7 +20,7 @@ export default (sequelize) => {
     resolvedAt: { field: 'resolved_at', type: DataTypes.DATE, allowNull: true },
   }, {
     tableName: 'tickets',
-    schema: 'desk',
+    schema: 'ia_desk',
     timestamps: false,
   });
 

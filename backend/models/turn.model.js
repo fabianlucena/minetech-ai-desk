@@ -17,7 +17,7 @@ export default (sequelize) => {
     endDate: { field: 'end_date', type: DataTypes.DATE, allowNull: false },
   }, {
     tableName: 'turns',
-    schema: 'desk',
+    schema: 'ia_desk',
     timestamps: false,
   });
 

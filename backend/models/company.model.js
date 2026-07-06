@@ -18,7 +18,7 @@ export default (sequelize) => {
     status: { type: DataTypes.ENUM(...companyStatusValues), allowNull: false },
   }, {
     tableName: 'companies',
-    schema: 'desk',
+    schema: 'ia_desk',
     timestamps: false,
   });
 

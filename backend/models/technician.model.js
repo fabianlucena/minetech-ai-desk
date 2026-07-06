@@ -15,7 +15,7 @@ export default (sequelize) => {
     isActive: { field: 'is_active', type: DataTypes.BOOLEAN, defaultValue: true },
   }, {
     tableName: 'technicians',
-    schema: 'desk',
+    schema: 'ia_desk',
     timestamps: false,
   });
 

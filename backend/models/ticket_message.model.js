@@ -17,7 +17,7 @@ export default (sequelize) => {
     message: { field: 'message', type: DataTypes.TEXT, allowNull: false },
   }, {
     tableName: 'ticket_messages',
-    schema: 'desk',
+    schema: 'ia_desk',
     timestamps: false,
   });
 
