@@ -4,7 +4,7 @@ import ModelService from './model.service.js';
 
 export default class RoleIncludeService extends ModelService {
   constructor() {
-    super({ model: getDependency('roleXIncludeModel') });
+    super({ model: getDependency('roleIncludesModel') });
   }
 
   async getAllIdsByIds(roleIds) {

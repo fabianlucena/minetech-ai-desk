@@ -418,6 +418,19 @@ insert into auth.permissions (
   join auth.users system on system.username = 'system'
 on conflict (name) do nothing;
 
+insert into auth.permissions_x_roles (
+  permission_id, role_id,
+  created_at, created_by_id,
+  deleted_at, deleted_by_id
+) select
+    p.id, r.id,
+    now(), system.id,
+    null, null
+  from auth.permissions p
+  join auth.users system on system.username = 'system'
+  join auth.roles r on r.name = 'admin'
+on conflict (name) do nothing;
+
 create schema if not exists ia_desk;
 
 create table if not exists ia_desk.technicians(
