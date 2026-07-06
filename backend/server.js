@@ -1,6 +1,5 @@
 import config from './config.js';
 import express from 'express';
-import { Sequelize } from 'sequelize';
 import routes from './routes/index.js';
 import './dependencies.js';
 import sequelize from './database.js';
@@ -9,14 +8,7 @@ import logMiddleware from './middlewares/log.middleware.js';
 import checkAuthorizationTokenMiddleware from './middlewares/check_authorization_token_middleware.js';
 import logger from './logger.js';
 import cors from 'cors';
-
-try {
-  await sequelize.authenticate();
-  logger.info('🛢️ Conexión a la base OK ✔️');
-} catch (error) {
-  logger.error('❌ Error de conexión:', error);
-  process.exit(1);
-}
+import './models/index.js';
 
 try {
   const app = express();

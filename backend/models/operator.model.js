@@ -1,42 +1,47 @@
 import sequelize, { DataTypes } from 'sequelize';
 
 export default (sequelize) => {
-  const UserPassword = sequelize.define('UserPassword', {
-    userId: { field: 'user_id', type: DataTypes.BIGINT, autoIncrement: true, primaryKey: true },
+  const Operator = sequelize.define('Operator', {
+    id: { type: DataTypes.BIGINT, autoIncrement: true, primaryKey: true },
+    uuid: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4 },
     createdAt: { field: 'created_at', type: DataTypes.DATE, defaultValue: DataTypes.NOW, allowNull: false },
     createdById: { field: 'created_by_id', type: DataTypes.BIGINT, allowNull: false },
     updatedAt: { field: 'updated_at', type: DataTypes.DATE, defaultValue: DataTypes.NOW, allowNull: false },
     updatedById: { field: 'updated_by_id', type: DataTypes.BIGINT, allowNull: false },
     deletedAt: { field: 'deleted_at', type: DataTypes.DATE, allowNull: true },
     deletedById: { field: 'deleted_by_id', type: DataTypes.BIGINT, allowNull: true },
-    passwordHash: { field: 'password_hash', type: DataTypes.STRING, allowNull: false, unique: true },
+    companyId: { field: 'company_id', type: DataTypes.BIGINT, primaryKey: true },
+    fullName: { type: DataTypes.STRING, allowNull: false, unique: true },
+    phone: { type: DataTypes.STRING, allowNull: false },
+    email: { type: DataTypes.STRING },
+    isActive: { field: 'is_active', type: DataTypes.BOOLEAN, defaultValue: true },
   }, {
-    tableName: 'user_passwords',
-    schema: 'auth',
+    tableName: 'operators',
+    schema: 'desk',
     timestamps: false,
   });
 
-  UserPassword.associate = (models) => {
-    UserPassword.belongsTo(models.User, {
-      foreignKey: 'userId',
-      as: 'user',
-    });
-
-    UserPassword.belongsTo(models.User, {
+  Operator.associate = (models) => {
+    Operator.belongsTo(models.User, {
       foreignKey: 'createdById',
       as: 'createdBy',
     });
 
-    UserPassword.belongsTo(models.User, {
+    Operator.belongsTo(models.User, {
       foreignKey: 'updatedById',
       as: 'updatedBy',
     });
 
-    UserPassword.belongsTo(models.User, {
+    Operator.belongsTo(models.User, {
       foreignKey: 'deletedById',
       as: 'deletedBy',
     });
-  }
 
-  return UserPassword;
+    Operator.belongsTo(models.Company, {
+      foreignKey: 'companyId',
+      as: 'company',
+    });
+  };
+
+  return Operator;
 };

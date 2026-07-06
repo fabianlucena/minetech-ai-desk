@@ -1,40 +1,55 @@
+import fs from 'fs';
+import path from 'path';
 import sequelize from '../database.js';
+import logger from '../logger.js';
+import { dirname } from 'path';
+import { fileURLToPath, pathToFileURL  } from 'url';
+import { addDependency } from '../dependency.js';
 
-import UserModel from './user.model.js';
-import UserPasswordModel from './user_password.model.js';
-import DeviceModel from './device.model.js';
-import SessionModel from './session.model.js';
-import RoleModel from './role.model.js';
-import RoleXUserModel from './role_x_user.model.js';
-import RoleXIncludeModel from './roles_includes.model.js';
-import PermissionXRoleModel from './permission_x_role.model.js';
-import PermissionModel from './permission.model.js';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
-export const UserPassword = UserPasswordModel(sequelize);
-export const User = UserModel(sequelize);
-export const Device = DeviceModel(sequelize);
-export const Session = SessionModel(sequelize);
-export const Role = RoleModel(sequelize);
-export const RoleXUser = RoleXUserModel(sequelize);
-export const RoleXInclude = RoleXIncludeModel(sequelize);
-export const PermissionXRole = PermissionXRoleModel(sequelize);
-export const Permission = PermissionModel(sequelize);
+const db = {};
 
-User.hasOne(UserPassword, {
-  as: 'password',
-  foreignKey: 'userId'
-});
+try {
+  await sequelize.authenticate();
+  logger.info('🛢️  Configurando BDD y modelos');
+  logger.info('  Conexión a la base OK ✔️');
 
-User.belongsToMany(Role, {
-  as: 'roles',
-  through: RoleXUser,
-  foreignKey: 'userId',
-  otherKey: 'roleId'
-});
+  logger.info('  Importando modelos:');
+  const files = fs.readdirSync(__dirname)
+    .filter(file => file.endsWith('.js') && file !== 'index.js');
 
-Role.belongsToMany(User, {
-  as: 'users',
-  through: RoleXUser,
-  foreignKey: 'roleId',
-  otherKey: 'userId'
-});
+  for (const file of files) {
+    logger.info(`    ${file}`);
+    const fullPath = path.join(__dirname, file);
+    const fileUrl = pathToFileURL(fullPath).href;
+    const { default: modelDef } = await import(fileUrl);
+    const model = modelDef(sequelize);
+    db[model.name] = model;
+  }
+
+  logger.info('  Modelos importados OK ✔️');
+  logger.info('  Configurando asociaciones:');
+  for (const model of Object.values(db)) {
+    if (typeof model.associate === 'function') {      
+      logger.info(`    ${model.name}`);
+      model.associate(db);
+    }
+  }
+
+  logger.info('  Asociaciones configuradas OK ✔️');
+
+  for (const model of Object.values(db)) {
+    const ModelName = model.name;
+    const modelName = ModelName[0].toLocaleLowerCase() + ModelName.substring(1) + 'Model';
+    addDependency(modelName, () => model);
+  }
+
+  logger.info('🛢️  BDD y modelos configurados OK ✔️');
+} catch (error) {
+  logger.error('❌ Error de conexión:', error);
+  process.exit(1);
+}
+
+export default db;

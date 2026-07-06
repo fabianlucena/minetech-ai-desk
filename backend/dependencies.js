@@ -5,8 +5,6 @@ import * as helloController from './controller/hello.controller.js';
 import * as userController from './controller/user.controller.js';
 import * as loginController from './controller/login.controller.js';
 
-import * as models from './models/index.js';
-
 import UserService from './services/user.service.js';
 import UserPasswordService from './services/user_password.service.js';
 import PasswordService from './services/password.service.js';
@@ -20,10 +18,6 @@ import PermissionService from './services/permission.service.js';
 import PermissionXRoleService from './services/permission_x_role.service.js';
 
 addDependency('config', config);
-
-for (const [key, value] of Object.entries(models)) {
-  addDependency(key[0].toLocaleLowerCase() + key.substring(1) + 'Model', () => value);
-}
 
 addDependency('helloController', () => helloController);
 addDependency('userController', () => userController);

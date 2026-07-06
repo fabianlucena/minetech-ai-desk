@@ -1,9 +1,7 @@
-import sequelize from 'sequelize';
-
-import { DataTypes } from 'sequelize';
+import sequelize, { DataTypes } from 'sequelize';
 
 export default (sequelize) => {
-  return sequelize.define('Device', {
+  const Device = sequelize.define('Device', {
     id: { type: DataTypes.BIGINT, autoIncrement: true, primaryKey: true },
     uuid: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4 },
     createdAt: { field: 'created_at', type: DataTypes.DATE, defaultValue: DataTypes.NOW, allowNull: false },
@@ -14,4 +12,6 @@ export default (sequelize) => {
     schema: 'auth',
     timestamps: false,
   });
+
+  return Device;
 };

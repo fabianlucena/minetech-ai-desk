@@ -1,9 +1,7 @@
-import sequelize from 'sequelize';
-
-import { DataTypes } from 'sequelize';
+import sequelize, { DataTypes } from 'sequelize';
 
 export default (sequelize) => {
-  return sequelize.define('Role', {
+  const Role = sequelize.define('Role', {
     id: { type: DataTypes.BIGINT, autoIncrement: true, primaryKey: true },
     uuid: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4 },
     createdAt: { field: 'created_at', type: DataTypes.DATE, defaultValue: DataTypes.NOW, allowNull: false },
@@ -21,4 +19,30 @@ export default (sequelize) => {
     schema: 'auth',
     timestamps: false,
   });
+
+  Role.associate = (models) => {
+    Role.belongsTo(models.User, {
+      foreignKey: 'createdById',
+      as: 'createdBy',
+    });
+
+    Role.belongsTo(models.User, {
+      foreignKey: 'updatedById',
+      as: 'updatedBy',
+    });
+
+    Role.belongsTo(models.User, {
+      foreignKey: 'deletedById',
+      as: 'deletedBy',
+    });
+
+    Role.belongsToMany(models.User, {
+      as: 'users',
+      through: models.RoleXUser,
+      foreignKey: 'roleId',
+      otherKey: 'userId'
+    });
+  };
+
+  return Role;
 };

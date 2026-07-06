@@ -1,9 +1,7 @@
-import sequelize from 'sequelize';
-
-import { DataTypes } from 'sequelize';
+import sequelize, { DataTypes } from 'sequelize';
 
 export default (sequelize) => {
-  return sequelize.define('Session', {
+  const Session = sequelize.define('Session', {
     id: { type: DataTypes.BIGINT, autoIncrement: true, primaryKey: true },
     uuid: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4 },
     createdAt: { field: 'created_at', type: DataTypes.DATE, defaultValue: DataTypes.NOW, allowNull: false },
@@ -21,4 +19,23 @@ export default (sequelize) => {
     schema: 'auth',
     timestamps: false,
   });
+
+  Session.associate = (models) => {
+    Session.belongsTo(models.User, {
+      foreignKey: 'createdById',
+      as: 'createdBy',
+    });
+
+    Session.belongsTo(models.User, {
+      foreignKey: 'userId',
+      as: 'user',
+    });
+
+    Session.belongsTo(models.Device, {
+      foreignKey: 'deviceId',
+      as: 'device',
+    });
+  }
+
+  return Session;
 };

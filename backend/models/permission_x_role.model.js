@@ -1,9 +1,7 @@
-import sequelize from 'sequelize';
-
-import { DataTypes } from 'sequelize';
+import sequelize, { DataTypes } from 'sequelize';
 
 export default (sequelize) => {
-  return sequelize.define('PermissionXRole', {
+  const PermissionXRole = sequelize.define('PermissionXRole', {
     permissionId: { field: 'permission_id', type: DataTypes.BIGINT, primaryKey: true },
     roleId: { field: 'role_id', type: DataTypes.BIGINT, primaryKey: true },
     createdAt: { field: 'created_at', type: DataTypes.DATE, defaultValue: DataTypes.NOW, allowNull: false },
@@ -15,4 +13,28 @@ export default (sequelize) => {
     schema: 'auth',
     timestamps: false,
   });
+
+  PermissionXRole.associate = (models) => {
+    PermissionXRole.belongsTo(models.Permission, {
+      foreignKey: 'permissionId',
+      as: 'permission',
+    });
+
+    PermissionXRole.belongsTo(models.Role, {
+      foreignKey: 'roleId',
+      as: 'role',
+    });
+
+    PermissionXRole.belongsTo(models.User, {
+      foreignKey: 'createdById',
+      as: 'createdBy',
+    });
+
+    PermissionXRole.belongsTo(models.User, {
+      foreignKey: 'deletedById',
+      as: 'deletedBy',
+    });
+  };
+
+  return PermissionXRole;
 };

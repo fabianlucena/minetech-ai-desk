@@ -1,9 +1,7 @@
-import sequelize from 'sequelize';
-
-import { DataTypes } from 'sequelize';
+import sequelize, { DataTypes } from 'sequelize';
 
 export default (sequelize) => {
-  return sequelize.define('Permission', {
+  const Permission = sequelize.define('Permission', {
     id: { type: DataTypes.BIGINT, autoIncrement: true, primaryKey: true },
     uuid: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4 },
     createdAt: { field: 'created_at', type: DataTypes.DATE, defaultValue: DataTypes.NOW, allowNull: false },
@@ -16,4 +14,25 @@ export default (sequelize) => {
     schema: 'auth',
     timestamps: false,
   });
+
+  Permission.associate = (models) => {
+    Permission.belongsTo(models.User, {
+      foreignKey: 'createdById',
+      as: 'createdBy',
+    });
+
+    Permission.belongsTo(models.User, {
+      foreignKey: 'deletedById',
+      as: 'deletedBy',
+    });
+
+    Permission.belongsToMany(models.Role, {
+      as: 'roles',
+      through: models.PermissionXRole,
+      foreignKey: 'permissionId',
+      otherKey: 'roleId'
+    });
+  };
+
+  return Permission;
 };
