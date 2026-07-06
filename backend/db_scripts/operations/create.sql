@@ -414,7 +414,8 @@ insert into auth.permissions (
   from (values
     ('users.create'),('users.delete'),('users.update'),('users.list'),('users.read'),('users.restore'),
     ('technicians.create'),('technicians.delete'),('technicians.update'),('technicians.list'),('technicians.read'),('technicians.restore'),
-    ('clients.create'),('clients.delete'),('clients.update'),('clients.list'),('clients.read'),('clients.restore')
+    ('clients.create'),('clients.delete'),('clients.update'),('clients.list'),('clients.read'),('clients.restore'),
+    ('operators.create'),('operators.delete'),('operators.update'),('operators.list'),('operators.read'),('operators.restore')
   ) as p(name)
   join auth.users system on system.username = 'system'
 on conflict (name) do nothing;
