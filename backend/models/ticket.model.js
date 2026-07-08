@@ -12,7 +12,7 @@ export default (sequelize) => {
     deletedAt: { field: 'deleted_at', type: DataTypes.DATE, allowNull: true },
     deletedById: { field: 'deleted_by_id', type: DataTypes.BIGINT, allowNull: true },
     clientId: { field: 'client_id', type: DataTypes.BIGINT, allowNull: false },
-    operatorId: { field: 'operator_id', type: DataTypes.BIGINT, allowNull: false },
+    requesterId: { field: 'requester_id', type: DataTypes.BIGINT, allowNull: false },
     technicianId: { field: 'technician_id', type: DataTypes.BIGINT, allowNull: true },
     turnId: { field: 'turn_id', type: DataTypes.BIGINT, allowNull: true },
     status: { field: 'status', type: DataTypes.ENUM(...ticketStatusValues), allowNull: false },
@@ -45,9 +45,9 @@ export default (sequelize) => {
       as: 'client',
     });
 
-    Ticket.belongsTo(models.Operator, {
-      foreignKey: 'operatorId',
-      as: 'operator',
+    Ticket.belongsTo(models.Requester, {
+      foreignKey: 'requesterId',
+      as: 'requester',
     });
 
     Ticket.belongsTo(models.Technician, {

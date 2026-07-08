@@ -14,7 +14,7 @@ import Technicians from './pages/Technicians.jsx';
 import Technician from './pages/Technician.jsx';
 import Clients from './pages/Clients.jsx';
 import Client from './pages/Client.jsx';
-import Operators from './pages/Operators.jsx';
+import Requesters from './pages/Requesters.jsx';
 import Turns from './pages/Turns.jsx';
 
 export const allRoutes = [
@@ -105,12 +105,12 @@ export const allRoutes = [
         condition: ({ permissions }) => permissions.includes('clients.update'),
       },
       {
-        path: '/operators',
+        path: '/requesters',
         label: 'Solicitantes',
         icon: <RequesterIcon />,
         menuItemOrder: 3,
-        element: <Operators />,
-        condition: ({ permissions }) => permissions.includes('operators.list'),
+        element: <Requesters />,
+        condition: ({ permissions }) => permissions.includes('requesters.list'),
       },
       {
         path: '/about',

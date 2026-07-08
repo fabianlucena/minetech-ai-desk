@@ -1,7 +1,7 @@
 import sequelize, { DataTypes } from 'sequelize';
 
 export default (sequelize) => {
-  const Operator = sequelize.define('Operator', {
+  const Requester = sequelize.define('Requester', {
     id: { type: DataTypes.BIGINT, autoIncrement: true, primaryKey: true },
     uuid: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4 },
     createdAt: { field: 'created_at', type: DataTypes.DATE, defaultValue: DataTypes.NOW, allowNull: false },
@@ -16,32 +16,32 @@ export default (sequelize) => {
     email: { field: 'email', type: DataTypes.STRING, allowNull: true, unique: true },
     isActive: { field: 'is_active', type: DataTypes.BOOLEAN, defaultValue: true },
   }, {
-    tableName: 'operators',
+    tableName: 'requesters',
     schema: 'ia_desk',
     timestamps: false,
   });
 
-  Operator.associate = (models) => {
-    Operator.belongsTo(models.User, {
+  Requester.associate = (models) => {
+    Requester.belongsTo(models.User, {
       foreignKey: 'createdById',
       as: 'createdBy',
     });
 
-    Operator.belongsTo(models.User, {
+    Requester.belongsTo(models.User, {
       foreignKey: 'updatedById',
       as: 'updatedBy',
     });
 
-    Operator.belongsTo(models.User, {
+    Requester.belongsTo(models.User, {
       foreignKey: 'deletedById',
       as: 'deletedBy',
     });
 
-    Operator.belongsTo(models.Client, {
+    Requester.belongsTo(models.Client, {
       foreignKey: 'clientId',
       as: 'client',
     });
   };
 
-  return Operator;
+  return Requester;
 };

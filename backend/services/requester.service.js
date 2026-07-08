@@ -1,9 +1,9 @@
 import { getDependency } from '../dependency.js';
 import ModelService from './model.service.js';
 
-export default class OperatorService extends ModelService {
+export default class RequesterService extends ModelService {
   constructor() {
-    super({ model: getDependency('operatorModel') });
+    super({ model: getDependency('requesterModel') });
   }
 
   getModelOptions(options) {
