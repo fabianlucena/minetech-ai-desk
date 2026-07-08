@@ -1,5 +1,13 @@
+import Calendar from '../components/Calendar';
+
 export default function Turns() {
-  return <div>
-    <h1>Turns</h1>
-  </div>
+  return <Calendar
+    title="Turnos"
+    onReload={() => {
+      console.log('Reloading turns...');
+    }}
+    onCreate={(date) => {
+      console.log('Creating turn for date:', date);
+    }}
+  />
 }
