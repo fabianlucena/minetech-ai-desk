@@ -34,13 +34,13 @@ export default class OperatorService extends ModelService {
 
   async updateByUuid(uuid, data, options) {
     if (!uuid)
-      throw new Error('El UUID del operator es obligatorio');
+      throw new Error('El UUID del solicitante es obligatorio');
 
-    const operator = await this.getByUuid(uuid);
-    if (!operator)
-      throw new Error('Operator no encontrado');
+    const requester = await this.getByUuid(uuid);
+    if (!requester)
+      throw new Error('Solicitante no encontrado');
 
     const globalOptions = { session: options?.session };
-    return await this.updateById(operator.id, data, globalOptions);
+    return await this.updateById(requester.id, data, globalOptions);
   }
 }

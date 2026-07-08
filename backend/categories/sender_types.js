@@ -1,8 +1,8 @@
 export const senderTypes = [
   {
-    value: 'operator',
-    name: 'Operador',
-    detail: 'Persona que llama desde la empresa cliente'
+    value: 'requester',
+    name: 'Solicitante',
+    detail: 'Persona que llama desde la empresa cliente solicitando asistencia técnica'
   },
   {
     value: 'technician',

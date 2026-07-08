@@ -12,7 +12,7 @@ export const ticketStatus = [
   {
     value: 'pendiente_cliente',
     name: 'Pendiente del cliente',
-    detail: 'Se espera información adicional del operador o cliente'
+    detail: 'Se espera información adicional del solicitante o cliente'
   },
   {
     value: 'pendiente_tecnico',
