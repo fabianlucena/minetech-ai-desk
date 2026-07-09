@@ -1,5 +1,5 @@
 import sequelize, { DataTypes } from 'sequelize';
-import { turnTypeValues } from '../categories/turn_type.js';
+import { turnTypeValues } from '../categories/turn_types.js';
 
 export default (sequelize) => {
   const Turn = sequelize.define('Turn', {
@@ -12,7 +12,7 @@ export default (sequelize) => {
     deletedAt: { field: 'deleted_at', type: DataTypes.DATE, allowNull: true },
     deletedById: { field: 'deleted_by_id', type: DataTypes.BIGINT, allowNull: true },
     technicianId: { field: 'technician_id', type: DataTypes.BIGINT, allowNull: true },
-    turnType: { field: 'turn_type', type: DataTypes.ENUM(...turnTypeValues), allowNull: true },
+    type: { field: 'type', type: DataTypes.ENUM(...turnTypeValues), allowNull: true },
     startDate: { field: 'start_date', type: DataTypes.DATE, allowNull: false },
     endDate: { field: 'end_date', type: DataTypes.DATE, allowNull: false },
   }, {

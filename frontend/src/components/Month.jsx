@@ -194,8 +194,8 @@ export default function Month({
                   margin: 0,
                   padding: 0,
                 }}
-                onClick={() => {
-                  onCreate?.(dateInfo.date);
+                onClick={event => {
+                  onCreate?.({event, date: dateInfo.date});
                 }}
               />
             )}
