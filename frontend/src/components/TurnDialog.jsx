@@ -35,7 +35,7 @@ export default function TurnDialog({
       const data = {
         ...defaultData,
         startDate,
-        endDate: addHours(startDate, 8),
+        endDate: startDate ? addHours(startDate, 8) : null,
       };
 
       setData(data);
