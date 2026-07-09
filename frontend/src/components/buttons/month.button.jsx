@@ -1,10 +1,10 @@
-import IconButton from '@mui/material/IconButton';
-import MUIIcon from '@mui/icons-material/CalendarMonthTwoTone';
+import IconButton from './IconButton';
+import Icon from '@mui/icons-material/CalendarMonthTwoTone';
 
 export default function MonthButton(props) {
   return <IconButton
-    {...{title: 'Mes', ...props}}
-  >
-    <MUIIcon />
-  </IconButton>;
+    title='Mes'
+    Icon={Icon}
+    {...props}
+  />;
 }
