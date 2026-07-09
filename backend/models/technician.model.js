@@ -13,6 +13,7 @@ export default (sequelize) => {
     fullName: { field: 'full_name', type: DataTypes.STRING, allowNull: false, unique: true },
     phone: { field: 'phone', type: DataTypes.STRING, allowNull: false, unique: true },
     isActive: { field: 'is_active', type: DataTypes.BOOLEAN, defaultValue: true },
+    color: { field: 'color', type: DataTypes.STRING, allowNull: true },
   }, {
     tableName: 'technicians',
     schema: 'ia_desk',

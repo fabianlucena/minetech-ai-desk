@@ -266,7 +266,7 @@ export default function Month({
               <Box
                 key={index}
                 sx={{
-                  backgroundColor: '#e0e0e0',
+                  backgroundColor: eventInfo.technician.color,
                   margin: '.1em .2em',
                   padding: '.1em .2em',
                   borderRadius: 2,
@@ -277,7 +277,7 @@ export default function Month({
                 }}
               >
                 <Typography variant="body2" sx={{ fontSize: 12, flex: 1 }}>
-                  {eventInfo.startDate.getHours?.().toString().padStart(2, '0')}: 
+                  {eventInfo.startDate.getHours?.().toString().padStart(2, '0')}h 
                   {eventInfo.technician.fullName}
                 </Typography>
                 {onEdit && <EditButton

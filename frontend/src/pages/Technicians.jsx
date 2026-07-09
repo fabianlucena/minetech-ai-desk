@@ -5,16 +5,18 @@ import { useNavigate } from 'react-router-dom';
 import { useToast } from '../state/toast.jsx';
 import { hasPermission } from '../state/global.jsx';
 import { formatDate } from '../utils/date.js';
-import Chips from '../components/Chips.jsx';
+import Chip from '../components/Chip.jsx';
 import { getTechnicians, deleteTechnician, restoreTechnician } from '../services/technician.service.js';
 import { PasswordIcon } from '../components/icons/index.jsx';
 import SwitchField from '../components/fields/SwitchField.jsx';
+import { getLighterColor } from '../utils/color.js';
 
 export default function Technicians() {
   const navigate = useNavigate();
   const { addMessage, addError } = useToast();
   const [data, setData] = useState([]);
   const [includeDeleted, setIncludeDeleted] = useState(false);
+  const [rowColors, setRowColors] = useState({});
 
   const columns = useMemo(() => {
     const baseColumns = [
@@ -27,6 +29,11 @@ export default function Technicians() {
         field: 'phone',
         headerName: 'Teléfono',
         flex: 1,
+      },
+      {
+        field: 'color',
+        headerName: 'Color',
+        renderCell: ({value}) => <Chip color={value ?? ''} />,
       },
       {
         field: 'isActive',
@@ -54,8 +61,14 @@ export default function Technicians() {
         query.includeDeleted = 1;
       }
 
-      const res = await getTechnicians({ query });
-      setData(res);
+      const data = await getTechnicians({ query });
+      setData(data);
+
+      const rowColors = data.reduce((acc, row) => {
+        acc[`& .row-${row.uuid}`] = { backgroundColor: getLighterColor(row.color, .75) };
+        return acc;
+      }, {});
+      setRowColors(rowColors);
     } catch (error) {
       addError('Error al obtener los técnicos');
       console.error('Error al obtener los técnicos:', error);
@@ -106,5 +119,7 @@ export default function Technicians() {
         />
       }
     </>}
+    getRowClassName={(params) => `row-${params.id}`}
+    sx={{ ...rowColors }}
   />;
 }
