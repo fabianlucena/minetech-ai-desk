@@ -1,10 +1,24 @@
 import IconButton from '@mui/material/IconButton';
-import DeleteIcon from '@mui/icons-material/DeleteTwoTone';
+import Icon from '@mui/icons-material/DeleteTwoTone';
 
-export default function DeleteButton(props) {
+export default function DeleteButton({ size, sx, ...props }) {
+  const iconSx = {};
+  if (size === 'small') {
+    iconSx.fontSize = 16;
+    sx = {
+      padding: '4px',
+      minWidth: 0,
+      width: 16,
+      height: 16,
+      margin: 0,
+      padding: 0,
+      ...sx,
+    };
+  }
+
   return <IconButton
-    {...{title: 'Eliminar', ...props}}
+    {...{ title: 'Eliminar', sx: sx, ...props}}
   >
-    <DeleteIcon />
+    <Icon sx={iconSx} />
   </IconButton>;
 }

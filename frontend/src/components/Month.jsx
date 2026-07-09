@@ -267,20 +267,18 @@ export default function Month({
                 key={index}
                 sx={{
                   backgroundColor: '#e0e0e0',
-                  margin: 0.5,
-                  padding: 0.5,
-                  borderRadius: 4,
+                  margin: '.1em .2em',
+                  padding: '.1em .2em',
+                  borderRadius: 2,
                   display: 'flex',
                   flexDirection: 'row',
                   alignItems: 'center',
                   justifyContent: 'space-between',
                 }}
               >
-                <Typography variant="body2">
-                  {eventInfo.technician.fullName}: 
-                  {eventInfo.startDate.getHours?.().toString().padStart(2, '0')}:{eventInfo.startDate.getMinutes?.().toString().padStart(2, '0')}
-                  -
-                  {eventInfo.endDate.getHours?.().toString().padStart(2, '0')}:{eventInfo.endDate.getMinutes?.().toString().padStart(2, '0')}
+                <Typography variant="body2" sx={{ fontSize: 12, flex: 1 }}>
+                  {eventInfo.startDate.getHours?.().toString().padStart(2, '0')}: 
+                  {eventInfo.technician.fullName}
                 </Typography>
                 {onEdit && <EditButton
                   size="small"
