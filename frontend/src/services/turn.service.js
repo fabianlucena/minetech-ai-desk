@@ -11,7 +11,10 @@ export async function getTurns(params) {
 }
 
 export async function getTurn(uuid, params) {
-  return await Api.getJson(`turns/${uuid}`, params);
+  let turn = await Api.getJson(`turns/${uuid}`, params);
+  turn.startDate = new Date(turn.startDate);
+  turn.endDate = new Date(turn.endDate);
+  return turn;
 }
 
 export async function getTypes(params) {

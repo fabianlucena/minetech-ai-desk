@@ -6,7 +6,7 @@ import DateTimeField from './fields/DateTimeField';
 import SliderField from './fields/SliderField';
 import { useToast } from '../state/toast.jsx';
 import { diffHours, addHours } from '../utils/time.js';
-import { getTechnicians, getTypes, getTurn, createTurn } from '../services/turn.service.js';
+import { getTechnicians, getTypes, getTurn, createTurn, updateTurn } from '../services/turn.service.js';
 
 const defaultData = {
   technicianUuid: '',
@@ -46,6 +46,8 @@ export default function TurnDialog({
   async function loadTurn() {
     if (uuid) {
       const data = await getTurn(uuid);
+      data.technicianUuid ??= data.technician?.uuid;
+      
       setData({...data});
       setUnchangedData({...data});
     }

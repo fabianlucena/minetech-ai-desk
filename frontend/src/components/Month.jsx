@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Box, Button, Typography } from '@mui/material';
-import { ReloadButton, CreateButton, PriorButton, NextButton } from './buttons';
+import { ReloadButton, CreateButton, PriorButton, NextButton, EditButton, DeleteButton } from './buttons';
 import SelectField from './fields/SelectField';
 import TextField from './fields/TextField';
+import ConfirmDialog from './ConfirmDialog.jsx';
 
 function addEventsToDatesInfo(datesInfo, events) {
   for (const dateInfo of datesInfo) {
@@ -28,10 +29,13 @@ export default function Month({
   tools,
   onReload,
   onCreate,
+  onDelete,
+  onEdit,
   events = [],
   date = new Date(),
   onFirstDate,
   onLastDate,
+  deleteConfirmationMessage = '¿Está seguro de que desea eliminar este elemento?',
 }) {
   const weekDayNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
   const monthNames = [
@@ -40,6 +44,12 @@ export default function Month({
   ];
   const [datesInfo, setDatesInfo] = useState([]);
   const [effectiveDate, setEffectiveDate] = useState(date);
+  const [confirmation, setConfirmation] = useState({
+    open: false,
+    onClose: () => setConfirmation({...confirmation, open: false}),
+    title: 'Confirmar',
+    message: '',
+  });
 
   useEffect(() => {
     const from = new Date(effectiveDate.getFullYear(), effectiveDate.getMonth(), -effectiveDate.getDay());
@@ -75,6 +85,24 @@ export default function Month({
     return monthNames[monthIndex];
   }
 
+  function deleteHandler(event, eventInfo) {
+    if (!onDelete)
+      return;
+
+    if (!deleteConfirmationMessage) {
+      onDelete({ event, eventInfo });
+      return;
+    }
+
+    setConfirmation({
+      ...confirmation,
+      open: true,
+      title: 'Confirmar eliminación',
+      message: deleteConfirmationMessage,
+      onConfirm: () => onDelete({ event, eventInfo }),
+    });
+  }
+
   return <Box
     sx={{
       minHeight: '100%',
@@ -84,6 +112,8 @@ export default function Month({
       overflow: 'visible',
     }}
   >
+    <ConfirmDialog {...confirmation} />
+
     {(title || description || tools || onReload) && <Box
       sx={{
         display: 'flex',
@@ -232,7 +262,7 @@ export default function Month({
               width: '100%',
             }}
           >
-            {dateInfo.events?.map((event, index) => (
+            {dateInfo.events?.map((eventInfo, index) => (
               <Box
                 key={index}
                 sx={{
@@ -240,14 +270,26 @@ export default function Month({
                   margin: 0.5,
                   padding: 0.5,
                   borderRadius: 4,
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
                 }}
               >
                 <Typography variant="body2">
-                  {event.technician.fullName}: 
-                  {event.startDate.getHours?.().toString().padStart(2, '0')}:{event.startDate.getMinutes?.().toString().padStart(2, '0')}
+                  {eventInfo.technician.fullName}: 
+                  {eventInfo.startDate.getHours?.().toString().padStart(2, '0')}:{eventInfo.startDate.getMinutes?.().toString().padStart(2, '0')}
                   -
-                  {event.endDate.getHours?.().toString().padStart(2, '0')}:{event.endDate.getMinutes?.().toString().padStart(2, '0')}
+                  {eventInfo.endDate.getHours?.().toString().padStart(2, '0')}:{eventInfo.endDate.getMinutes?.().toString().padStart(2, '0')}
                 </Typography>
+                {onEdit && <EditButton
+                  size="small"
+                  onClick={event => onEdit({ event, eventInfo })}
+                />}
+                {onDelete && <DeleteButton
+                  size="small"
+                  onClick={event => deleteHandler(event, eventInfo)}
+                />}
               </Box>
             ))}
           </Box>

@@ -1,5 +1,5 @@
 export function diffHours(date1, date2) {
-  if (!date1 || !date2)
+  if (!date1?.getTime || !date2?.getTime)
     return 0;
 
   const ms = date2.getTime() - date1.getTime();

@@ -9,8 +9,11 @@ export default function Calendar({
   tools,
   onReload,
   onCreate,
+  onDelete,
+  onEdit,
   onFirstDate,
   onLastDate,
+  deleteConfirmationMessage,
 }) {
   return <Box
     sx={{
@@ -47,8 +50,11 @@ export default function Calendar({
     <Month
       events={events}
       onCreate={onCreate}
+      onDelete={onDelete}
+      onEdit={onEdit}
       onFirstDate={onFirstDate}
       onLastDate={onLastDate}
+      deleteConfirmationMessage={deleteConfirmationMessage}
     />
   </Box>
 }
