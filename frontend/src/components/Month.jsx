@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Box, Button, Typography } from '@mui/material';
-import { ReloadButton, CreateButton, PriorButton, NextButton, EditButton, DeleteButton } from './buttons';
+import { ReloadButton, CreateButton, PriorButton, NextButton, EditButton, DeleteButton, RestoreButton } from './buttons';
 import SelectField from './fields/SelectField';
 import TextField from './fields/TextField';
 import ConfirmDialog from './ConfirmDialog.jsx';
@@ -31,6 +31,7 @@ export default function Month({
   onCreate,
   onDelete,
   onEdit,
+  onRestore,
   events = [],
   date = new Date(),
   onFirstDate,
@@ -266,7 +267,7 @@ export default function Month({
               <Box
                 key={index}
                 sx={{
-                  backgroundColor: '#e0e0e0',
+                  backgroundColor: eventInfo.technician.color,
                   margin: '.1em .2em',
                   padding: '.1em .2em',
                   borderRadius: 2,
@@ -277,14 +278,18 @@ export default function Month({
                 }}
               >
                 <Typography variant="body2" sx={{ fontSize: 12, flex: 1 }}>
-                  {eventInfo.startDate.getHours?.().toString().padStart(2, '0')}: 
+                  {eventInfo.startDate.getHours?.().toString().padStart(2, '0')}h 
                   {eventInfo.technician.fullName}
                 </Typography>
-                {onEdit && <EditButton
+                {onRestore && eventInfo.deletedAt && <RestoreButton
+                  size="small"
+                  onClick={event => onRestore({ event, eventInfo })}
+                />}
+                {onEdit && !eventInfo.deletedAt && <EditButton
                   size="small"
                   onClick={event => onEdit({ event, eventInfo })}
                 />}
-                {onDelete && <DeleteButton
+                {onDelete && !eventInfo.deletedAt && <DeleteButton
                   size="small"
                   onClick={event => deleteHandler(event, eventInfo)}
                 />}

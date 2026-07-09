@@ -11,6 +11,7 @@ export default function Calendar({
   onCreate,
   onDelete,
   onEdit,
+  onRestore,
   onFirstDate,
   onLastDate,
   deleteConfirmationMessage,
@@ -52,6 +53,7 @@ export default function Calendar({
       onCreate={onCreate}
       onDelete={onDelete}
       onEdit={onEdit}
+      onRestore={onRestore}
       onFirstDate={onFirstDate}
       onLastDate={onLastDate}
       deleteConfirmationMessage={deleteConfirmationMessage}

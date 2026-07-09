@@ -8,5 +8,6 @@ export { default as MonthButton } from './month.button.jsx';
 export { default as NextButton } from './next.button.jsx';
 export { default as ReloadButton } from './reload.button.jsx';
 export { default as RenewButton } from './renew.button.jsx';
+export { default as RestoreButton } from './restore.button.jsx';
 export { default as ShowButton } from './show.button.jsx';
 export { default as WeekButton } from './week.button.jsx';

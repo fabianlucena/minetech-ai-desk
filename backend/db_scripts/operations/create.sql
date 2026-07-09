@@ -454,6 +454,7 @@ create table if not exists ia_desk.technicians(
     full_name varchar(128) not null,
     phone varchar(64) not null,
     is_active boolean not null,
+    color varchar(10) null,
     
     constraint uk_ia_desk_technicians_uuid unique (uuid),
     constraint uk_ia_desk_technicians_full_name unique (full_name),

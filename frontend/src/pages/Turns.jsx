@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react';
 import Calendar from '../components/Calendar';
 import TurnDialog from '../components/TurnDialog';
-import { getTurns, deleteTurn } from '../services/turn.service.js';
+import { getTurns, deleteTurn, restoreTurn } from '../services/turn.service.js';
 import { hasPermission } from '../state/global.jsx';
 import { useToast } from '../state/toast.jsx';
+import SwitchField from '../components/fields/SwitchField.jsx';
 
 export default function Turns() {
   const [turns, setTurns] = useState([]);
   const [firstDate, setFirstDate] = useState(null);
   const [lastDate, setLastDate] = useState(null);
+  const [includeDeleted, setIncludeDeleted] = useState(false);
   const [openTurnDialog, setOpenTurnDialog] = useState(false);
   const [turnDialogUuid, setTurnDialogUuid] = useState(null);
   const [turnDialogStartDate, setTurnDialogStartDate] = useState(null);
@@ -18,16 +20,21 @@ export default function Turns() {
     if (!firstDate || !lastDate)
       return;
 
-    const turns = await getTurns({ query: {
+    const query = {
       fromDay: firstDate.toISOString().split('T')[0], 
-      toDay: lastDate.toISOString().split('T')[0]
-    }});
+      toDay: lastDate.toISOString().split('T')[0],
+    };
+
+    if (includeDeleted)
+      query.includeDeleted = true;
+
+    const turns = await getTurns({ query });
     setTurns(turns);
   }
 
   useEffect(() => {
     load();
-  }, [firstDate, lastDate]);
+  }, [firstDate, lastDate, includeDeleted]);
 
   function createTurnHandler({date}) {
     setTurnDialogUuid(null);
@@ -52,6 +59,17 @@ export default function Turns() {
     setOpenTurnDialog(true);
   }
 
+  async function restoreTurnHandler({ eventInfo }) {
+    try {
+      await restoreTurn(eventInfo.uuid);
+      addMessage('Turno restaurado correctamente');
+      load();
+    } catch (error) {
+      addError('Error al restaurar el turno');
+      console.error('Error al restaurar el turno:', error);
+    }
+  }
+
   return <>
     <TurnDialog
       uuid={turnDialogUuid}
@@ -68,9 +86,19 @@ export default function Turns() {
       onCreate={hasPermission('turns.create') && createTurnHandler}
       onDelete={hasPermission('turns.delete') && deleteTurnHandler}
       onEdit={hasPermission('turns.update') && editTurnHandler}
+      onRestore={hasPermission('turns.restore') && restoreTurnHandler}
       onFirstDate={setFirstDate}
       onLastDate={setLastDate}
       deleteConfirmationMessage="¿Está seguro de que desea eliminar este turno?"
+      tools={<>
+        {hasPermission('turns.restore') && 
+          <SwitchField
+            label="Incluir eliminados"
+            checked={includeDeleted}
+            onChange={(e) => setIncludeDeleted(e.target.checked)}
+          />
+        }
+      </>}
     />
   </>;
 }

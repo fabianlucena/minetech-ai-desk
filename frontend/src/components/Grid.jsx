@@ -23,6 +23,8 @@ export default function Grid({
   onRestore,
   deleteConfirmationMessage = '¿Está seguro de que desea eliminar este elemento?',
   getRowClassName,
+  sx,
+  ...props
 }) {
   const navigate = useNavigate();
   const [confirmation, setConfirmation] = useState({
@@ -162,7 +164,9 @@ export default function Grid({
             backgroundColor: 'rgba(255, 0, 0, 0.15)',
           },
         },
+        ...sx,
       }}
+      {...props}
     />
   </Box>;
 }

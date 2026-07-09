@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Form from '../components/Form.jsx';
-import { TextField, SwitchField, PasswordField, ChippedCheckboxSelectField } from '../components/fields/index.jsx';
+import { TextField, SwitchField, PasswordField, ChippedCheckboxSelectField, ColorField } from '../components/fields/index.jsx';
 import { useToast } from '../state/toast.jsx';
 import { getTechnician, updateTechnician, createTechnician } from '../services/technician.service.js';
 
@@ -118,6 +118,13 @@ export default function Technician() {
       required
       value={data.phone}
       onChange={(e) => setData({...data, phone: e.target.value})}
+    />
+    <ColorField
+      label="Color"
+      disabled={disabled}
+      required
+      value={data.color}
+      onChange={(e) => setData({...data, color: e.target.value})}
     />
   </Form>;
 }
