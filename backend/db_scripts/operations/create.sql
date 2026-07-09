@@ -540,3 +540,38 @@ create table if not exists ia_desk.requesters(
     constraint uk_ia_desk_requesters_deleted_by_id foreign key (deleted_by_id)
       references auth.users(id) on delete restrict
 );
+
+-- Table turns
+create table if not exists ia_desk.turns(
+    id bigint generated always as identity primary key,
+    uuid uuid not null default gen_random_uuid(),
+
+    created_at timestamp not null default now(),
+    created_by_id bigint not null,
+
+    updated_at timestamp not null default now(),
+    updated_by_id bigint not null,
+
+    deleted_at timestamp null,
+    deleted_by_id bigint null,
+    
+    technician_id bigint not null,
+
+    type varchar(64) not null,
+    start_date timestamp not null,
+    end_date timestamp not null,
+    
+    constraint uk_ia_desk_turns_uuid unique (uuid),
+    
+    constraint uk_ia_desk_turns_technician_id foreign key (technician_id)
+      references ia_desk.technicians(id) on delete restrict,
+    
+    constraint uk_ia_desk_turns_created_by_id foreign key (created_by_id)
+      references auth.users(id) on delete restrict,
+    
+    constraint uk_ia_desk_turns_updated_by_id foreign key (updated_by_id)
+      references auth.users(id) on delete restrict,
+    
+    constraint uk_ia_desk_turns_deleted_by_id foreign key (deleted_by_id)
+      references auth.users(id) on delete restrict
+);

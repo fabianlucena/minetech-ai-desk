@@ -1,11 +1,12 @@
 import getDependency from '../dependency.js';
 import { TurnDTO } from '../dto/turn.dto.js';
-import { TechnicianMinDTO } from '../dto/technicians.dto.js';
+import { TechnicianMinDTO } from '../dto/technician.dto.js';
 import { turnTypes } from '../categories/turn_types.js';
 
 export async function getList(req, res) {
   const turnService = getDependency('turnService');
   const turns = await turnService.getList({
+    includeTechnician: true,
     includeDeleted: !!req.query.includeDeleted,
     session: req.session,
   });
@@ -15,6 +16,7 @@ export async function getList(req, res) {
 export async function getByUuid(req, res) {
   const turnService = getDependency('turnService');
   const turn = await turnService.getByUuid(req.params.uuid, {
+    includeTechnician: true,
     session: req.session,
   });
   res.json(new TurnDTO(turn));

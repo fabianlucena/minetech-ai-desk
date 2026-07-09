@@ -24,8 +24,8 @@ export default class TurnService extends ModelService {
     if (!data.technicianId) {
       if (data.technicianUuid) {
         const technicianService = getDependency('technicianService');
-        const technicianId = await technicianService.getIdByUuid(data.technicianUuid, { session: options?.session });
-        if (!technicianId)
+        data.technicianId = await technicianService.getIdByUuid(data.technicianUuid, { session: options?.session });
+        if (!data.technicianId)
           throw new Error('Técnico no encontrado');
       } else
         throw new Error('El técnico es obligatorio');

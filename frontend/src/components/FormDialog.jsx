@@ -15,8 +15,13 @@ export default function FormDialog({
   >
     <Form
       title={title}
-      onCancel={() => {
-        onCancel?.();
+      onCancel={(...args) => {
+        onCancel?.(...args);
+        setOpen(false);
+      }}
+      onSubmit={(e, ...args) => {
+        e.preventDefault();
+        onSubmit?.(e, ...args);
         setOpen(false);
       }}
       {...props}

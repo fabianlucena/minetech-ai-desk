@@ -89,8 +89,6 @@ export default function TurnDialog({
         await createTurn(data);
         addInfo('Turno creado correctamente');
       }
-
-      navigate(-1);
     } catch (error) {
       if (uuid) {
         console.error('Error al actualizar turno:', error);

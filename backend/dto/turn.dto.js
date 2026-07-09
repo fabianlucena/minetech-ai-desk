@@ -1,3 +1,5 @@
+import { TechnicianMinDTO } from './technician.dto.js';
+
 export class TurnMinDTO {
   constructor(turn) {
     this.uuid = turn.uuid;
