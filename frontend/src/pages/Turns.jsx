@@ -29,7 +29,6 @@ export default function Turns() {
       uuid={turnDialogUuid}
       startDate={turnDialogStartDate}
       open={openTurnDialog}
-      setOpen={setOpenTurnDialog}
       onClose={() => setOpenTurnDialog(false)}
     />
 

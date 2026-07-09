@@ -5,24 +5,25 @@ export default function FormDialog({
   title = '',
   children,
   open,
-  setOpen = () => {},
   onCancel,
+  onSubmit,
+  onClose,
   ...props
 }) {
   return <Dialog
     open={open}
-    onClose={() => setOpen(false)}
+    onClose={() => onClose?.(false)}
   >
     <Form
       title={title}
       onCancel={(...args) => {
         onCancel?.(...args);
-        setOpen(false);
+        onClose?.();
       }}
       onSubmit={(e, ...args) => {
         e.preventDefault();
         onSubmit?.(e, ...args);
-        setOpen(false);
+        onClose?.();
       }}
       {...props}
     >
