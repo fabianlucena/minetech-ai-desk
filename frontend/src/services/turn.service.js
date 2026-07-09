@@ -1,7 +1,13 @@
 import Api from '../utils/api.js';
 
 export async function getTurns(params) {
-  return await Api.getJson('turns', params);
+  let turns = await Api.getJson('turns', params);
+  turns = turns.map(turn => ({
+    ...turn,
+    startDate: new Date(turn.startDate),
+    endDate: new Date(turn.endDate),
+  }));
+  return turns;
 }
 
 export async function getTurn(uuid, params) {

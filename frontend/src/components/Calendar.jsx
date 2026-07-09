@@ -5,9 +5,12 @@ import Month from './Month';
 export default function Calendar({
   title,
   description,
+  events,
   tools,
   onReload,
   onCreate,
+  onFirstDate,
+  onLastDate,
 }) {
   return <Box
     sx={{
@@ -42,7 +45,10 @@ export default function Calendar({
     </Box>}
 
     <Month
+      events={events}
       onCreate={onCreate}
+      onFirstDate={onFirstDate}
+      onLastDate={onLastDate}
     />
   </Box>
 }

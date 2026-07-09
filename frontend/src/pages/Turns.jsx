@@ -5,18 +5,26 @@ import { getTurns } from '../services/turn.service.js';
 
 export default function Turns() {
   const [turns, setTurns] = useState([]);
+  const [firstDate, setFirstDate] = useState(null);
+  const [lastDate, setLastDate] = useState(null);
   const [openTurnDialog, setOpenTurnDialog] = useState(false);
   const [turnDialogUuid, setTurnDialogUuid] = useState(null);
   const [turnDialogStartDate, setTurnDialogStartDate] = useState(null);
 
   async function load() {
-    const turns = await getTurns();
+    if (!firstDate || !lastDate)
+      return;
+
+    const turns = await getTurns({ query: {
+      from: firstDate.toISOString(), 
+      to: lastDate.toISOString()
+    }});
     setTurns(turns);
   }
 
   useEffect(() => {
     load();
-  }, []);
+  }, [firstDate, lastDate]);
 
   function createTurnHandler({date}) {
     setTurnDialogUuid(null);
@@ -35,8 +43,11 @@ export default function Turns() {
 
     <Calendar
       title="Turnos"
+      events={turns}
       onReload={() => load()}
       onCreate={createTurnHandler}
+      onFirstDate={setFirstDate}
+      onLastDate={setLastDate}
     />
   </>;
 }

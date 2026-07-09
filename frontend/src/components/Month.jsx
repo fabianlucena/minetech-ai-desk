@@ -4,40 +4,72 @@ import { ReloadButton, CreateButton, PriorButton, NextButton } from './buttons';
 import SelectField from './fields/SelectField';
 import TextField from './fields/TextField';
 
+function addEventsToDatesInfo(datesInfo, events) {
+  for (const dateInfo of datesInfo) {
+    const date = dateInfo.date;
+    dateInfo.events = events.filter(event => {
+      const eventStartDate = new Date(event.startDate);
+      if (eventStartDate.toDateString() === date.toDateString())
+        return true;
+      
+      const eventEndDate = new Date(event.endDate);
+      if (eventEndDate.toDateString() === date.toDateString())
+        return true;
+
+      if (eventStartDate.toDateString() < date.toDateString() && eventEndDate.toDateString() > date.toDateString())
+        return true;
+    });
+  };
+}
+
 export default function Month({
   title,
   description,
   tools,
   onReload,
   onCreate,
+  events = [],
   date = new Date(),
+  onFirstDate,
+  onLastDate,
 }) {
   const weekDayNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
   const monthNames = [
     'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
     'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
   ];
-  const [dates, setDates] = useState([]);
+  const [datesInfo, setDatesInfo] = useState([]);
   const [effectiveDate, setEffectiveDate] = useState(date);
 
   useEffect(() => {
     const from = new Date(effectiveDate.getFullYear(), effectiveDate.getMonth(), -effectiveDate.getDay());
     const nextDate = new Date(from);
-    const dates = [];
+    const datesInfo = [];
     const currentMonth = effectiveDate.getMonth();
     const todayString = new Date().toDateString();
 
     for (let i = 0; i < 42; i++) {
       nextDate.setDate(nextDate.getDate() + 1);
-      dates[i] = {
+      datesInfo[i] = {
         date: new Date(nextDate),
         isCurrentMonth: nextDate.getMonth() === currentMonth,
         isToday: nextDate.toDateString() === todayString,
       };
     }
 
-    setDates(dates);
+    addEventsToDatesInfo(datesInfo, events);
+    setDatesInfo(datesInfo);
+    onFirstDate?.(datesInfo[0].date);
+    onLastDate?.(datesInfo[datesInfo.length - 1].date);
   }, [effectiveDate]);
+
+  useEffect(() => {
+    if (datesInfo.length === 0)
+      return;
+      
+    addEventsToDatesInfo(datesInfo, events);
+    setDatesInfo([...datesInfo]);
+  }, [events]);
 
   function getMonthName(monthIndex) {
     return monthNames[monthIndex];
@@ -137,7 +169,7 @@ export default function Month({
           </Typography>
         </Box>
       ))}
-      {dates.map((dateInfo) => (
+      {datesInfo.map((dateInfo) => (
         <Box
           key={dateInfo.date.toISOString()}
           sx={{
@@ -195,9 +227,29 @@ export default function Month({
             sx={{
               flex: 1,
               display: 'flex',
+              flexDirection: 'column',
+              overflow: 'auto',
               width: '100%',
             }}
           >
+            {dateInfo.events?.map((event, index) => (
+              <Box
+                key={index}
+                sx={{
+                  backgroundColor: '#e0e0e0',
+                  margin: 0.5,
+                  padding: 0.5,
+                  borderRadius: 4,
+                }}
+              >
+                <Typography variant="body2">
+                  {event.technician.fullName}: 
+                  {event.startDate.getHours?.().toString().padStart(2, '0')}:{event.startDate.getMinutes?.().toString().padStart(2, '0')}
+                  -
+                  {event.endDate.getHours?.().toString().padStart(2, '0')}:{event.endDate.getMinutes?.().toString().padStart(2, '0')}
+                </Typography>
+              </Box>
+            ))}
           </Box>
         </Box>
       ))}
