@@ -1,5 +1,6 @@
 import { getDependency } from '../dependency.js';
 import ModelService from './model.service.js';
+import { Op } from 'sequelize';
 
 export default class TurnService extends ModelService {
   constructor() {
@@ -15,6 +16,12 @@ export default class TurnService extends ModelService {
         as: 'technician'
       }),
       delete options.includeTechnician;
+    }
+
+    if (options.from && options.to) {
+      options.where = options.where || {};
+      options.where.startDate = { [Op.lt]: options.to };
+      options.where.endDate = { [Op.gt]: options.from };
     }
 
     return options;

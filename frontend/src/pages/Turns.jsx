@@ -16,8 +16,8 @@ export default function Turns() {
       return;
 
     const turns = await getTurns({ query: {
-      from: firstDate.toISOString(), 
-      to: lastDate.toISOString()
+      fromDay: firstDate.toISOString().split('T')[0], 
+      toDay: lastDate.toISOString().split('T')[0]
     }});
     setTurns(turns);
   }

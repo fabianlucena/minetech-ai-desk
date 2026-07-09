@@ -5,11 +5,19 @@ import { turnTypes } from '../categories/turn_types.js';
 
 export async function getList(req, res) {
   const turnService = getDependency('turnService');
-  const turns = await turnService.getList({
+  const options = {
     includeTechnician: true,
     includeDeleted: !!req.query.includeDeleted,
     session: req.session,
-  });
+  };
+  if (req.query.fromDay && req.query.toDay) {
+    const to = new Date(req.query.toDay);
+    to.setDate(to.getDate() + 1);
+    options.from = new Date(req.query.fromDay);
+    options.to = to;
+  }
+  
+  const turns = await turnService.getList(options);
   res.json(turns.map(u => new TurnDTO(u)));
 }
 
