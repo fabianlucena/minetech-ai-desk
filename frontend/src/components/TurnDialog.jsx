@@ -4,17 +4,43 @@ import SelectField from './fields/SelectField';
 import TextField from './fields/TextField';
 import DateTimeField from './fields/DateTimeField';
 import SliderField from './fields/SliderField';
-import { getTechnicians, getTypes } from '../services/turn.service.js';
 import { diffHours, addHours } from '../utils/time.js';
+import { getTechnicians, getTypes, getTurn } from '../services/turn.service.js';
+
+const defaultData = {
+  technicianUuid: '',
+  type: 'primary',
+  startDate: '',
+  endDate: '',
+};
 
 export default function TurnDialog({
-  title = 'Turno',
-  data = {},
-  setData = () => {},
+  uuid = null,
+  startDate = null,
   ...rest
 }) {
   const [technicians, setTechnicians] = useState([]);
   const [turnTypes, setTurnTypes] = useState([]);
+  const [data, setData] = useState({ ...defaultData,  });
+
+  useEffect(() => {
+    if (uuid) {
+      loadTurn();
+    } else {
+      setData({
+        ...defaultData,
+        startDate,
+        endDate: addHours(startDate, 8),
+      });
+    }
+  }, [uuid, startDate]);
+
+  async function loadTurn() {
+    if (uuid) {
+      const turnData = await getTurn(uuid);
+      setData(turnData);
+    }
+  }
 
   async function loadTechnicians() {
     const techniciansData = await getTechnicians();
@@ -46,11 +72,8 @@ export default function TurnDialog({
   }
 
   return <FormDialog
-    title={title}
+    title={uuid ? 'Modificar Turno' : 'Crear Turno'}
     validationError={getValidationError()}
-    onCancel={() => {
-      setData({});
-    }}
     {...rest}
   >
     <SelectField 

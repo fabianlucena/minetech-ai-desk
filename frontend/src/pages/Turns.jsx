@@ -1,45 +1,41 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Calendar from '../components/Calendar';
 import TurnDialog from '../components/TurnDialog';
-import { addHours } from '../utils/time.js';
-
-const defaultTurnData = {
-  technicianUuid: '',
-  type: 'primary',
-  startDate: '',
-  endDate: '',
-};
+import { getTurns } from '../services/turn.service.js';
 
 export default function Turns() {
-  const [open, setOpen] = useState(false);
-  const [turnDialogTitle, setTurnDialogTitle] = useState('Turno');
-  const [turnData, setTurnData] = useState({});
+  const [turns, setTurns] = useState([]);
+  const [openTurnDialog, setOpenTurnDialog] = useState(false);
+  const [turnDialogUuid, setTurnDialogUuid] = useState(null);
+  const [turnDialogStartDate, setTurnDialogStartDate] = useState(null);
+
+  async function load() {
+    const turns = await getTurns();
+    setTurns(turns);
+  }
+
+  useEffect(() => {
+    load();
+  }, []);
 
   function createTurnHandler({date}) {
-    setTurnDialogTitle('Crear Turno');
-    setOpen(true);
-    setTurnData({
-      ...defaultTurnData,
-      startDate: date,
-      endDate: addHours(date, 8),
-    });
+    setTurnDialogUuid(null);
+    setTurnDialogStartDate(date);
+    setOpenTurnDialog(true);
   }
 
   return <>
     <TurnDialog
-      open={open}
-      setOpen={setOpen}
-      title={turnDialogTitle}
-      onClose={() => setOpen(false)}
-      data={turnData}
-      setData={setTurnData}
+      uuid={turnDialogUuid}
+      startDate={turnDialogStartDate}
+      open={openTurnDialog}
+      setOpen={setOpenTurnDialog}
+      onClose={() => setOpenTurnDialog(false)}
     />
 
     <Calendar
       title="Turnos"
-      onReload={() => {
-        console.log('Reloading turns...');
-      }}
+      onReload={() => load()}
       onCreate={createTurnHandler}
     />
   </>;
