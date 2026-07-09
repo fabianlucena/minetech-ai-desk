@@ -1,6 +1,14 @@
 import { useState } from 'react';
 import Calendar from '../components/Calendar';
 import TurnDialog from '../components/TurnDialog';
+import { addHours } from '../utils/time.js';
+
+const defaultTurnData = {
+  technicianUuid: '',
+  type: 'primary',
+  startDate: '',
+  endDate: '',
+};
 
 export default function Turns() {
   const [open, setOpen] = useState(false);
@@ -11,8 +19,9 @@ export default function Turns() {
     setTurnDialogTitle('Crear Turno');
     setOpen(true);
     setTurnData({
+      ...defaultTurnData,
       startDate: date,
-      endDate: (new Date()).setTime(date.getTime() + 28800000), // 8 hours later
+      endDate: addHours(date, 8),
     });
   }
 
@@ -22,8 +31,8 @@ export default function Turns() {
       setOpen={setOpen}
       title={turnDialogTitle}
       onClose={() => setOpen(false)}
-      turnData={turnData}
-      setTurnData={setTurnData}
+      data={turnData}
+      setData={setTurnData}
     />
 
     <Calendar

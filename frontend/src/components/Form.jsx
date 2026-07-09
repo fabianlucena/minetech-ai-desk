@@ -78,7 +78,7 @@ export default function Form({
       {validationError || (unchangedData ? "No se han realizado cambios" : "Listo para enviar")}
     </Typography>
 
-    <form onSubmit={(e) => { e.preventDefault(); onSubmit(e); }}>
+    <form onSubmit={(e) => { e.preventDefault(); onSubmit?.(e); }}>
       <Stack spacing={2}>
         {children}
       </Stack>

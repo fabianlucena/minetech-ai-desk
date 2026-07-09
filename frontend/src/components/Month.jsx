@@ -84,45 +84,26 @@ export default function Month({
       />
 
       <SelectField
+        variant="standard"
         options={monthNames.map((name, index) => ({ value: index, label: name }))}
         value={effectiveDate.getMonth()}
         onChange={(event) => setEffectiveDate(new Date(effectiveDate.getFullYear(), event.target.value, 1))}
-        sx={{
-          '& .MuiOutlinedInput-notchedOutline': {
-            border: 'none',
-          },
-          '& .MuiSelect-select': {
-            padding: '4px 8px',
-          }
-        }}
+        sx={{ width: 120 }}
       />
       
       <TextField
+        variant="standard"
         value={effectiveDate.getFullYear()}
         onChange={(event) => setEffectiveDate(new Date(event.target.value, effectiveDate.getMonth(), 1))}
         type="number"
-        inputProps={{ min: 1900, max: 2100 }}
-        sx={{
-          '& .MuiOutlinedInput-notchedOutline': {
-            border: 'none',
-          },
-          '& .MuiSelect-select': {
-            padding: '4px 8px',
-          }
-        }}
+        sx={{ width: 80 }}
       />
 
       <Button
-        variant="text"
+        variant="contained"
         onClick={() => setEffectiveDate(new Date())}
-        sx={{
-          textTransform: 'none',
-          padding: '4px 8px',
-          marginLeft: 1,
-          marginRight: 1,
-        }}
       >
-        Hoy
+        Ir a Hoy
       </Button>
 
       <NextButton
@@ -173,21 +154,31 @@ export default function Month({
               display: 'flex',
               flexDirection: 'row',
               alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
-            <Typography
-              variant="body2"
+            <Box
               sx={{
-                fontWeight: dateInfo.isToday ? 600 : 400,
-                padding: '0 6px',
-                backgroundColor: dateInfo.isToday ? '#1976d2' : 'transparent',
-                color: dateInfo.isToday ? '#fff' : dateInfo.isCurrentMonth ? 'inherit' : '#808080',
-                borderRadius: '50%',
+                flex: 1,
+                display: 'flex',
+                justifyContent: 'center',
                 alignItems: 'center',
               }}
             >
-              {dateInfo.date.getDate()}
-            </Typography>
+              <Typography
+                variant="body2"
+                sx={{
+                  fontWeight: dateInfo.isToday ? 600 : 400,
+                  padding: '0 6px',
+                  backgroundColor: dateInfo.isToday ? '#1976d2' : 'transparent',
+                  color: dateInfo.isToday ? '#fff' : dateInfo.isCurrentMonth ? 'inherit' : '#808080',
+                  borderRadius: '50%',
+                  margin: 'auto',
+                }}
+              >
+                {dateInfo.date.getDate()}
+              </Typography>
+            </Box>
             {onCreate && (
               <CreateButton
                 sx={{

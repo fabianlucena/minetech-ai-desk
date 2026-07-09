@@ -1,4 +1,5 @@
-import { Select, MenuItem, Checkbox } from '@mui/material';
+import { Box, MenuItem, Checkbox } from '@mui/material';
+import TextField from './TextField';
 
 export default function SelectField({
   label,
@@ -13,12 +14,12 @@ export default function SelectField({
     ? (selected) => options.filter((option) => selected.includes(option.value)).map((option) => option.label).join(', ')
     : (selected) => options.find((option) => option.value === selected)?.label ?? selected;
 
-  return <Select
+  return <TextField
+    select
     label={label}
     multiple={multiple}
     value={value}
     onChange={onChange}
-    renderValue={renderValue || defaultRenderValue}
     {...props}
   >
     {options.map((option) => (
@@ -26,5 +27,5 @@ export default function SelectField({
         {option.label}
       </MenuItem>
     ))}
-  </Select>;
+  </TextField>;
 }
