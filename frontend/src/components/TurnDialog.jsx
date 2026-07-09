@@ -4,8 +4,9 @@ import SelectField from './fields/SelectField';
 import TextField from './fields/TextField';
 import DateTimeField from './fields/DateTimeField';
 import SliderField from './fields/SliderField';
+import { useToast } from '../state/toast.jsx';
 import { diffHours, addHours } from '../utils/time.js';
-import { getTechnicians, getTypes, getTurn } from '../services/turn.service.js';
+import { getTechnicians, getTypes, getTurn, createTurn } from '../services/turn.service.js';
 
 const defaultData = {
   technicianUuid: '',
@@ -21,24 +22,31 @@ export default function TurnDialog({
 }) {
   const [technicians, setTechnicians] = useState([]);
   const [turnTypes, setTurnTypes] = useState([]);
-  const [data, setData] = useState({ ...defaultData,  });
+  const [disabled, setDisabled] = useState(false);
+  const [data, setData] = useState({});
+  const [unchangedData, setUnchangedData] = useState({...defaultData});
+  const { addInfo, addError } = useToast();
 
   useEffect(() => {
     if (uuid) {
       loadTurn();
     } else {
-      setData({
+      const data = {
         ...defaultData,
         startDate,
         endDate: addHours(startDate, 8),
-      });
+      };
+
+      setData(data);
+      setUnchangedData(data);
     }
   }, [uuid, startDate]);
 
   async function loadTurn() {
     if (uuid) {
-      const turnData = await getTurn(uuid);
-      setData(turnData);
+      const data = await getTurn(uuid);
+      setData({...data});
+      setUnchangedData({...data});
     }
   }
 
@@ -71,9 +79,36 @@ export default function TurnDialog({
       return 'Debe seleccionar una fecha de finalización';
   }
 
+  async function onSubmitHandler() {
+    setDisabled(true);
+    try {
+      if (uuid) {
+        await updateTurn(uuid, data);
+        addInfo('Turno actualizado correctamente');
+      } else {
+        await createTurn(data);
+        addInfo('Turno creado correctamente');
+      }
+
+      navigate(-1);
+    } catch (error) {
+      if (uuid) {
+        console.error('Error al actualizar turno:', error);
+        addError('Error al actualizar turno');
+      } else {
+        console.error('Error al crear turno:', error);
+        addError('Error al crear turno');
+      }
+    }
+    setDisabled(false);
+  }
+
   return <FormDialog
     title={uuid ? 'Modificar Turno' : 'Crear Turno'}
+    disabled={disabled}
     validationError={getValidationError()}
+    unchangedData={JSON.stringify(data) === JSON.stringify(unchangedData)}
+    onSubmit={onSubmitHandler}
     {...rest}
   >
     <SelectField 
