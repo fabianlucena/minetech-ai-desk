@@ -1,5 +1,6 @@
-import MUIBusinessCenterIcon from '@mui/icons-material/RecordVoiceOverTwoTone';
+import MUIContactSupportIcon from '@mui/icons-material/ContactSupportTwoTone';
+//import MUIRecordVoiceOverIcon from '@mui/icons-material/RecordVoiceOverTwoTone';
   
 export default function RequesterIcon(props) {
-  return <MUIBusinessCenterIcon {...{title: 'Solicitante', ...props}} />;
+  return <MUIContactSupportIcon {...{title: 'Solicitante', ...props}} />;
 }

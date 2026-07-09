@@ -47,7 +47,8 @@ export default function Menu() {
     sx={{
       display: menuOpen ? 'flex' : 'none',
       flexDirection: 'column',
-      bgcolor: '#666666'
+      bgcolor: '#666666',
+      overflow: 'auto',
     }}
   >
     <List
