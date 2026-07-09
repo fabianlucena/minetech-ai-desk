@@ -18,6 +18,7 @@ const defaultData = {
 export default function TurnDialog({
   uuid = null,
   startDate = null,
+  onSubmit,
   ...rest
 }) {
   const [technicians, setTechnicians] = useState([]);
@@ -99,6 +100,8 @@ export default function TurnDialog({
       }
     }
     setDisabled(false);
+
+    onSubmit?.();
   }
 
   return <FormDialog

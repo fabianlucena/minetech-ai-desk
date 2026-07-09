@@ -30,6 +30,7 @@ export default function Turns() {
       startDate={turnDialogStartDate}
       open={openTurnDialog}
       onClose={() => setOpenTurnDialog(false)}
+      onSubmit={() => load()}
     />
 
     <Calendar
