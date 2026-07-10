@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import { Box, Typography } from '@mui/material';
 import { ReloadButton, CreateButton, MonthButton, WeekButton } from './buttons';
 import Month from './Month';
+import Week from './Week';
 
 export default function Calendar({
   title,
@@ -16,6 +18,8 @@ export default function Calendar({
   onLastDate,
   deleteConfirmationMessage,
 }) {
+  const [type, setType] = useState('month');
+
   return <Box
     sx={{
       height: '100%',
@@ -43,12 +47,12 @@ export default function Calendar({
         {tools}
         {onCreate && <CreateButton onClick={onCreate} />}
         {onReload && <ReloadButton onClick={onReload} />}
-        <MonthButton />
-        <WeekButton />
+        <MonthButton selected={type === 'month'} onClick={() => setType('month')} />
+        <WeekButton selected={type === 'week'} onClick={() => setType('week')} />
       </Box>}
     </Box>}
 
-    <Month
+    {type === 'month' && <Month
       events={events}
       onCreate={onCreate}
       onDelete={onDelete}
@@ -57,6 +61,17 @@ export default function Calendar({
       onFirstDate={onFirstDate}
       onLastDate={onLastDate}
       deleteConfirmationMessage={deleteConfirmationMessage}
-    />
+    />}
+
+    {type === 'week' && <Week
+      events={events}
+      onCreate={onCreate}
+      onDelete={onDelete}
+      onEdit={onEdit}
+      onRestore={onRestore}
+      onFirstDate={onFirstDate}
+      onLastDate={onLastDate}
+      deleteConfirmationMessage={deleteConfirmationMessage}
+    />}
   </Box>
 }
