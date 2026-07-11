@@ -36,9 +36,9 @@ export default (sequelize) => {
       as: 'deletedBy',
     });
 
-    Technician.hasMany(models.Turn, {
+    Technician.hasMany(models.Shift, {
       foreignKey: 'technicianId',
-      as: 'turns',
+      as: 'shifts',
     });
 
     Technician.hasMany(models.Ticket, {

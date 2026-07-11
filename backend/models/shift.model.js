@@ -1,8 +1,8 @@
 import sequelize, { DataTypes } from 'sequelize';
-import { turnTypeValues } from '../categories/turn_types.js';
+import { shiftTypeValues } from '../categories/shift_types.js';
 
 export default (sequelize) => {
-  const Turn = sequelize.define('Turn', {
+  const Shift = sequelize.define('Shift', {
     id: { type: DataTypes.BIGINT, autoIncrement: true, primaryKey: true },
     uuid: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4 },
     createdAt: { field: 'created_at', type: DataTypes.DATE, defaultValue: DataTypes.NOW, allowNull: false },
@@ -12,36 +12,36 @@ export default (sequelize) => {
     deletedAt: { field: 'deleted_at', type: DataTypes.DATE, allowNull: true },
     deletedById: { field: 'deleted_by_id', type: DataTypes.BIGINT, allowNull: true },
     technicianId: { field: 'technician_id', type: DataTypes.BIGINT, allowNull: true },
-    type: { field: 'type', type: DataTypes.ENUM(...turnTypeValues), allowNull: true },
+    type: { field: 'type', type: DataTypes.ENUM(...shiftTypeValues), allowNull: true },
     startDate: { field: 'start_date', type: DataTypes.DATE, allowNull: false },
     endDate: { field: 'end_date', type: DataTypes.DATE, allowNull: false },
   }, {
-    tableName: 'turns',
+    tableName: 'shifts',
     schema: 'ia_desk',
     timestamps: false,
   });
 
-  Turn.associate = (models) => {
-    Turn.belongsTo(models.User, {
+  Shift.associate = (models) => {
+    Shift.belongsTo(models.User, {
       foreignKey: 'createdById',
       as: 'createdBy',
     });
 
-    Turn.belongsTo(models.User, {
+    Shift.belongsTo(models.User, {
       foreignKey: 'updatedById',
       as: 'updatedBy',
     });
 
-    Turn.belongsTo(models.User, {
+    Shift.belongsTo(models.User, {
       foreignKey: 'deletedById',
       as: 'deletedBy',
     });
 
-    Turn.belongsTo(models.Technician, {
+    Shift.belongsTo(models.Technician, {
       foreignKey: 'technicianId',
       as: 'technician',
     });
   };
 
-  return Turn;
+  return Shift;
 };

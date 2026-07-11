@@ -1,4 +1,4 @@
-export const turnTypes = [
+export const shiftTypes = [
   {
     value: 'primary',
     name: 'Principal',
@@ -11,4 +11,4 @@ export const turnTypes = [
   }
 ];
 
-export const turnTypeValues = turnTypes.map(t => t.value);
+export const shiftTypeValues = shiftTypes.map(s => s.value);

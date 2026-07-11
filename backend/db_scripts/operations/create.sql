@@ -416,7 +416,7 @@ insert into auth.permissions (
     ('technicians.create'),('technicians.delete'),('technicians.update'),('technicians.list'),('technicians.read'),('technicians.restore'),
     ('clients.create'),('clients.delete'),('clients.update'),('clients.list'),('clients.read'),('clients.restore'),
     ('requesters.create'),('requesters.delete'),('requesters.update'),('requesters.list'),('requesters.read'),('requesters.restore'),
-    ('turns.create'),('turns.delete'),('turns.update'),('turns.list'),('turns.read'),('turns.restore')
+    ('shifts.create'),('shifts.delete'),('shifts.update'),('shifts.list'),('shifts.read'),('shifts.restore')
   ) as p(name)
   join auth.users system on system.username = 'system'
 on conflict (name) do nothing;
@@ -542,8 +542,8 @@ create table if not exists ia_desk.requesters(
       references auth.users(id) on delete restrict
 );
 
--- Table turns
-create table if not exists ia_desk.turns(
+-- Table shifts
+create table if not exists ia_desk.shifts(
     id bigint generated always as identity primary key,
     uuid uuid not null default gen_random_uuid(),
 
@@ -562,17 +562,17 @@ create table if not exists ia_desk.turns(
     start_date timestamp not null,
     end_date timestamp not null,
     
-    constraint uk_ia_desk_turns_uuid unique (uuid),
+    constraint uk_ia_desk_shifts_uuid unique (uuid),
     
-    constraint uk_ia_desk_turns_technician_id foreign key (technician_id)
+    constraint uk_ia_desk_shifts_technician_id foreign key (technician_id)
       references ia_desk.technicians(id) on delete restrict,
     
-    constraint uk_ia_desk_turns_created_by_id foreign key (created_by_id)
+    constraint uk_ia_desk_shifts_created_by_id foreign key (created_by_id)
       references auth.users(id) on delete restrict,
     
-    constraint uk_ia_desk_turns_updated_by_id foreign key (updated_by_id)
+    constraint uk_ia_desk_shifts_updated_by_id foreign key (updated_by_id)
       references auth.users(id) on delete restrict,
     
-    constraint uk_ia_desk_turns_deleted_by_id foreign key (deleted_by_id)
+    constraint uk_ia_desk_shifts_deleted_by_id foreign key (deleted_by_id)
       references auth.users(id) on delete restrict
 );

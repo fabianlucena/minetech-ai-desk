@@ -1,19 +1,19 @@
 import { useState, useEffect } from 'react';
-import Calendar from '../components/Calendar';
-import TurnDialog from '../components/TurnDialog';
-import { getTurns, deleteTurn, restoreTurn } from '../services/turn.service.js';
+import Calendar from '../components/Calendar.jsx';
+import ShiftDialog from '../components/ShiftDialog.jsx';
+import { getShifts, deleteShift, restoreShift } from '../services/shift.service.js';
 import { hasPermission } from '../state/global.jsx';
 import { useToast } from '../state/toast.jsx';
 import SwitchField from '../components/fields/SwitchField.jsx';
 
-export default function Turns() {
-  const [turns, setTurns] = useState([]);
+export default function Shifts() {
+  const [shifts, setShifts] = useState([]);
   const [firstDate, setFirstDate] = useState(null);
   const [lastDate, setLastDate] = useState(null);
   const [includeDeleted, setIncludeDeleted] = useState(false);
-  const [openTurnDialog, setOpenTurnDialog] = useState(false);
-  const [turnDialogUuid, setTurnDialogUuid] = useState(null);
-  const [turnDialogStartDate, setTurnDialogStartDate] = useState(null);
+  const [openShiftDialog, setOpenShiftDialog] = useState(false);
+  const [shiftDialogUuid, setShiftDialogUuid] = useState(null);
+  const [shiftDialogStartDate, setShiftDialogStartDate] = useState(null);
   const { addMessage, addError } = useToast();
 
   async function load() {
@@ -28,23 +28,23 @@ export default function Turns() {
     if (includeDeleted)
       query.includeDeleted = true;
 
-    const turns = await getTurns({ query });
-    setTurns(turns);
+    const shifts = await getShifts({ query });
+    setShifts(shifts);
   }
 
   useEffect(() => {
     load();
   }, [firstDate, lastDate, includeDeleted]);
 
-  function createTurnHandler({date}) {
-    setTurnDialogUuid(null);
-    setTurnDialogStartDate(date);
-    setOpenTurnDialog(true);
+  function createShiftHandler({date}) {
+    setShiftDialogUuid(null);
+    setShiftDialogStartDate(date);
+    setOpenShiftDialog(true);
   }
 
-  async function deleteTurnHandler({ eventInfo }) {
+  async function deleteShiftHandler({ eventInfo }) {
     try {
-      await deleteTurn(eventInfo.uuid);
+      await deleteShift(eventInfo.uuid);
       addMessage('Turno eliminado correctamente');
       load();
     } catch (error) {
@@ -53,15 +53,15 @@ export default function Turns() {
     }
   }
 
-  function editTurnHandler({ eventInfo }) {
-    setTurnDialogUuid(eventInfo.uuid);
-    setTurnDialogStartDate(new Date(eventInfo.startDate));
-    setOpenTurnDialog(true);
+  function editShiftHandler({ eventInfo }) {
+    setShiftDialogUuid(eventInfo.uuid);
+    setShiftDialogStartDate(new Date(eventInfo.startDate));
+    setOpenShiftDialog(true);
   }
 
-  async function restoreTurnHandler({ eventInfo }) {
+  async function restoreShiftHandler({ eventInfo }) {
     try {
-      await restoreTurn(eventInfo.uuid);
+      await restoreShift(eventInfo.uuid);
       addMessage('Turno restaurado correctamente');
       load();
     } catch (error) {
@@ -71,27 +71,27 @@ export default function Turns() {
   }
 
   return <>
-    <TurnDialog
-      uuid={turnDialogUuid}
-      startDate={turnDialogStartDate}
-      open={openTurnDialog}
-      onClose={() => setOpenTurnDialog(false)}
+    <ShiftDialog
+      uuid={shiftDialogUuid}
+      startDate={shiftDialogStartDate}
+      open={openShiftDialog}
+      onClose={() => setOpenShiftDialog(false)}
       onSubmit={() => load()}
     />
 
     <Calendar
       title="Turnos"
-      events={turns}
+      events={shifts}
       onReload={() => load()}
-      onCreate={hasPermission('turns.create') && createTurnHandler}
-      onDelete={hasPermission('turns.delete') && deleteTurnHandler}
-      onEdit={hasPermission('turns.update') && editTurnHandler}
-      onRestore={hasPermission('turns.restore') && restoreTurnHandler}
+      onCreate={hasPermission('shifts.create') && createShiftHandler}
+      onDelete={hasPermission('shifts.delete') && deleteShiftHandler}
+      onEdit={hasPermission('shifts.update') && editShiftHandler}
+      onRestore={hasPermission('shifts.restore') && restoreShiftHandler}
       onFirstDate={setFirstDate}
       onLastDate={setLastDate}
       deleteConfirmationMessage="¿Está seguro de que desea eliminar este turno?"
       tools={<>
-        {hasPermission('turns.restore') && 
+        {hasPermission('shifts.restore') && 
           <SwitchField
             label="Incluir eliminados"
             checked={includeDeleted}

@@ -14,7 +14,7 @@ export default (sequelize) => {
     clientId: { field: 'client_id', type: DataTypes.BIGINT, allowNull: false },
     requesterId: { field: 'requester_id', type: DataTypes.BIGINT, allowNull: false },
     technicianId: { field: 'technician_id', type: DataTypes.BIGINT, allowNull: true },
-    turnId: { field: 'turn_id', type: DataTypes.BIGINT, allowNull: true },
+    shiftId: { field: 'shift_id', type: DataTypes.BIGINT, allowNull: true },
     status: { field: 'status', type: DataTypes.ENUM(...ticketStatusValues), allowNull: false },
     parentTicketId: { field: 'parent_ticket_id', type: DataTypes.BIGINT, allowNull: true },
     resolvedAt: { field: 'resolved_at', type: DataTypes.DATE, allowNull: true },
@@ -55,9 +55,9 @@ export default (sequelize) => {
       as: 'technician',
     });
 
-    Ticket.belongsTo(models.Turn, {
-      foreignKey: 'turnId',
-      as: 'turn',
+    Ticket.belongsTo(models.Shift, {
+      foreignKey: 'shiftId',
+      as: 'shift',
     });
 
     Ticket.belongsTo(models.Ticket, {

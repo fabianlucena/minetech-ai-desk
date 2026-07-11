@@ -1,10 +1,10 @@
 import getDependency from '../dependency.js';
-import { TurnDTO } from '../dto/turn.dto.js';
+import { ShiftDTO } from '../dto/shift.dto.js';
 import { TechnicianMinDTO } from '../dto/technician.dto.js';
-import { turnTypes } from '../categories/turn_types.js';
+import { shiftTypes } from '../categories/shift_types.js';
 
 export async function getList(req, res) {
-  const turnService = getDependency('turnService');
+  const shiftService = getDependency('shiftService');
   const options = {
     includeTechnician: true,
     includeDeleted: !!req.query.includeDeleted,
@@ -17,17 +17,17 @@ export async function getList(req, res) {
     options.to = to;
   }
   
-  const turns = await turnService.getList(options);
-  res.json(turns.map(u => new TurnDTO(u)));
+  const shifts = await shiftService.getList(options);
+  res.json(shifts.map(s => new ShiftDTO(s)));
 }
 
 export async function getByUuid(req, res) {
-  const turnService = getDependency('turnService');
-  const turn = await turnService.getByUuid(req.params.uuid, {
+  const shiftService = getDependency('shiftService');
+  const shift = await shiftService.getByUuid(req.params.uuid, {
     includeTechnician: true,
     session: req.session,
   });
-  res.json(new TurnDTO(turn));
+  res.json(new ShiftDTO(shift));
 }
 
 export async function getTechnicians(req, res) {
@@ -39,31 +39,31 @@ export async function getTechnicians(req, res) {
 }
 
 export async function getTypes(req, res) {
-  res.json(turnTypes);
+  res.json(shiftTypes);
 }
 
 export async function create(req, res) {
-  const turnService = getDependency('turnService');
-  const turn = await turnService.create(
+  const shiftService = getDependency('shiftService');
+  const shift = await shiftService.create(
     req.body,
     { session: req.session }
   );
-  res.json(new TurnDTO(turn));
+  res.json(new ShiftDTO(shift));
 }
 
 export async function updateByUuid(req, res) {
-  const turnService = getDependency('turnService');
-  const turn = await turnService.updateByUuid(
+  const shiftService = getDependency('shiftService');
+  const shift = await shiftService.updateByUuid(
     req.params.uuid,
     req.body,
     { session: req.session }
   );
-  res.json(new TurnDTO(turn));
+  res.json(new ShiftDTO(shift));
 }
 
 export async function deleteByUuid(req, res) {
-  const turnService = getDependency('turnService');
-  await turnService.deleteByUuid(
+  const shiftService = getDependency('shiftService');
+  await shiftService.deleteByUuid(
     req.params.uuid,
     { session: req.session }
   );
@@ -71,8 +71,8 @@ export async function deleteByUuid(req, res) {
 }
 
 export async function restoreByUuid(req, res) {
-  const turnService = getDependency('turnService');
-  await turnService.restoreByUuid(
+  const shiftService = getDependency('shiftService');
+  await shiftService.restoreByUuid(
     req.params.uuid,
     { session: req.session }
   );

@@ -2,9 +2,9 @@ import { getDependency } from '../dependency.js';
 import ModelService from './model.service.js';
 import { Op } from 'sequelize';
 
-export default class TurnService extends ModelService {
+export default class ShiftService extends ModelService {
   constructor() {
-    super({ model: getDependency('turnModel') });
+    super({ model: getDependency('shiftModel') });
   }
 
   getModelOptions(options) {
@@ -47,23 +47,23 @@ export default class TurnService extends ModelService {
     if (!data.endDate)
       throw new Error('La fecha y hora de finalización de turno es obligatoria');
 
-    const turn = await super.create(data, options);
+    const shift = await super.create(data, options);
 
     const globalOptions = { session: options?.session };
 
-    return await this.getById(turn.id, { includeTechnician: true });
+    return await this.getById(shift.id, { includeTechnician: true });
   }
 
   async updateByUuid(uuid, data, options) {
     if (!uuid)
       throw new Error('El UUID de turno es obligatorio');
 
-    const turn = await this.getByUuid(uuid);
-    if (!turn)
+    const shift = await this.getByUuid(uuid);
+    if (!shift)
       throw new Error('Turno no encontrado');
 
     const globalOptions = { session: options?.session };
-    const result = await this.updateById(turn.id, data, globalOptions);
+    const result = await this.updateById(shift.id, data, globalOptions);
 
     return result;
   }

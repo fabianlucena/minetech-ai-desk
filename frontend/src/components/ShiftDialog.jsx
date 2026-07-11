@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
-import FormDialog from './FormDialog';
-import SelectField from './fields/SelectField';
-import TextField from './fields/TextField';
-import DateTimeField from './fields/DateTimeField';
-import SliderField from './fields/SliderField';
+import FormDialog from './FormDialog.jsx';
+import SelectField from './fields/SelectField.jsx';
+import TextField from './fields/TextField.jsx';
+import DateTimeField from './fields/DateTimeField.jsx';
+import SliderField from './fields/SliderField.jsx';
 import { useToast } from '../state/toast.jsx';
 import { diffHours, addHours } from '../utils/time.js';
-import { getTechnicians, getTypes, getTurn, createTurn, updateTurn } from '../services/turn.service.js';
+import { getTechnicians, getTypes, getShift, createShift, updateShift } from '../services/shift.service.js';
 
 const defaultData = {
   technicianUuid: '',
@@ -15,14 +15,14 @@ const defaultData = {
   endDate: '',
 };
 
-export default function TurnDialog({
+export default function ShiftDialog({
   uuid = null,
   startDate = null,
   onSubmit,
   ...rest
 }) {
   const [technicians, setTechnicians] = useState([]);
-  const [turnTypes, setTurnTypes] = useState([]);
+  const [shiftTypes, setShiftTypes] = useState([]);
   const [disabled, setDisabled] = useState(false);
   const [data, setData] = useState({});
   const [unchangedData, setUnchangedData] = useState({...defaultData});
@@ -30,7 +30,7 @@ export default function TurnDialog({
 
   useEffect(() => {
     if (uuid) {
-      loadTurn();
+      loadShift();
     } else {
       const data = {
         ...defaultData,
@@ -43,9 +43,9 @@ export default function TurnDialog({
     }
   }, [uuid, startDate]);
 
-  async function loadTurn() {
+  async function loadShift() {
     if (uuid) {
-      const data = await getTurn(uuid);
+      const data = await getShift(uuid);
       data.technicianUuid ??= data.technician?.uuid;
       
       setData({...data});
@@ -58,14 +58,14 @@ export default function TurnDialog({
     setTechnicians(techniciansData);
   }
 
-  async function loadTurnTypes() {
-    const turnTypesData = await getTypes();
-    setTurnTypes(turnTypesData);
+  async function loadShiftTypes() {
+    const shiftTypesData = await getTypes();
+    setShiftTypes(shiftTypesData);
   }
 
   useEffect(() => {
     loadTechnicians();
-    loadTurnTypes();
+    loadShiftTypes();
   }, []);
 
   function getValidationError() {
@@ -86,10 +86,10 @@ export default function TurnDialog({
     setDisabled(true);
     try {
       if (uuid) {
-        await updateTurn(uuid, data);
+        await updateShift(uuid, data);
         addInfo('Turno actualizado correctamente');
       } else {
-        await createTurn(data);
+        await createShift(data);
         addInfo('Turno creado correctamente');
       }
     } catch (error) {
@@ -125,7 +125,7 @@ export default function TurnDialog({
       label="Tipo"
       value={data.type || ''}
       onChange={(e) => setData({ ...data, type: e.target.value })}
-      options={turnTypes.map(t => ({ value: t.value, label: t.name }))}
+      options={shiftTypes.map(t => ({ value: t.value, label: t.name }))}
     />
 
     <DateTimeField
