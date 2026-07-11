@@ -53,7 +53,8 @@ export default function Month({
   });
 
   useEffect(() => {
-    const from = new Date(effectiveDate.getFullYear(), effectiveDate.getMonth(), -effectiveDate.getDay());
+    const firstDayOfMonth = new Date(effectiveDate.getFullYear(), effectiveDate.getMonth(), 1);
+    const from = new Date(effectiveDate.getFullYear(), effectiveDate.getMonth(), -firstDayOfMonth.getDay());
     const nextDate = new Date(from);
     const datesInfo = [];
     const currentMonth = effectiveDate.getMonth();
