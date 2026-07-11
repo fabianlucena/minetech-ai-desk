@@ -131,20 +131,37 @@ export default function TurnDialog({
     <DateTimeField
       label="Fecha de inicio"
       value={data.startDate || ''}
-      onChange={(e) => setData({ ...data, startDate: e.target.value })}
-      
+      onChangeDate={({ date }) => {
+        const newData = { ...data, startDate: date };
+        if (newData.endDate < newData.startDate)
+          newData.endDate = newData.startDate;
+
+        setData({ ...newData });
+      }}
     />
 
     <DateTimeField
       label="Fecha de finalización"
       value={data.endDate || ''}
-      onChange={(e) => setData({ ...data, endDate: e.target.value })}
+      onChangeDate={({ date }) => {
+        const newData = { ...data, endDate: date };
+        if (newData.endDate < newData.startDate)
+          newData.startDate = newData.endDate;
+
+        setData({ ...newData });
+      }}
     />
 
     <SliderField
       label={"Horas: " + (diffHours(data.startDate, data.endDate) || 0)}
       value={diffHours(data.startDate, data.endDate) || 0}
-      onChange={(e, value) => setData({ ...data, endDate: addHours(data.startDate, value) })}
+      onChange={(e, value) => {
+        const newData = { ...data, endDate: addHours(data.startDate, value) };
+        if (newData.endDate < newData.startDate)
+          newData.endDate = newData.startDate;
+
+        setData({ ...newData });
+      }}
       min={0}
       max={12}
       step={1}
