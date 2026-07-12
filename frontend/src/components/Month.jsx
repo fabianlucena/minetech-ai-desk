@@ -7,19 +7,10 @@ import ConfirmDialog from './ConfirmDialog.jsx';
 
 function addEventsToDatesInfo(datesInfo, events) {
   for (const dateInfo of datesInfo) {
-    const date = dateInfo.date;
-    dateInfo.events = events.filter(event => {
-      const eventStartDate = new Date(event.startDate);
-      if (eventStartDate.toDateString() === date.toDateString())
-        return true;
-      
-      const eventEndDate = new Date(event.endDate);
-      if (eventEndDate.toDateString() === date.toDateString())
-        return true;
-
-      if (eventStartDate.toDateString() < date.toDateString() && eventEndDate.toDateString() > date.toDateString())
-        return true;
-    });
+    const dateISOString = dateInfo.date.toISOString().split('T')[0];
+    dateInfo.events = events.filter(event => event.startDate.toISOString().split('T')[0] <= dateISOString
+        && event.endDate.toISOString().split('T')[0] >= dateISOString
+      );
   };
 }
 
@@ -55,17 +46,17 @@ export default function Month({
   useEffect(() => {
     const firstDayOfMonth = new Date(effectiveDate.getFullYear(), effectiveDate.getMonth(), 1);
     const from = new Date(effectiveDate.getFullYear(), effectiveDate.getMonth(), -firstDayOfMonth.getDay());
-    const nextDate = new Date(from);
+    const date = new Date(from);
     const datesInfo = [];
     const currentMonth = effectiveDate.getMonth();
     const todayString = new Date().toDateString();
 
     for (let i = 0; i < 42; i++) {
-      nextDate.setDate(nextDate.getDate() + 1);
+      date.setDate(date.getDate() + 1);
       datesInfo[i] = {
-        date: new Date(nextDate),
-        isCurrentMonth: nextDate.getMonth() === currentMonth,
-        isToday: nextDate.toDateString() === todayString,
+        date: new Date(date),
+        isCurrentMonth: date.getMonth() === currentMonth,
+        isToday: date.toDateString() === todayString,
       };
     }
 
