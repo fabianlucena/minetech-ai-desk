@@ -31,7 +31,7 @@ export default function Grid({
     open: false,
     onClose: () => setConfirmation({...confirmation, open: false}),
     title: 'Confirmar',
-    message: '',
+    content: '',
   });
 
   function handleDelete(row) {
@@ -47,7 +47,7 @@ export default function Grid({
       ...confirmation,
       open: true,
       title: 'Confirmar eliminación',
-      message: deleteConfirmationMessage,
+      content: deleteConfirmationMessage,
       onConfirm: () => {
         onDelete(row);
       },

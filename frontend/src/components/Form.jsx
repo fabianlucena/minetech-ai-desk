@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 export default function Form({
   title,
+  titleTools,
   description,
   footer,
   children,
@@ -61,11 +62,22 @@ export default function Form({
         {disabledMessage}
       </Typography>
     </Box>}
-    
-    {(title || description) && <Box>
-      {title && <Typography variant="h6" fontWeight={600}>
-        {title}
-      </Typography>}
+
+    {(title || titleTools || description) && <Box>
+      {(title || titleTools) && <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        {title && <Typography variant="h6" fontWeight={600}>
+          {title}
+        </Typography>}
+        {titleTools && <Box>
+          {titleTools}
+        </Box>}
+      </Box>}
       {description && <Typography variant="body2" color="text.secondary">
         {description}
       </Typography>}

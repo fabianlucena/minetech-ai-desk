@@ -2,14 +2,14 @@ import Dialog from './Dialog';
 
 export default function ConfirmDialog({
   title = 'Confirmar',
-  message = '¿Está seguro de que desea continuar?',
+  content = '¿Está seguro de que desea continuar?',
+  message = '',
   ...rest
 }) {
   return <Dialog
     title={title}
-    message={message}
     {...rest}
   >
-    {message}
+    {content || message}
   </Dialog>;
 }

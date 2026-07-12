@@ -40,7 +40,7 @@ export default function Month({
     open: false,
     onClose: () => setConfirmation({...confirmation, open: false}),
     title: 'Confirmar',
-    message: '',
+    content: '',
   });
 
   useEffect(() => {
@@ -91,7 +91,7 @@ export default function Month({
       ...confirmation,
       open: true,
       title: 'Confirmar eliminación',
-      message: deleteConfirmationMessage,
+      content: deleteConfirmationMessage,
       onConfirm: () => onDelete({ event, eventInfo }),
     });
   }
