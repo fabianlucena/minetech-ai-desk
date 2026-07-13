@@ -44,7 +44,7 @@ export default function Shifts() {
 
   async function deleteShiftHandler({ eventInfo }) {
     try {
-      await deleteShift(eventInfo.uuid);
+      await deleteShift(eventInfo.id);
       addMessage('Turno eliminado correctamente');
       load();
     } catch (error) {
@@ -54,14 +54,14 @@ export default function Shifts() {
   }
 
   function editShiftHandler({ eventInfo }) {
-    setShiftDialogUuid(eventInfo.uuid);
+    setShiftDialogUuid(eventInfo.id);
     setShiftDialogStart(new Date(eventInfo.start));
     setOpenShiftDialog(true);
   }
 
   async function restoreShiftHandler({ eventInfo }) {
     try {
-      await restoreShift(eventInfo.uuid);
+      await restoreShift(eventInfo.id);
       addMessage('Turno restaurado correctamente');
       load();
     } catch (error) {
@@ -81,7 +81,14 @@ export default function Shifts() {
 
     <Calendar
       title="Turnos"
-      events={shifts}
+      events={shifts.map(shift => ({
+        id: shift.uuid,
+        start: shift.start,
+        end: shift.end,
+        title: shift.technician.fullName,
+        color: shift.technician.color,
+        isDeleted: !!shift.deletedAt,
+      }))}
       onReload={() => load()}
       onCreate={hasPermission('shifts.create') && createShiftHandler}
       onDelete={hasPermission('shifts.delete') && deleteShiftHandler}

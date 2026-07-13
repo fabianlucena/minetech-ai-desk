@@ -105,6 +105,20 @@ export default function Month({
     });
   }
 
+  function getEventCapability(event, capability, defaultValue = false) {
+    if (!event || !capability)
+      return false;
+
+    let result = event[capability];
+    if (result === undefined || result === null)
+      return defaultValue;
+
+    if (typeof result === 'function')
+      result = result(event);
+
+    return !!result;
+  }
+
   return <Box
     sx={{
       minHeight: '100%',
@@ -268,29 +282,29 @@ export default function Month({
               <Box
                 key={index}
                 sx={{
-                  backgroundColor: eventInfo.technician.color,
+                  backgroundColor: eventInfo.color || '#bcd5ec',
                   margin: '.1em .2em',
                   padding: '.1em .2em',
                   borderRadius: 2,
                   display: 'flex',
                   flexDirection: 'row',
-                  alignItems: 'center',
+                  alignItems: 'start',
                   justifyContent: 'space-between',
                 }}
               >
                 <Typography variant="body2" sx={{ fontSize: 12, flex: 1 }}>
                   {eventInfo.start.getHours?.().toString().padStart(2, '0')}h 
-                  {eventInfo.technician.fullName}
+                  {eventInfo.title}
                 </Typography>
-                {onRestore && eventInfo.deletedAt && <RestoreButton
+                {onRestore && getEventCapability(eventInfo, 'canRestore', eventInfo.isDeleted) && <RestoreButton
                   size="small"
                   onClick={event => onRestore({ event, eventInfo })}
                 />}
-                {onEdit && !eventInfo.deletedAt && <EditButton
+                {onEdit && getEventCapability(eventInfo, 'canEdit', !eventInfo.isDeleted) && <EditButton
                   size="small"
                   onClick={event => onEdit({ event, eventInfo })}
                 />}
-                {onDelete && !eventInfo.deletedAt && <DeleteButton
+                {onDelete && getEventCapability(eventInfo, 'canDelete', !eventInfo.isDeleted) && <DeleteButton
                   size="small"
                   onClick={event => deleteHandler(event, eventInfo)}
                 />}

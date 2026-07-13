@@ -201,6 +201,20 @@ export default function Week({
     });
   }
 
+  function getEventCapability(event, capability, defaultValue = false) {
+    if (!event || !capability)
+      return false;
+
+    let result = event[capability];
+    if (result === undefined || result === null)
+      return defaultValue;
+
+    if (typeof result === 'function')
+      result = result(event);
+
+    return !!result;
+  }
+
   return <Box
     sx={{
       minHeight: '100%',
@@ -367,9 +381,9 @@ export default function Week({
             gridTemplateRows: 'repeat(24, 1fr)',
           }}
         > 
-          {normalizedEvents.filter(event => event.isoDate === dateInfo.isoDate).map((event, i) => {
-            const start = new Date(event.start);
-            const end = new Date(event.end);
+          {normalizedEvents.filter(eventInfo => eventInfo.isoDate === dateInfo.isoDate).map((eventInfo, i) => {
+            const start = new Date(eventInfo.start);
+            const end = new Date(eventInfo.end);
             const dayIndex = start.getDay();
             const startHour = start.getHours();
             const endHour = end.getHours() + (end.getMinutes() > 0 || end.getSeconds() > 0 || end.getMilliseconds() > 0 ? 1 : 0);
@@ -378,15 +392,31 @@ export default function Week({
               key={i}
               style={{
                 gridRow: `${startHour + 1} / span ${endHour - startHour + 1}`,
-                backgroundColor: `${event.technician.color}40`,
-                border: `2px solid ${getDarkerColor(event.technician.color)}`,
+                backgroundColor: `${eventInfo.color}40`,
+                border: `2px solid ${getDarkerColor(eventInfo.color)}`,
                 borderRadius: 4,
                 padding: 4,
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'start',
+                justifyContent: 'space-between',
               }}
             >
-              {event.technician.fullName}
-              - {event.slot}
-              - {event.start.getHours?.().toString().padStart(2, '0')}h - {event.end.getHours?.().toString().padStart(2, '0')}h
+              <Typography variant="body2" sx={{ fontSize: 12, flex: 1 }}>
+                {eventInfo.title}
+              </Typography>
+              {onRestore && getEventCapability(eventInfo, 'canRestore', eventInfo.isDeleted) && <RestoreButton
+                size="small"
+                onClick={event => onRestore({ event, eventInfo })}
+              />}
+              {onEdit && getEventCapability(eventInfo, 'canEdit', !eventInfo.isDeleted) && <EditButton
+                size="small"
+                onClick={event => onEdit({ event, eventInfo })}
+              />}
+              {onDelete && getEventCapability(eventInfo, 'canDelete', !eventInfo.isDeleted) && <DeleteButton
+                size="small"
+                onClick={event => deleteHandler(event, eventInfo)}
+              />}
             </Box>;
           })}
           </Box>;
