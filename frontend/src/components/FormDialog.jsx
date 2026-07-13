@@ -57,6 +57,6 @@ export default function FormDialog({
       >
         {children}
       </Form>
-    </Dialog>;
+    </Dialog>
   </>;
 }
