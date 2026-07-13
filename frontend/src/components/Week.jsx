@@ -6,24 +6,6 @@ import TextField from './fields/TextField';
 import ConfirmDialog from './ConfirmDialog.jsx';
 import { getDarkerColor } from '../utils/color.js';
 
-function addEventsToDatesInfo(datesInfo, events) {
-  for (const dateInfo of datesInfo) {
-    const date = dateInfo.date;
-    dateInfo.events = events.filter(event => {
-      const eventStartDate = new Date(event.startDate);
-      if (eventStartDate.toDateString() === date.toDateString())
-        return true;
-      
-      const eventEndDate = new Date(event.endDate);
-      if (eventEndDate.toDateString() === date.toDateString())
-        return true;
-
-      if (eventStartDate.toDateString() < date.toDateString() && eventEndDate.toDateString() > date.toDateString())
-        return true;
-    });
-  };
-}
-
 export default function Week({
   title,
   description,
@@ -56,7 +38,22 @@ export default function Week({
   const [isShowingToday, setIsShowingToday] = useState(false);
 
   function updateNow() {
-    setNow(new Date());
+    setNow(prev => {
+      const date = new Date();
+      if (prev.getDate() !== date.getDate()) {
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const todayTimeStampMS = today.getTime();
+
+        for (let dateInfo of datesInfo) {
+          dateInfo.isToday = dateInfo.date.getTime() === todayTimeStampMS;
+        }
+
+        setIsShowingToday(datesInfo.some(dateInfo => dateInfo.isToday));
+        setDatesInfo([...datesInfo]);
+      }
+
+      return date;
+    });
   }
 
   useEffect(() => {
@@ -95,19 +92,11 @@ export default function Week({
 
     setIsShowingToday(datesInfo.some(dateInfo => dateInfo.isToday));
 
-    addEventsToDatesInfo(datesInfo, events);
     setDatesInfo(datesInfo);
+
     onFirstDate?.(datesInfo[0].date);
     onLastDate?.(datesInfo[datesInfo.length - 1].date);
-  }, [effectiveDate, now]);
-
-  useEffect(() => {
-    if (datesInfo.length === 0)
-      return;
-      
-    addEventsToDatesInfo(datesInfo, events);
-    setDatesInfo([...datesInfo]);
-  }, [events]);
+  }, [effectiveDate]);
 
   function getMonthName(monthIndex) {
     return monthNames[monthIndex];
