@@ -63,6 +63,7 @@ export default function Month({
       datesInfo[i] = {
         date: new Date(date),
         isCurrentMonth: date.getMonth() === currentMonth,
+        isPreviousDay: timeStampMS < todayTimeStampMS,
         isToday: timeStampMS === todayTimeStampMS,
         fromTimeStampMS: timeStampMS,
         toTimeStampMS: timeStampMS + dateDuration,
@@ -224,7 +225,11 @@ export default function Month({
             backgroundColor: '#f5f5f5',
             minHeight: 100,
             padding: 0,
-            backgroundColor: dateInfo.isCurrentMonth ? '#f5f5f5' : '#e8e8e8',
+            backgroundColor: dateInfo.isCurrentMonth ?
+              dateInfo.isToday ? '#e3e8f8' :
+              dateInfo.isPreviousDay ? '#e8e8e8' :
+              '#f8f8f8' :
+              '#dadada',
           }}
         >
           <Box

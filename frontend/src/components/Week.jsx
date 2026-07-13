@@ -141,6 +141,7 @@ export default function Week({
         isoDate: nextDate.toISOString().split("T")[0],
         isCurrentMonth: nextDate.getMonth() === currentMonth,
         isToday: nextDate.getTime() === todayTimeStampMS,
+        isPreviousDay: nextDate.getTime() < todayTimeStampMS,
         weekDayName: weekDayNames[nextDate.getDay()],
       };
     }
@@ -321,7 +322,7 @@ export default function Week({
             justifyContent: 'center',
             alignItems: 'center',
             backgroundColor: dateInfo.isToday ? '#70a5db': dateInfo.isCurrentMonth ? '#bdbdbd' : '#d3d3d3',
-            color: dateInfo.isCurrentMonth ? '#000000' : '#8b8b8b',
+            color: (dateInfo.isPreviousDay || !dateInfo.isCurrentMonth) ? '#8b8b8b' : '#000000',
             minHeight: 30,
             padding: 4,
             borderLeft: '#4b4b4b solid 1px',
@@ -357,13 +358,17 @@ export default function Week({
             {h.toString().padStart(2, '0')}:00
           </Typography>
         </Box>
-        {Array(7).fill().map((_, i) => <>
+        {datesInfo.map((dateInfo, i) => <>
           <Box
             key={i}
             sx={{
               display: 'flex',
               flexDirection: 'column',
-              backgroundColor: '#f5f5f5',
+              backgroundColor: dateInfo.isToday ?
+                ( h < now.getHours() ? '#e1e1ee' : h == now.getHours() ? '#d6e3fd' : '#e3e8f8' ):
+                dateInfo.isPreviousDay ?
+                '#e8e8e8' :
+                '#f5f5f5',
               padding: 0,
               borderLeft: '#a8a8a8 dotted 1px',
               borderBottom: '#a8a8a8 dotted 1px',
