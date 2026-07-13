@@ -52,7 +52,9 @@ export default function Month({
     const date = new Date(from);
     const datesInfo = [];
     const currentMonth = effectiveDate.getMonth();
-    const todayString = new Date().toDateString();
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const todayTimeStampMS = today.getTime();
     const dateDuration = 24 * 60 * 60 * 1000 - 1;
 
     for (let i = 0; i < 42; i++) {
@@ -61,7 +63,7 @@ export default function Month({
       datesInfo[i] = {
         date: new Date(date),
         isCurrentMonth: date.getMonth() === currentMonth,
-        isToday: date.toDateString() === todayString,
+        isToday: timeStampMS === todayTimeStampMS,
         fromTimeStampMS: timeStampMS,
         toTimeStampMS: timeStampMS + dateDuration,
       };

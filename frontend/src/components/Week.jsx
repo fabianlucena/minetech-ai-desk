@@ -58,14 +58,16 @@ export default function Week({
     const nextDate = new Date(from);
     const datesInfo = [];
     const currentMonth = effectiveDate.getMonth();
-    const todayString = new Date().toDateString();
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const todayTimeStampMS = today.getTime();
 
     for (let i = 0; i < 7; i++) {
       nextDate.setDate(nextDate.getDate() + 1);
       datesInfo[i] = {
         date: new Date(nextDate),
         isCurrentMonth: nextDate.getMonth() === currentMonth,
-        isToday: nextDate.toDateString() === todayString,
+        isToday: nextDate.getTime() === todayTimeStampMS,
         weekDayName: weekDayNames[nextDate.getDay()],
       };
     }
