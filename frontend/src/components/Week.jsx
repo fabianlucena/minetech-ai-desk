@@ -19,6 +19,7 @@ function splitMultiDayEvent(event) {
 
     days.push({
       ...event,
+      isoDate: current.toISOString().split("T")[0],
       start: new Date(current),
       end: (new Date()).setTime(dayEnd.getTime() - 1),
       originalId: event.id,
@@ -29,12 +30,55 @@ function splitMultiDayEvent(event) {
 
   days.push({
     ...event,
+    isoDate: current.toISOString().split("T")[0],
     start: current,
     end: end,
     originalId: event.id,
   });
 
   return days;
+}
+
+function assignSlots(events) {
+  const eventsByDay = {};
+
+  events.forEach(ev => {
+    const isoDate = ev.isoDate;
+    if (!eventsByDay[isoDate])
+      eventsByDay[isoDate] = [];
+    eventsByDay[isoDate].push(ev);
+  });
+
+  const slotsByDay = {};
+
+  Object.entries(eventsByDay).forEach(([isoDate, dayEvents]) => {
+    const sorted = [...dayEvents].sort((a, b) => a.start - b.start);
+    const slots = [];
+
+    sorted.forEach(event => {
+      let assigned = false;
+
+      for (let i = 0; i < slots.length; i++) {
+        const last = slots[i][slots[i].length - 1];
+
+        if (event.start >= last.end) {
+          slots[i].push(event);
+          event.slot = i;
+          assigned = true;
+          break;
+        }
+      }
+
+      if (!assigned) {
+        slots.push([event]);
+        event.slot = slots.length - 1;
+      }
+    });
+
+    slotsByDay[isoDate] = slots.length;
+  });
+
+  return { events, slotsByDay };
 }
 
 export default function Week({
@@ -68,11 +112,11 @@ export default function Week({
   const [now, setNow] = useState(new Date());
   const [isShowingToday, setIsShowingToday] = useState(false);
   const [normalizedEvents, setNormalizedEvents] = useState([]);
+  const [slotsByDay, setSlotsByDay] = useState({});
 
   function updateNow() {
     setNow(prev => {
       const date = new Date();
-      // date.setTime(date.getTime() - 12 * 60000);
       if (prev.getDate() !== date.getDate()) {
         updateDatesInfo();
       }
@@ -93,6 +137,7 @@ export default function Week({
       nextDate.setDate(nextDate.getDate() + 1);
       datesInfo[i] = {
         date: new Date(nextDate),
+        isoDate: nextDate.toISOString().split("T")[0],
         isCurrentMonth: nextDate.getMonth() === currentMonth,
         isToday: nextDate.getTime() === todayTimeStampMS,
         weekDayName: weekDayNames[nextDate.getDay()],
@@ -129,9 +174,10 @@ export default function Week({
 
   useEffect(() => {
     const normalized = events.flatMap(splitMultiDayEvent);
-    setNormalizedEvents(normalized);
-    console.log(events, normalized);
-  }, [events]);
+    const slotted = assignSlots(normalized);
+    setNormalizedEvents(slotted.events);
+    setSlotsByDay(slotted.slotsByDay);
+  }, [effectiveDate, events]);
 
   function getMonthName(monthIndex) {
     return monthNames[monthIndex];
@@ -311,6 +357,41 @@ export default function Week({
           </Box>
         </>)}
       </>)}
+      {datesInfo.map((dateInfo, i) => {
+        const slotsCount = slotsByDay[dateInfo.isoDate];
+        return <Box
+          style={{
+            gridArea: `2 / ${i + 2} / span 24 / span 1`,
+            position: 'relative',
+            zIndex: 1,
+            display: 'grid',
+            gridTemplateRows: 'repeat(24, 1fr)',
+          }}
+        > 
+          {normalizedEvents.filter(event => event.isoDate === dateInfo.isoDate).map((event, i) => {
+            const start = new Date(event.start);
+            const end = new Date(event.end);
+            const dayIndex = start.getDay();
+            const startHour = start.getHours();
+            const endHour = end.getHours() + (end.getMinutes() > 0 || end.getSeconds() > 0 || end.getMilliseconds() > 0 ? 1 : 0);
+
+            return <Box
+              key={i}
+              style={{
+                gridRow: `${startHour + 1} / span ${endHour - startHour + 1}`,
+                backgroundColor: `${event.technician.color}40`,
+                border: `2px solid ${getDarkerColor(event.technician.color)}`,
+                borderRadius: 4,
+                padding: 4,
+              }}
+            >
+              {event.technician.fullName}
+              - {event.slot}
+              - {event.start.getHours?.().toString().padStart(2, '0')}h - {event.end.getHours?.().toString().padStart(2, '0')}h
+            </Box>;
+          })}
+          </Box>;
+      })}
       {isShowingToday &&
         <div
           style={{
@@ -325,29 +406,6 @@ export default function Week({
           }}>
           </div>
       </div>}
-      {normalizedEvents.map((event, i) => {
-        const start = new Date(event.start);
-        const end = new Date(event.end);
-        const dayIndex = start.getDay();
-        const startHour = start.getHours();
-        const endHour = end.getHours() + (end.getMinutes() > 0 || end.getSeconds() > 0 || end.getMilliseconds() > 0 ? 1 : 0);
-
-        return <Box
-          key={i}
-          style={{
-            gridArea: `${startHour + 2} / ${dayIndex + 2} / span ${endHour - startHour} / span 1`,
-            backgroundColor: `${event.technician.color}40`,
-            border: `2px solid ${getDarkerColor(event.technician.color)}`,
-            borderRadius: 4,
-            padding: 4,
-          }}
-        >
-          {event.technician.fullName}
-          - {start.getDay()}
-          - {start.getHours?.().toString().padStart(2, '0')}h
-          - {end.getHours?.().toString().padStart(2, '0')}h
-        </Box>;
-      })}
     </Box>
   </Box>
 }
