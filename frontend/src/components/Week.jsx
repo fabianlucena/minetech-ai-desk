@@ -34,45 +34,22 @@ export default function Week({
     title: 'Confirmar',
     content: '',
   });
-  const [now, setNow] = useState(() => new Date());
+  const [now, setNow] = useState(new Date());
   const [isShowingToday, setIsShowingToday] = useState(false);
 
   function updateNow() {
     setNow(prev => {
       const date = new Date();
+      // date.setTime(date.getTime() - 12 * 60000);
       if (prev.getDate() !== date.getDate()) {
-        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        const todayTimeStampMS = today.getTime();
-
-        for (let dateInfo of datesInfo) {
-          dateInfo.isToday = dateInfo.date.getTime() === todayTimeStampMS;
-        }
-
-        setIsShowingToday(datesInfo.some(dateInfo => dateInfo.isToday));
-        setDatesInfo([...datesInfo]);
+        updateDatesInfo();
       }
 
       return date;
     });
   }
 
-  useEffect(() => {
-    updateNow();
-    const msToNextMinute = (60 - now.getSeconds()) * 1000;
-
-    const timeout = setTimeout(() => {
-      updateNow();
-      const interval = setInterval(() => {
-        updateNow();
-      }, 60 * 1000);
-
-      return () => clearInterval(interval);
-    }, msToNextMinute);
-
-    return () => clearTimeout(timeout);
-  }, []);
-
-  useEffect(() => {
+  function updateDatesInfo() {
     const from = new Date(effectiveDate.getFullYear(), effectiveDate.getMonth(), effectiveDate.getDate() - effectiveDate.getDay() - 1);
     const nextDate = new Date(from);
     const datesInfo = [];
@@ -91,9 +68,29 @@ export default function Week({
     }
 
     setIsShowingToday(datesInfo.some(dateInfo => dateInfo.isToday));
-
     setDatesInfo(datesInfo);
 
+    return datesInfo;
+  }    
+
+  useEffect(() => {
+    updateNow();
+    const msToNextMinute = (60 - now.getSeconds()) * 1000;
+
+    const timeout = setTimeout(() => {
+      updateNow();
+      const interval = setInterval(() => {
+        updateNow();
+      }, 60 * 1000);
+
+      return () => clearInterval(interval);
+    }, msToNextMinute);
+
+    return () => clearTimeout(timeout);
+  }, []);
+
+  useEffect(() => {
+    const datesInfo = updateDatesInfo();
     onFirstDate?.(datesInfo[0].date);
     onLastDate?.(datesInfo[datesInfo.length - 1].date);
   }, [effectiveDate]);
@@ -277,9 +274,16 @@ export default function Week({
         </>)}
       </>)}
       {isShowingToday &&
-        <div style={{ gridArea: `2 / ${datesInfo.findIndex(dateInfo => dateInfo.isToday) + 2} / span 24 / span 1`, position: 'relative' }}>
+        <div
+          style={{
+            gridArea: `2 / ${datesInfo.findIndex(dateInfo => dateInfo.isToday) + 2} / span 24 / span 1`,
+            position: 'relative',
+            paddingBottom: 1,
+          }}
+        >
           <div style={{
-            height: (now.getHours() + now.getMinutes() / 60) * (100 / 24) + '%',
+            //height: (now.getHours() + now.getMinutes() / 60 + now.getSeconds() / 3600) * (100 / 24) + '%',
+            height: '100%',
             borderBottom: '2px solid red'
           }}>
           </div>
