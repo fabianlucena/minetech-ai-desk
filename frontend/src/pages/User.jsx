@@ -89,10 +89,10 @@ export default function User() {
     } catch (error) {
       if (uuid) {
         console.error('Error al actualizar usuario:', error);
-        addError('Error al actualizar usuario');
+        addError('Error al actualizar usuario: ' + (error.data?.message || error.message || error.data?.error));
       } else {
         console.error('Error al crear usuario:', error);
-        addError('Error al crear usuario');
+        addError('Error al crear usuario: ' + (error.data?.message || error.message || error.data?.error));
       }
     }
     setDisabled(false);
