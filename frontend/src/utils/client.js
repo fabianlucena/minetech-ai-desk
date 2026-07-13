@@ -28,8 +28,6 @@ export function generateClientIdentifiers(clientName) {
 
     while (code.length < 3)
       code = code[0] + code;
-
-    console.log('Generated code:', code);
   }
 
   let letters = normalized.replace(/\s+/g, '').slice(0, 3).toLowerCase();

@@ -17,8 +17,6 @@ export default class TechnicianService extends ModelService {
     if (!phone)
       throw new Error('El teléfono es obligatorio');
 
-    console.log({ ...options, where: { ...options?.where, phone } });
-
     return this.getFirstOrDefault({ ...options, where: { ...options?.where, phone } });
   }
 

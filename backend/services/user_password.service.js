@@ -32,8 +32,6 @@ export default class UserPasswordService extends ModelService {
     if (!data.passwordHash)
       throw new Error('El hash de la contraseña es obligatorio');
 
-    console.log(options);
-
     const list = await this.getList({ where: options.where, includeDeleted: true });
 
     if (!list?.length)
