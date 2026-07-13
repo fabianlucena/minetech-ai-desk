@@ -379,7 +379,9 @@ export default function Week({
             gridArea: `2 / ${i + 2} / span 24 / span 1`,
             position: 'relative',
             zIndex: 1,
-            display: 'flex',
+            display: 'grid',
+            gridTemplateColumns: `repeat(${slotsByDay[dateInfo.isoDate] || 1}, 1fr)`,
+            gridTemplateRows: '1fr',
           }}
         > 
           {normalizedEvents.filter(eventInfo => eventInfo.isoDate === dateInfo.isoDate).map((eventInfo, i) => {
@@ -392,6 +394,8 @@ export default function Week({
             return <Box
               key={i}
               style={{
+                gridColumn: `${eventInfo.slot + 1} / span 1`,
+                gridRow: `1 / span 1`,
                 marginTop: `${startHour * pixelsPerHour}px`,
                 height: `${(endHour - startHour) * pixelsPerHour}px`,
                 backgroundColor: `${eventInfo.color}40`,
@@ -403,7 +407,6 @@ export default function Week({
                 alignItems: 'start',
                 justifyContent: 'space-between',
                 boxSizing: 'border-box',
-                flex: 1,
               }}
             >
               <Typography variant="body2" sx={{ fontSize: 12, flex: 1 }}>
