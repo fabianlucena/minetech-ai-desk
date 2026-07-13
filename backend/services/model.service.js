@@ -143,7 +143,7 @@ export default class ModelService {
     return result.map(r => r.get({ plain: true }));
   }
 
-  async getListId(options) {
+  async getIdList(options) {
     return (await this.getList({ ...options, attributes: ['id'] }))
       .map(r => r.id);
   }

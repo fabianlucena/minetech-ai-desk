@@ -78,7 +78,15 @@ export default function User() {
     setDisabled(true);
     try {
       if (uuid) {
-        await updateUser(uuid, data);
+        await updateUser(uuid, {
+          username: data.username,
+          displayName: data.displayName,
+          isActive: data.isActive,
+          canLogin: data.canLogin,
+          lastLoginAt: data.lastLoginAt,
+          password: data.password,
+          roles: data.roles,
+        });
         addInfo('Usuario actualizado correctamente');
       } else {
         await createUser(data);

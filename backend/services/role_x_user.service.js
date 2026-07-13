@@ -8,6 +8,24 @@ export default class RoleXUserService extends ModelService {
     this.roleIncludeService = getDependency('roleIncludeService');
   }
 
+  get validPropertiesForCreation() {
+    return ['userId', 'roleId'];
+  }
+
+  async validateForCreation(data, options) {
+    if (!data.userId)
+      throw new Error('El ID de usuario es obligatorio');
+
+    if (!data.roleId)
+      throw new Error('El ID de rol es obligatorio');
+
+    const existing = await this.getFirstOrDefault({ where: { userId: data.userId, roleId: data.roleId }, includeDeleted: true });
+    if (existing)
+      throw new Error('El usuario ya tiene asignado este rol');
+
+    return await super.validateForCreation(data, options);
+  }
+
   async getRoleIdsByUserId(userId, options) {
     if (!userId)
       throw new Error('El ID de usuario es obligatorio');
@@ -42,11 +60,7 @@ export default class RoleXUserService extends ModelService {
 
     const globalOptions = { session: options?.session };
 
-    await this.updateByWhere(
-      {
-        deletedAt: null,
-        deletedById: null,
-      },
+    await this.restoreByWhere(
       {
         userId,
         roleId: roleIds,

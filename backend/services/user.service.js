@@ -46,13 +46,25 @@ export default class UserService extends ModelService {
     await this.updateById(userId, { lastLoginAt: new Date() });
   }
 
-  async create(data, options) {
+  get validPropertiesForCreation() {
+    return ['username', 'displayName', 'isActive', 'canLogin', 'password', 'roles', 'lastLoginAt'];
+  }
+
+  async validateForCreation(data, options) {
     if (!data.username)
       throw new Error('El nombre de usuario es obligatorio');
 
     if (!data.displayName)
       throw new Error('El nombre para mostrar es obligatorio');
 
+    const existing = await this.getByUsername(data.username, { includeDeleted: true });
+    if (existing)
+      throw new Error('El nombre de usuario ya está en uso');
+
+    return await super.validateForCreation(data, options);
+  }
+
+  async create(data, options) {
     const user = await super.create(data, options);
 
     const globalOptions = { session: options?.session };
@@ -71,7 +83,21 @@ export default class UserService extends ModelService {
   }
 
   get validPropertiesForUpdate() {
-    return ['lastLoginAt'];
+    return ['username', 'displayName', 'isActive', 'canLogin', 'password', 'roles', 'lastLoginAt'];
+  }
+
+  async validateForCreation(data, options) {
+    if (!data.username)
+      throw new Error('El nombre de usuario es obligatorio');
+
+    if (!data.displayName)
+      throw new Error('El nombre para mostrar es obligatorio');
+
+    const existing = await this.getByUsername(data.username, { includeDeleted: true });
+    if (existing)
+      throw new Error('El nombre de usuario ya está en uso');
+
+    return await super.validateForCreation(data, options);
   }
 
   async updateByUuid(uuid, data, options) {

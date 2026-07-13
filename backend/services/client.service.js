@@ -80,7 +80,7 @@ export default class ClientService extends ModelService {
   }
 
   async validateForUpdate(data, options) {
-    const ids = await this.getListId(options);
+    const ids = await this.getIdList(options);
 
     if (!ids.length)
       throw new Error('No se encontraron clientes con los criterios especificados');
