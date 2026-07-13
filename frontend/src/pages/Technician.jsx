@@ -62,7 +62,12 @@ export default function Technician() {
     setDisabled(true);
     try {
       if (uuid) {
-        await updateTechnician(uuid, data);
+        await updateTechnician(uuid, {
+          fullName: data.fullName,
+          phone: data.phone,
+          isActive: data.isActive,
+          color: data.color,
+        });
         addInfo('Técnico actualizado correctamente');
       } else {
         await createTechnician(data);
@@ -73,10 +78,10 @@ export default function Technician() {
     } catch (error) {
       if (uuid) {
         console.error('Error al actualizar técnico:', error);
-        addError('Error al actualizar técnico');
+        addError('Error al actualizar técnico: ' + (error.data?.message || error.message || error.data?.error));
       } else {
         console.error('Error al crear técnico:', error);
-        addError('Error al crear técnico');
+        addError('Error al crear técnico: ' + (error.data?.message || error.message || error.data?.error));
       }
     }
     setDisabled(false);

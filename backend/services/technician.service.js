@@ -1,5 +1,6 @@
 import { getDependency } from '../dependency.js';
 import ModelService from './model.service.js';
+import { Op } from 'sequelize';
 
 export default class TechnicianService extends ModelService {
   constructor() {
@@ -12,21 +13,59 @@ export default class TechnicianService extends ModelService {
     return options;
   }
 
-  async getByFullName(fullName) {
-    if (!fullName)
-      throw new Error('El nombre completo es obligatorio');
+  getByPhone(phone, options) {
+    if (!phone)
+      throw new Error('El teléfono es obligatorio');
 
-    return await this.getFirstOrDefault({ where: { fullName } });
+    console.log({ ...options, where: { ...options?.where, phone } });
+
+    return this.getFirstOrDefault({ ...options, where: { ...options?.where, phone } });
   }
 
-  async create(data, options) {
+  get validPropertiesForCreation() {
+    return ['fullName', 'phone', 'isActive', 'color'];
+  }
+
+  get validPropertiesForUpdate() {
+    return ['fullName', 'phone', 'isActive', 'color'];
+  }
+
+  async validateForCreation(data, options) {
     if (!data.fullName)
       throw new Error('El nombre completo es obligatorio');
 
     if (!data.phone)
       throw new Error('El teléfono es obligatorio');
 
-    return await super.create(data, options);
+    const existent = await this.getByPhone(data.phone);
+    if (existent)
+      throw new Error('El teléfono del técnico ya existe');
+
+    return await super.validateForCreation(data, options);
+  }
+
+  async validateForUpdate(data, options) {
+    if (data.phone) {
+      const ids = await this.getIdList({ where: options.where, includeDeleted: true });
+      if (!ids?.length)
+        throw new Error('No se encontraron técnicos para actualizar');
+
+      if (ids.length > 1)
+        throw new Error('Se encontraron múltiples técnicos para actualizar, debe especificar un técnico único');
+
+      const existent = await this.getByPhone(data.phone, { where: { id: { [Op.ne]: ids } } });
+      if (existent)
+        throw new Error('El teléfono del técnico ya está en uso');
+    }
+
+    return await super.validateForUpdate(data, options);
+  }
+
+  async getByFullName(fullName) {
+    if (!fullName)
+      throw new Error('El nombre completo es obligatorio');
+
+    return await this.getFirstOrDefault({ where: { fullName } });
   }
 
   async updateByUuid(uuid, data, options) {

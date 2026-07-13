@@ -1,5 +1,6 @@
 import { getDependency } from '../dependency.js';
 import ModelService from './model.service.js';
+import { Op } from 'sequelize';
 
 export default class ClientService extends ModelService {
   constructor() {
@@ -96,19 +97,19 @@ export default class ClientService extends ModelService {
         throw new Error('No se puede colocar el mismo código de acceso a varios clientes');
     } else {
       if (data.name) {
-        const existent = await this.getByName(data.name, { includeDeleted: true, where: { id: { $ne: ids[0] } } });
+        const existent = await this.getByName(data.name, { includeDeleted: true, where: { id: { [Op.ne]: ids[0] } } });
         if (existent && existent.id !== ids[0])
           throw new Error('El nombre del cliente ya existe');
       }
 
       if (data.code) {
-        const existent = await this.getByCode(data.code, { includeDeleted: true, where: { id: { $ne: ids[0] } } });
+        const existent = await this.getByCode(data.code, { includeDeleted: true, where: { id: { [Op.ne]: ids[0] } } });
         if (existent && existent.id !== ids[0])
           throw new Error('El código del cliente ya existe');
       }
 
       if (data.accessCode) {
-        const existent = await this.getByAccessCode(data.accessCode, { includeDeleted: true, where: { id: { $ne: ids[0] } } });
+        const existent = await this.getByAccessCode(data.accessCode, { includeDeleted: true, where: { id: { [Op.ne]: ids[0] } } });
         if (existent && existent.id !== ids[0])
           throw new Error('El código de acceso del cliente ya existe');
       }
