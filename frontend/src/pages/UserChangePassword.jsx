@@ -32,7 +32,7 @@ export default function UserChangePassword() {
       setData(data);
       setUnchangedData(data);
     } catch (error) {
-      addError('Error al obtener el usuario');
+      addError('Error al obtener el usuario: ' + (error.data?.message || error.message || error.data?.error));
       console.error('Error al obtener el usuario:', error);
     }
   }

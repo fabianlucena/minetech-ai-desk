@@ -70,6 +70,10 @@ export default class UserService extends ModelService {
     return await this.getById(user.id);
   }
 
+  get validPropertiesForUpdate() {
+    return ['lastLoginAt'];
+  }
+
   async updateByUuid(uuid, data, options) {
     if (!uuid)
       throw new Error('El UUID de usuario es obligatorio');

@@ -35,7 +35,7 @@ export default function Technician() {
       setData(data);
       setUnchangedData(data);
     } catch (error) {
-      addError('Error al obtener el técnico');
+      addError('Error al obtener el técnico: ' + (error.data?.message || error.message || error.data?.error));
       console.error('Error al obtener el técnico:', error);
     }
   }

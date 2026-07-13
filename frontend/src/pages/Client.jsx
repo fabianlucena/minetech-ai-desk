@@ -78,7 +78,13 @@ export default function Client() {
     setDisabled(true);
     try {
       if (uuid) {
-        await updateClient(uuid, data);
+        await updateClient(uuid, {
+          name: data.name,
+          code: data.code,
+          accessCode: data.accessCode,
+          status: data.status,
+          isActive: data.isActive,
+        });
         addInfo('Cliente actualizado correctamente');
       } else {
         await createClient(data);
@@ -89,10 +95,10 @@ export default function Client() {
     } catch (error) {
       if (uuid) {
         console.error('Error al actualizar cliente:', error);
-        addError('Error al actualizar cliente');
+        addError('Error al actualizar cliente: ' + (error.data?.message || error.message || error.data?.error));
       } else {
         console.error('Error al crear cliente:', error);
-        addError('Error al crear cliente');
+        addError('Error al crear cliente: ' + (error.data?.message || error.message || error.data?.error));
       }
     }
     setDisabled(false);

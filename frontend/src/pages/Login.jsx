@@ -29,7 +29,7 @@ export default function Login() {
       addInfo('Sesión iniciada correctamente');
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
-      addError('Error al iniciar sesión');
+      addError('Error al iniciar sesión: ' + (error.data?.message || error.message || error.data?.error));
     }
     setDisabled(false);
   }

@@ -19,7 +19,7 @@ export default function Logout() {
       addWarning('Sesión cerrada correctamente');
     } catch (error) {
       console.error('Error al cerrar sesión:', error);
-      addError('Error al cerrar sesión', { severity: 'error' });
+      addError('Error al cerrar sesión: ' + (error.data?.message || error.message || error.data?.error));
     }
   }, []);
 

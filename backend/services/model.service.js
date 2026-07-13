@@ -57,9 +57,32 @@ export default class ModelService {
     return options;
   }
 
-  async create(data, options = {}) {
+  get validPropertiesForCreation() {
+    return [];
+  }
+
+  async validateForCreation(data, options) {
     if (!data || typeof data !== 'object')
       throw new Error('Data es obligatorio y debe ser un objeto');
+
+    if (data.id)
+      throw new Error('El ID no debe ser proporcionado');
+
+    if (data.uuid)
+      throw new Error('El UUID no debe ser proporcionado');
+
+    const properties = Object.keys(data);
+    const validProperties = this.validPropertiesForCreation;
+    for (const prop of properties) {
+      if (!validProperties.includes(prop))
+        throw new Error(`Propiedad no válida: ${prop}`);
+    }
+
+    return data;
+  }
+
+  async create(data, options = {}) {
+    data = await this.validateForCreation(data, options);
 
     if (this.traceable) {
       data.createdAt ??= new Date();
@@ -120,6 +143,11 @@ export default class ModelService {
     return result.map(r => r.get({ plain: true }));
   }
 
+  async getListId(options) {
+    return (await this.getList({ ...options, attributes: ['id'] }))
+      .map(r => r.id);
+  }
+
   async getById(id, options) {
     if (!id)
       throw new Error('ID es obligatorio');
@@ -154,9 +182,26 @@ export default class ModelService {
     }
   }
 
-  async update(data, options = {}) {
+  get validPropertiesForUpdate() {
+    return [];
+  }
+
+  async validateForUpdate(data, options) {
     if (!data || typeof data !== 'object')
       throw new Error('Data es obligatorio y debe ser un objeto');
+
+    const properties = Object.keys(data);
+    const validProperties = this.validPropertiesForUpdate;
+    for (const prop of properties) {
+      if (!validProperties.includes(prop))
+        throw new Error(`Propiedad no válida: ${prop}`);
+    }
+
+    return data;
+  }
+
+  async update(data, options = {}) {
+    await this.validateForUpdate(data, options);
 
     options = this.getModelOptions(options);
     if (this.auditable && !options.skipAudit) {

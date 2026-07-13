@@ -33,7 +33,7 @@ export default function User() {
     try {
       setRoles(await getRoles());
     } catch (error) {
-      addError('Error al obtener los roles');
+      addError('Error al obtener los roles: ' + (error.data?.message || error.message || error.data?.error));
       console.error('Error al obtener los roles:', error);
     }
   }

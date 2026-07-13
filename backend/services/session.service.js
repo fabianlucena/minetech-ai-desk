@@ -15,7 +15,11 @@ export default class SessionService extends ModelService {
     this.config = getDependency('config');
   }
 
-  async create(data, options = {}) {
+  get validPropertiesForCreation() {
+    return ['userId', 'deviceId', 'authorizationToken', 'autoLoginToken', 'expiresAt', 'lastUsedAt'];
+  }
+
+  async validateForCreation(data, options) {
     if (!data.userId)
       throw new Error('El ID de usuario es obligatorio');
 
@@ -27,10 +31,12 @@ export default class SessionService extends ModelService {
     data.expiresAt ||= new Date(Date.now() + this.config.sessionExpiration * 1000);
     data.lastUsedAt ||= new Date();
 
+    return await super.validateForCreation(data, options);
+  }
+
+  async create(data, options = {}) {
     const session = await super.create(data, options);
-
     await this.userService.updateLastLoginAtById(data.userId);
-
     return session;
   }
 
