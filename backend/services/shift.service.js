@@ -20,8 +20,8 @@ export default class ShiftService extends ModelService {
 
     if (options.from && options.to) {
       options.where = options.where || {};
-      options.where.startDate = { [Op.lt]: options.to };
-      options.where.endDate = { [Op.gt]: options.from };
+      options.where.start = { [Op.lt]: options.to };
+      options.where.end = { [Op.gt]: options.from };
     }
 
     return options;
@@ -41,10 +41,10 @@ export default class ShiftService extends ModelService {
     if (!data.type)
       throw new Error('El tipo de turno es obligatorio');
 
-    if (!data.startDate)
+    if (!data.start)
       throw new Error('La fecha y hora de inicio de turno es obligatoria');
 
-    if (!data.endDate)
+    if (!data.end)
       throw new Error('La fecha y hora de finalización de turno es obligatoria');
 
     const shift = await super.create(data, options);

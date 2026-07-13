@@ -13,8 +13,8 @@ export default (sequelize) => {
     deletedById: { field: 'deleted_by_id', type: DataTypes.BIGINT, allowNull: true },
     technicianId: { field: 'technician_id', type: DataTypes.BIGINT, allowNull: true },
     type: { field: 'type', type: DataTypes.ENUM(...shiftTypeValues), allowNull: true },
-    startDate: { field: 'start_date', type: DataTypes.DATE, allowNull: false },
-    endDate: { field: 'end_date', type: DataTypes.DATE, allowNull: false },
+    start: { field: 'start', type: DataTypes.DATE, allowNull: false },
+    end: { field: 'end', type: DataTypes.DATE, allowNull: false },
   }, {
     tableName: 'shifts',
     schema: 'ia_desk',

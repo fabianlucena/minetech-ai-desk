@@ -559,8 +559,8 @@ create table if not exists ia_desk.shifts(
     technician_id bigint not null,
 
     type varchar(64) not null,
-    start_date timestamp not null,
-    end_date timestamp not null,
+    start timestamp not null,
+    end timestamp not null,
     
     constraint uk_ia_desk_shifts_uuid unique (uuid),
     

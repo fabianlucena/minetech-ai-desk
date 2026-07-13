@@ -11,13 +11,13 @@ import { getTechnicians, getTypes, getShift, createShift, updateShift } from '..
 const defaultData = {
   technicianUuid: '',
   type: 'primary',
-  startDate: '',
-  endDate: '',
+  start: '',
+  end: '',
 };
 
 export default function ShiftDialog({
   uuid = null,
-  startDate = null,
+  start = null,
   onSubmit,
   ...rest
 }) {
@@ -34,14 +34,14 @@ export default function ShiftDialog({
     } else {
       const data = {
         ...defaultData,
-        startDate,
-        endDate: startDate ? addHours(startDate, 8) : null,
+        start,
+        end: start ? addHours(start, 8) : null,
       };
 
       setData(data);
       setUnchangedData(data);
     }
-  }, [uuid, startDate]);
+  }, [uuid, start]);
 
   async function loadShift() {
     if (uuid) {
@@ -75,10 +75,10 @@ export default function ShiftDialog({
     if (!data.type)
       return 'Debe seleccionar un tipo de turno';
 
-    if (!data.startDate)
+    if (!data.start)
       return 'Debe seleccionar una fecha de inicio';
 
-    if (!data.endDate)
+    if (!data.end)
       return 'Debe seleccionar una fecha de finalización';
   }
 
@@ -130,11 +130,11 @@ export default function ShiftDialog({
 
     <DateTimeField
       label="Fecha de inicio"
-      value={data.startDate || ''}
+      value={data.start || ''}
       onChangeDate={({ date }) => {
-        const newData = { ...data, startDate: date };
-        if (newData.endDate < newData.startDate)
-          newData.endDate = newData.startDate;
+        const newData = { ...data, start: date };
+        if (newData.end < newData.start)
+          newData.end = newData.start;
 
         setData({ ...newData });
       }}
@@ -142,23 +142,23 @@ export default function ShiftDialog({
 
     <DateTimeField
       label="Fecha de finalización"
-      value={data.endDate || ''}
+      value={data.end || ''}
       onChangeDate={({ date }) => {
-        const newData = { ...data, endDate: date };
-        if (newData.endDate < newData.startDate)
-          newData.startDate = newData.endDate;
+        const newData = { ...data, end: date };
+        if (newData.end < newData.start)
+          newData.start = newData.end;
 
         setData({ ...newData });
       }}
     />
 
     <SliderField
-      label={"Horas: " + (diffHours(data.startDate, data.endDate) || 0)}
-      value={diffHours(data.startDate, data.endDate) || 0}
+      label={"Horas: " + (diffHours(data.start, data.end) || 0)}
+      value={diffHours(data.start, data.end) || 0}
       onChange={(e, value) => {
-        const newData = { ...data, endDate: addHours(data.startDate, value) };
-        if (newData.endDate < newData.startDate)
-          newData.endDate = newData.startDate;
+        const newData = { ...data, end: addHours(data.start, value) };
+        if (newData.end < newData.start)
+          newData.end = newData.start;
 
         setData({ ...newData });
       }}

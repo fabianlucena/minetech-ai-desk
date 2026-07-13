@@ -7,8 +7,8 @@ import ConfirmDialog from './ConfirmDialog.jsx';
 
 function addEventsToDatesInfo(datesInfo, events) {
   for (const event of events) {
-    event.startTimeStampMS = event.startDate.getTime();
-    event.endTimeStampMS = event.endDate.getTime();
+    event.startTimeStampMS = event.start.getTime();
+    event.endTimeStampMS = event.end.getTime();
   }
 
   for (const dateInfo of datesInfo) {
@@ -279,7 +279,7 @@ export default function Month({
                 }}
               >
                 <Typography variant="body2" sx={{ fontSize: 12, flex: 1 }}>
-                  {eventInfo.startDate.getHours?.().toString().padStart(2, '0')}h 
+                  {eventInfo.start.getHours?.().toString().padStart(2, '0')}h 
                   {eventInfo.technician.fullName}
                 </Typography>
                 {onRestore && eventInfo.deletedAt && <RestoreButton

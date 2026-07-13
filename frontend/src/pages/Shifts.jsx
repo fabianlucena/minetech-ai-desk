@@ -13,7 +13,7 @@ export default function Shifts() {
   const [includeDeleted, setIncludeDeleted] = useState(false);
   const [openShiftDialog, setOpenShiftDialog] = useState(false);
   const [shiftDialogUuid, setShiftDialogUuid] = useState(null);
-  const [shiftDialogStartDate, setShiftDialogStartDate] = useState(null);
+  const [shiftDialogStart, setShiftDialogStart] = useState(null);
   const { addMessage, addError } = useToast();
 
   async function load() {
@@ -38,7 +38,7 @@ export default function Shifts() {
 
   function createShiftHandler({date}) {
     setShiftDialogUuid(null);
-    setShiftDialogStartDate(date);
+    setShiftDialogStart(date);
     setOpenShiftDialog(true);
   }
 
@@ -55,7 +55,7 @@ export default function Shifts() {
 
   function editShiftHandler({ eventInfo }) {
     setShiftDialogUuid(eventInfo.uuid);
-    setShiftDialogStartDate(new Date(eventInfo.startDate));
+    setShiftDialogStart(new Date(eventInfo.start));
     setOpenShiftDialog(true);
   }
 
@@ -73,7 +73,7 @@ export default function Shifts() {
   return <>
     <ShiftDialog
       uuid={shiftDialogUuid}
-      startDate={shiftDialogStartDate}
+      start={shiftDialogStart}
       open={openShiftDialog}
       onClose={() => setOpenShiftDialog(false)}
       onSubmit={() => load()}

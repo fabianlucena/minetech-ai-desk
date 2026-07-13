@@ -4,16 +4,16 @@ export async function getShifts(params) {
   let shifts = await Api.getJson('shifts', params);
   shifts = shifts.map(shift => ({
     ...shift,
-    startDate: new Date(shift.startDate),
-    endDate: new Date(shift.endDate),
+    start: new Date(shift.start),
+    end: new Date(shift.end),
   }));
   return shifts;
 }
 
 export async function getShift(uuid, params) {
   let shift = await Api.getJson(`shifts/${uuid}`, params);
-  shift.startDate = new Date(shift.startDate);
-  shift.endDate = new Date(shift.endDate);
+  shift.start = new Date(shift.start);
+  shift.end = new Date(shift.end);
   return shift;
 }
 

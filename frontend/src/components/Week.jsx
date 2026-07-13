@@ -6,6 +6,37 @@ import TextField from './fields/TextField';
 import ConfirmDialog from './ConfirmDialog.jsx';
 import { getDarkerColor } from '../utils/color.js';
 
+function splitMultiDayEvent(event) {
+  const start = new Date(event.start);
+  const end = new Date(event.end);
+
+  const days = [];
+  let current = new Date(start);
+
+  while (current.toDateString() !== end.toDateString()) {
+    const dayEnd = new Date(current);
+    dayEnd.setHours(24, 0, 0, 0);
+
+    days.push({
+      ...event,
+      start: new Date(current),
+      end: (new Date()).setTime(dayEnd.getTime() - 1),
+      originalId: event.id,
+    });
+
+    current = new Date(dayEnd);
+  }
+
+  days.push({
+    ...event,
+    start: current,
+    end: end,
+    originalId: event.id,
+  });
+
+  return days;
+}
+
 export default function Week({
   title,
   description,
@@ -36,6 +67,7 @@ export default function Week({
   });
   const [now, setNow] = useState(new Date());
   const [isShowingToday, setIsShowingToday] = useState(false);
+  const [normalizedEvents, setNormalizedEvents] = useState([]);
 
   function updateNow() {
     setNow(prev => {
@@ -94,6 +126,12 @@ export default function Week({
     onFirstDate?.(datesInfo[0].date);
     onLastDate?.(datesInfo[datesInfo.length - 1].date);
   }, [effectiveDate]);
+
+  useEffect(() => {
+    const normalized = events.flatMap(splitMultiDayEvent);
+    setNormalizedEvents(normalized);
+    console.log(events, normalized);
+  }, [events]);
 
   function getMonthName(monthIndex) {
     return monthNames[monthIndex];
@@ -282,53 +320,33 @@ export default function Week({
           }}
         >
           <div style={{
-            //height: (now.getHours() + now.getMinutes() / 60 + now.getSeconds() / 3600) * (100 / 24) + '%',
-            height: '100%',
+            height: (now.getHours() + now.getMinutes() / 60 + now.getSeconds() / 3600) * (100 / 24) + '%',
             borderBottom: '2px solid red'
           }}>
           </div>
       </div>}
-      {events.map((event, i) => {
-        const startDate = new Date(event.startDate);
-        const endDate = new Date(event.endDate);
-        const startHour = startDate.getHours();
-        const endHour = endDate.getHours();
-        const startDayIndex = datesInfo.findIndex(dateInfo => dateInfo.date.toDateString() === startDate.toDateString());
-        const endDayIndex = datesInfo.findIndex(dateInfo => dateInfo.date.toDateString() === endDate.toDateString());
-        if (startDayIndex < 0 && endDayIndex < 0
-          || startDayIndex > 7 && endDayIndex > 7
-          || startDayIndex < endDayIndex
-        )
-          return null;
+      {normalizedEvents.map((event, i) => {
+        const start = new Date(event.start);
+        const end = new Date(event.end);
+        const dayIndex = start.getDay();
+        const startHour = start.getHours();
+        const endHour = end.getHours() + (end.getMinutes() > 0 || end.getSeconds() > 0 || end.getMilliseconds() > 0 ? 1 : 0);
 
-        if (startDayIndex < 0)         
-          startDayIndex = 0;
-
-        if (startDayIndex > 7)
-          startDayIndex = 7;
-
-        const eventBoxes = [];
-        for (let i = startDayIndex; i <= endDayIndex; i++) {
-          eventBoxes.push({
-            startHour: i === startDayIndex ? startHour : 0,
-            endHour: i === endDayIndex ? endHour : 24,
-            dayIndex: i,
-          });
-        }
-
-        return eventBoxes.map((eventBox, j) => <Box
-            key={j}
-            style={{
-              gridArea: `${eventBox.startHour + 2} / ${eventBox.dayIndex + 2} / span ${eventBox.endHour - eventBox.startHour} / span 1`,
-              backgroundColor: `${event.technician.color}40`,
-              border: `2px solid ${getDarkerColor(event.technician.color)}`,
-              borderRadius: 4,
-              padding: 4,
-            }}
-          >
-            {event.technician.fullName}
-          </Box>
-        );
+        return <Box
+          key={i}
+          style={{
+            gridArea: `${startHour + 2} / ${dayIndex + 2} / span ${endHour - startHour} / span 1`,
+            backgroundColor: `${event.technician.color}40`,
+            border: `2px solid ${getDarkerColor(event.technician.color)}`,
+            borderRadius: 4,
+            padding: 4,
+          }}
+        >
+          {event.technician.fullName}
+          - {start.getDay()}
+          - {start.getHours?.().toString().padStart(2, '0')}h
+          - {end.getHours?.().toString().padStart(2, '0')}h
+        </Box>;
       })}
     </Box>
   </Box>

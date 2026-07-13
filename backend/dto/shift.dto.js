@@ -4,8 +4,8 @@ export class ShiftMinDTO {
   constructor(shift) {
     this.uuid = shift.uuid;
     this.technician = shift.technician ? new TechnicianMinDTO(shift.technician) : null;
-    this.startDate = shift.startDate;
-    this.endDate = shift.endDate;
+    this.start = shift.start;
+    this.end = shift.end;
   }
 }
 
@@ -14,8 +14,8 @@ export class ShiftDTO {
     this.uuid = shift.uuid;
     this.technician = shift.technician ? new TechnicianMinDTO(shift.technician) : null;
     this.type = shift.type;
-    this.startDate = shift.startDate;
-    this.endDate = shift.endDate;
+    this.start = shift.start;
+    this.end = shift.end;
     this.createdAt = shift.createdAt;
     this.updatedAt = shift.updatedAt;
     this.deletedAt = shift.deletedAt;
