@@ -52,13 +52,34 @@ export default function Week({
     title: 'Confirmar',
     content: '',
   });
+  const [now, setNow] = useState(() => new Date());
+  const [isShowingToday, setIsShowingToday] = useState(false);
+
+  function updateNow() {
+    setNow(new Date());
+  }
+
+  useEffect(() => {
+    updateNow();
+    const msToNextMinute = (60 - now.getSeconds()) * 1000;
+
+    const timeout = setTimeout(() => {
+      updateNow();
+      const interval = setInterval(() => {
+        updateNow();
+      }, 60 * 1000);
+
+      return () => clearInterval(interval);
+    }, msToNextMinute);
+
+    return () => clearTimeout(timeout);
+  }, []);
 
   useEffect(() => {
     const from = new Date(effectiveDate.getFullYear(), effectiveDate.getMonth(), effectiveDate.getDate() - effectiveDate.getDay() - 1);
     const nextDate = new Date(from);
     const datesInfo = [];
     const currentMonth = effectiveDate.getMonth();
-    const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const todayTimeStampMS = today.getTime();
 
@@ -72,11 +93,13 @@ export default function Week({
       };
     }
 
+    setIsShowingToday(datesInfo.some(dateInfo => dateInfo.isToday));
+
     addEventsToDatesInfo(datesInfo, events);
     setDatesInfo(datesInfo);
     onFirstDate?.(datesInfo[0].date);
     onLastDate?.(datesInfo[datesInfo.length - 1].date);
-  }, [effectiveDate]);
+  }, [effectiveDate, now]);
 
   useEffect(() => {
     if (datesInfo.length === 0)
@@ -264,6 +287,14 @@ export default function Week({
           </Box>
         </>)}
       </>)}
+      {isShowingToday &&
+        <div style={{ gridArea: `2 / ${datesInfo.findIndex(dateInfo => dateInfo.isToday) + 2} / span 24 / span 1`, position: 'relative' }}>
+          <div style={{
+            height: (now.getHours() + now.getMinutes() / 60) * (100 / 24) + '%',
+            borderBottom: '2px solid red'
+          }}>
+          </div>
+      </div>}
       {events.map((event, i) => {
         const startDate = new Date(event.startDate);
         const endDate = new Date(event.endDate);
