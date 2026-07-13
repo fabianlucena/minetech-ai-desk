@@ -86,12 +86,19 @@ export default function ShiftDialog({
     setDisabled(true);
     try {
       if (uuid) {
-        await updateShift(uuid, data);
+        await updateShift(uuid, {
+          technicianUuid: data.technicianUuid,
+          type: data.type,
+          start: data.start,
+          end: data.end,
+        });
         addInfo('Turno actualizado correctamente');
       } else {
         await createShift(data);
         addInfo('Turno creado correctamente');
       }
+
+      onSubmit?.();
     } catch (error) {
       if (uuid) {
         console.error('Error al actualizar turno:', error);
@@ -102,8 +109,6 @@ export default function ShiftDialog({
       }
     }
     setDisabled(false);
-
-    onSubmit?.();
   }
 
   return <FormDialog

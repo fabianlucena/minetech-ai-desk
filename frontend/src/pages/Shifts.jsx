@@ -65,7 +65,7 @@ export default function Shifts() {
       addMessage('Turno restaurado correctamente');
       load();
     } catch (error) {
-      addError('Error al restaurar el turno');
+      addError('Error al restaurar el turno: ' + (error.data?.message || error.message || error.data?.error));
       console.error('Error al restaurar el turno:', error);
     }
   }

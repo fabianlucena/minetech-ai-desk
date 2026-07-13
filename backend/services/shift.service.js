@@ -27,13 +27,23 @@ export default class ShiftService extends ModelService {
     return options;
   }
 
-  async create(data, options) {
+  get validPropertiesForCreation() {
+    return ['technicianId', 'type', 'start', 'end'];
+  }
+
+  get validPropertiesForUpdate() {
+    return ['technicianId', 'type', 'start', 'end'];
+  }
+
+  async validateForCreation(data, options) {
     if (!data.technicianId) {
       if (data.technicianUuid) {
         const technicianService = getDependency('technicianService');
         data.technicianId = await technicianService.getIdByUuid(data.technicianUuid, { session: options?.session });
         if (!data.technicianId)
           throw new Error('Técnico no encontrado');
+
+        delete data.technicianUuid;
       } else
         throw new Error('El técnico es obligatorio');
     }
@@ -47,6 +57,26 @@ export default class ShiftService extends ModelService {
     if (!data.end)
       throw new Error('La fecha y hora de finalización de turno es obligatoria');
 
+    return await super.validateForCreation(data, options);
+  }
+
+  async validateForUpdate(data, options) {
+    if (!data.technicianId) {
+      if (data.technicianUuid) {
+        const technicianService = getDependency('technicianService');
+        data.technicianId = await technicianService.getIdByUuid(data.technicianUuid, { session: options?.session });
+        if (!data.technicianId)
+          throw new Error('Técnico no encontrado');
+
+        delete data.technicianUuid;
+      } else
+        throw new Error('El técnico es obligatorio');
+    }
+
+    return await super.validateForUpdate(data, options);
+  }
+
+  async create(data, options) {
     const shift = await super.create(data, options);
 
     const globalOptions = { session: options?.session };
