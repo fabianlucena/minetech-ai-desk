@@ -358,7 +358,6 @@ export default function Week({
         </>)}
       </>)}
       {datesInfo.map((dateInfo, i) => {
-        const slotsCount = slotsByDay[dateInfo.isoDate];
         return <Box
           style={{
             gridArea: `2 / ${i + 2} / span 24 / span 1`,
