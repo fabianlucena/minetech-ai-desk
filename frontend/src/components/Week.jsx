@@ -113,6 +113,7 @@ export default function Week({
   const [isShowingToday, setIsShowingToday] = useState(false);
   const [normalizedEvents, setNormalizedEvents] = useState([]);
   const [slotsByDay, setSlotsByDay] = useState({});
+  const pixelsPerHour = 28;
 
   function updateNow() {
     setNow(prev => {
@@ -289,6 +290,7 @@ export default function Week({
       style={{
         display: 'grid',
         gridTemplateColumns: '1fr repeat(7, 3fr)',
+        gridTemplateRows: `1fr repeat(24, ${pixelsPerHour}px)`,
         gap: 0,
         backgroundColor: '#a1a1a1',
         overflow: 'visible',
@@ -377,21 +379,21 @@ export default function Week({
             gridArea: `2 / ${i + 2} / span 24 / span 1`,
             position: 'relative',
             zIndex: 1,
-            display: 'grid',
-            gridTemplateRows: 'repeat(24, 1fr)',
+            display: 'flex',
           }}
         > 
           {normalizedEvents.filter(eventInfo => eventInfo.isoDate === dateInfo.isoDate).map((eventInfo, i) => {
             const start = new Date(eventInfo.start);
             const end = new Date(eventInfo.end);
             const dayIndex = start.getDay();
-            const startHour = start.getHours();
-            const endHour = end.getHours() + (end.getMinutes() > 0 || end.getSeconds() > 0 || end.getMilliseconds() > 0 ? 1 : 0);
-
+            const startHour = start.getHours() + start.getMinutes() / 60 + start.getSeconds() / 3600 + start.getMilliseconds() / 3600000;
+            const endHour = end.getHours() + end.getMinutes() / 60 + end.getSeconds() / 3600 + end.getMilliseconds() / 3600000;
+            
             return <Box
               key={i}
               style={{
-                gridRow: `${startHour + 1} / span ${endHour - startHour + 1}`,
+                marginTop: `${startHour * pixelsPerHour}px`,
+                height: `${(endHour - startHour) * pixelsPerHour}px`,
                 backgroundColor: `${eventInfo.color}40`,
                 border: `2px solid ${getDarkerColor(eventInfo.color)}`,
                 borderRadius: 4,
@@ -400,6 +402,8 @@ export default function Week({
                 flexDirection: 'row',
                 alignItems: 'start',
                 justifyContent: 'space-between',
+                boxSizing: 'border-box',
+                flex: 1,
               }}
             >
               <Typography variant="body2" sx={{ fontSize: 12, flex: 1 }}>
