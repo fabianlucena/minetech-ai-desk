@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Box, Button, Typography } from '@mui/material';
 import { ReloadButton, CreateButton, PriorButton, NextButton, EditButton, DeleteButton, RestoreButton } from './buttons';
+import { ArrowBackIcon, ArrowForwardIcon } from './icons';
 import SelectField from './fields/SelectField';
 import TextField from './fields/TextField';
 import ConfirmDialog from './ConfirmDialog.jsx';
@@ -13,7 +14,12 @@ function addEventsToDatesInfo(datesInfo, events) {
 
   for (const dateInfo of datesInfo) {
     dateInfo.events = events.filter(event => event.startTimeStampMS <= dateInfo.toTimeStampMS 
-      && event.endTimeStampMS >= dateInfo.fromTimeStampMS);
+      && event.endTimeStampMS >= dateInfo.fromTimeStampMS)
+      .map(event => ({
+        ...event,
+        fromPreviousDay: event.startTimeStampMS < dateInfo.fromTimeStampMS,
+        toNextDay: event.endTimeStampMS > dateInfo.toTimeStampMS,
+      }));
   }
 }
 
@@ -297,9 +303,19 @@ export default function Month({
                   justifyContent: 'space-between',
                 }}
               >
-                <Typography variant="body2" sx={{ fontSize: 12, flex: 1 }}>
-                  {eventInfo.start.getHours?.().toString().padStart(2, '0')}h 
+                <Typography
+                  variant="body2"
+                  sx={{
+                    fontSize: 12,
+                    flex: 1,
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                  }}
+                >
+                  {eventInfo.fromPreviousDay && <ArrowBackIcon title="Evento de día anterior" sx={{ fontSize: 16, color: '#606060' }} />}
                   {eventInfo.title}
+                  {eventInfo.toNextDay && <ArrowForwardIcon title="Evento de día siguiente" sx={{ fontSize: 16, color: '#606060' }} />}
                 </Typography>
                 {onRestore && getEventCapability(eventInfo, 'canRestore', eventInfo.isDeleted) && <RestoreButton
                   size="small"

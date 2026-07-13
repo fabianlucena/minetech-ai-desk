@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Box, Button, Typography } from '@mui/material';
 import { ReloadButton, CreateButton, PriorButton, NextButton, EditButton, DeleteButton, RestoreButton } from './buttons';
+import { ArrowBackIcon, ArrowForwardIcon } from './icons';
 import SelectField from './fields/SelectField';
 import TextField from './fields/TextField';
 import ConfirmDialog from './ConfirmDialog.jsx';
@@ -12,6 +13,7 @@ function splitMultiDayEvent(event) {
 
   const days = [];
   let current = new Date(start);
+  let fromPreviousDay = false;
 
   while (current.toDateString() !== end.toDateString()) {
     const dayEnd = new Date(current);
@@ -23,9 +25,12 @@ function splitMultiDayEvent(event) {
       start: new Date(current),
       end: (new Date()).setTime(dayEnd.getTime() - 1),
       originalId: event.id,
+      fromPreviousDay,
+      toNextDay: true,
     });
 
     current = new Date(dayEnd);
+    fromPreviousDay = true;
   }
 
   days.push({
@@ -34,6 +39,8 @@ function splitMultiDayEvent(event) {
     start: current,
     end: end,
     originalId: event.id,
+    fromPreviousDay,
+    toNextDay: false,
   });
 
   return days;
@@ -414,8 +421,19 @@ export default function Week({
                 boxSizing: 'border-box',
               }}
             >
-              <Typography variant="body2" sx={{ fontSize: 12, flex: 1 }}>
+              <Typography
+                variant="body2"
+                sx={{
+                  fontSize: 12,
+                  flex: 1,
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                }}
+              >
+                {eventInfo.fromPreviousDay && <ArrowBackIcon title="Evento de día anterior" sx={{ fontSize: 16, color: '#606060' }} />}
                 {eventInfo.title}
+                {eventInfo.toNextDay && <ArrowForwardIcon title="Evento de día siguiente" sx={{ fontSize: 16, color: '#606060' }} />}
               </Typography>
               {onRestore && getEventCapability(eventInfo, 'canRestore', eventInfo.isDeleted) && <RestoreButton
                 size="small"
