@@ -6,12 +6,15 @@ import TextField from './fields/TextField';
 import ConfirmDialog from './ConfirmDialog.jsx';
 
 function addEventsToDatesInfo(datesInfo, events) {
+  for (const event of events) {
+    event.startTimeStampMS = event.startDate.getTime();
+    event.endTimeStampMS = event.endDate.getTime();
+  }
+
   for (const dateInfo of datesInfo) {
-    const dateISOString = dateInfo.date.toISOString().split('T')[0];
-    dateInfo.events = events.filter(event => event.startDate.toISOString().split('T')[0] <= dateISOString
-        && event.endDate.toISOString().split('T')[0] >= dateISOString
-      );
-  };
+    dateInfo.events = events.filter(event => event.startTimeStampMS <= dateInfo.toTimeStampMS 
+      && event.endTimeStampMS >= dateInfo.fromTimeStampMS);
+  }
 }
 
 export default function Month({
@@ -50,13 +53,17 @@ export default function Month({
     const datesInfo = [];
     const currentMonth = effectiveDate.getMonth();
     const todayString = new Date().toDateString();
+    const dateDuration = 24 * 60 * 60 * 1000 - 1;
 
     for (let i = 0; i < 42; i++) {
       date.setDate(date.getDate() + 1);
+      const timeStampMS = date.getTime();
       datesInfo[i] = {
         date: new Date(date),
         isCurrentMonth: date.getMonth() === currentMonth,
         isToday: date.toDateString() === todayString,
+        fromTimeStampMS: timeStampMS,
+        toTimeStampMS: timeStampMS + dateDuration,
       };
     }
 
