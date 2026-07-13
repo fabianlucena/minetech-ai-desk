@@ -5,7 +5,7 @@ import TextField from './fields/TextField.jsx';
 import DateTimeField from './fields/DateTimeField.jsx';
 import SliderField from './fields/SliderField.jsx';
 import { useToast } from '../state/toast.jsx';
-import { diffHours, addHours } from '../utils/time.js';
+import { diffHours, addHours, diffHoursMinutes } from '../utils/time.js';
 import { getTechnicians, getTypes, getShift, createShift, updateShift } from '../services/shift.service.js';
 
 const defaultData = {
@@ -153,7 +153,7 @@ export default function ShiftDialog({
     />
 
     <SliderField
-      label={"Horas: " + (diffHours(data.start, data.end) || 0)}
+      label={"Horas: " + (diffHoursMinutes(data.start, data.end) || 0)}
       value={diffHours(data.start, data.end) || 0}
       onChange={(e, value) => {
         const newData = { ...data, end: addHours(data.start, value) };
