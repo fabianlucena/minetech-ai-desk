@@ -112,7 +112,7 @@ export default function UsuariosPage() {
 
   useEffect(() => {
     load();
-  }, [load, includeDeleted]);
+  }, [load]);
 
   return <Grid
     title="Usuarios"

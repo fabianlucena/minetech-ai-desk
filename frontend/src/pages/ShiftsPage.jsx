@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Calendar from '../components/Calendar.jsx';
 import ShiftDialog from '../components/ShiftDialog.jsx';
 import { getShifts, deleteShift, restoreShift } from '../services/shift.service.js';
@@ -17,7 +17,7 @@ export default function ShiftsPage() {
   const [shiftDialogStart, setShiftDialogStart] = useState(null);
   const { addMessage, addError } = useToast();
 
-  async function load() {
+  const load = useCallback(async () => {
     if (!firstDate || !lastDate)
       return;
 
@@ -31,12 +31,11 @@ export default function ShiftsPage() {
 
     const shifts = await getShifts({ query });
     setShifts(shifts);
-  }
+  }, [firstDate, lastDate, includeDeleted]);
 
   useEffect(() => {
     load();
-  // oxlint-disable-next-line react-hooks/exhaustive-deps
-  }, [firstDate, lastDate, includeDeleted]);
+  }, [load]);
 
   function createShiftHandler({date}) {
     setShiftDialogUuid(null);

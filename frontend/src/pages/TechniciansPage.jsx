@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import Grid from '../components/Grid.jsx';
 import useToast from '../states/useToast.jsx';
 import usePermissions from '../states/usePermissions.jsx';
@@ -51,7 +51,7 @@ export default function TechniciansPage() {
     return baseColumns;
   }, [includeDeleted]);
 
-  async function load() {
+  const load = useCallback(async () => {
     try {
       const query = {};
       if (includeDeleted) {
@@ -70,7 +70,7 @@ export default function TechniciansPage() {
       addError('Error al obtener los técnicos');
       console.error('Error al obtener los técnicos:', error);
     }
-  }
+  }, [includeDeleted, addError]);
 
   async function deleteTechnicianHandler({ uuid }) {
     try {
@@ -96,8 +96,7 @@ export default function TechniciansPage() {
 
   useEffect(() => {
     load();
-  // oxlint-disable-next-line react-hooks/exhaustive-deps
-  }, [includeDeleted]);
+  }, [load]);
 
   return <Grid
     title="Técnicos"

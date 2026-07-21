@@ -1,17 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Form from '../components/Form.jsx';
 import { TextField, SwitchField, ColorField } from '../components/fields/index.jsx';
 import useToast from '../states/useToast.jsx';
 import { getTechnician, updateTechnician, createTechnician } from '../services/technician.service.js';
 
-export default function TechnicianPage() {
-  const defaultData = {
-    fullName: '',
-    phone: '',
-    isActive: true,
-  };
+const defaultData = {
+  fullName: '',
+  phone: '',
+  isActive: true,
+};
 
+export default function TechnicianPage() {
   const navigate = useNavigate();
   const { uuid } = useParams();
   const { addInfo, addError } = useToast();
@@ -25,7 +25,7 @@ export default function TechnicianPage() {
     disabledMessage: 'Creando técnico...',
   });
 
-  async function load() {
+  const load = useCallback(async () => {
     try {
       const res = await getTechnician(uuid);
       const data = {
@@ -38,7 +38,7 @@ export default function TechnicianPage() {
       addError('Error al obtener el técnico: ' + (error.data?.message || error.message || error.data?.error));
       console.error('Error al obtener el técnico:', error);
     }
-  }
+  }, [uuid, addError]);
 
   useEffect(() => {
     if (uuid) {
@@ -56,8 +56,7 @@ export default function TechnicianPage() {
         disabledMessage: 'Creando técnico...',
       });
     }
-  // oxlint-disable-next-line react-hooks/exhaustive-deps
-  }, [uuid]);
+  }, [uuid, load, addError, navigate]);
 
   async function onSubmit() {
     setDisabled(true);

@@ -1,18 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Form from '../components/Form.jsx';
 import { TextField, PasswordField } from '../components/fields';
 import useToast from '../states/useToast.jsx';
 import { getUser, updateUserPassword } from '../services/user.service.js';
 
-export default function UserChangePasswordPage() {
-  const defaultData = {
-    username: '',
-    displayName: '',
-    hasPassword: false,
-    password: '',
-  };
+const defaultData = {
+  username: '',
+  displayName: '',
+  hasPassword: false,
+  password: '',
+};
 
+export default function UserChangePasswordPage() {
   const navigate = useNavigate();
   const { uuid } = useParams();
   const { addInfo, addError } = useToast();
@@ -20,7 +20,7 @@ export default function UserChangePasswordPage() {
   const [data, setData] = useState({...defaultData});
   const [unchangedData, setUnchangedData] = useState({...defaultData});
 
-  async function load() {
+  const load = useCallback(async () => {
     try {
       const res = await getUser(uuid);
       const data = {
@@ -35,7 +35,7 @@ export default function UserChangePasswordPage() {
       addError('Error al obtener el usuario: ' + (error.data?.message || error.message || error.data?.error));
       console.error('Error al obtener el usuario:', error);
     }
-  }
+  }, [uuid, addError]);
 
   useEffect(() => {
     if (!uuid) {
@@ -45,8 +45,7 @@ export default function UserChangePasswordPage() {
     }
 
     load();
-  // oxlint-disable-next-line react-hooks/exhaustive-deps
-  }, [uuid]);
+  }, [uuid, load, addError, navigate]);
 
   async function onSubmit() {
     setDisabled(true);

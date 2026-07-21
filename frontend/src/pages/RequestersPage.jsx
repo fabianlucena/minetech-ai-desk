@@ -41,7 +41,7 @@ export default function RequestersPage() {
     return baseColumns.filter(col => !col.condition || col.condition());
   }, [includeDeleted]);
 
-  async function load() {
+  const load = useCallback(async () => {
     try {
       const query = {};
       if (includeDeleted) {
@@ -54,12 +54,11 @@ export default function RequestersPage() {
       addError('Error al obtener los solicitantes');
       console.error('Error al obtener los solicitantes:', error);
     }
-  }
+  }, [includeDeleted, addError]);
 
   useEffect(() => {
     load();
-  // oxlint-disable-next-line react-hooks/exhaustive-deps
-  }, [includeDeleted]);
+  }, [load]);
 
   return <Grid
     title="Solicitantes"
