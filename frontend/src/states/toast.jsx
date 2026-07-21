@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useCallback } from 'react';
 import Snackbar from '../components/Snackbar.jsx';
 
 const ToastContext = createContext();
@@ -6,7 +6,7 @@ const ToastContext = createContext();
 export function ToastProvider({ children }) {
   const [messages, setMessages] = useState([]);
 
-  function addMessage(message, options = {}) {
+  const addMessage = useCallback((message, options = {}) => {
     if (typeof message === 'string') {
       message = {
         text: message,
@@ -16,9 +16,9 @@ export function ToastProvider({ children }) {
 
     message.id ??= crypto.randomUUID();
     setMessages((prevMessages) => [...prevMessages, message]);
-  }
+  }, []);
 
-  function addInfo(message, options = {}) {
+  const addInfo = useCallback((message, options = {}) => {
     if (typeof message === 'string') {
       message = {
         text: message,
@@ -29,9 +29,9 @@ export function ToastProvider({ children }) {
 
     message.severity = 'info';
     addMessage(message);
-  }
+  }, [addMessage]);
 
-  function addSuccess(message, options = {}) {
+  const addSuccess = useCallback((message, options = {}) => {
     if (typeof message === 'string') {
       message = {
         text: message,
@@ -42,9 +42,9 @@ export function ToastProvider({ children }) {
 
     message.severity = 'success';
     addMessage(message);
-  }
+  }, [addMessage]);
 
-  function addWarning(message, options = {}) {
+  const addWarning = useCallback((message, options = {}) => {
     if (typeof message === 'string') {
       message = {
         text: message,
@@ -55,9 +55,9 @@ export function ToastProvider({ children }) {
 
     message.severity = 'warning';
     addMessage(message);
-  }
+  }, [addMessage]);
 
-  function addError(message, options = {}) {
+  const addError = useCallback((message, options = {}) => {
     if (typeof message === 'string') {
       message = {
         text: message,
@@ -68,7 +68,7 @@ export function ToastProvider({ children }) {
 
     message.severity = 'error';
     addMessage(message);
-  }
+  }, [addMessage]);
 
   return <ToastContext.Provider
     value={{
