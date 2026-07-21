@@ -53,3 +53,11 @@ export async function setCredentials(res) {
 
   return res;
 }
+
+export function clearCredentials() {
+  localStorage.removeItem('autoLoginToken');
+  if (Api.Authorization) {
+    Api.Authorization = null;
+    Api.AuthorizationExpireAt = null;
+  }
+}
