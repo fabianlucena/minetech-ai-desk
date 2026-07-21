@@ -1,9 +1,8 @@
-import { createContext, useContext, useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import Snackbar from '../components/Snackbar.jsx';
+import ToastContext from './ToastContext.jsx';
 
-const ToastContext = createContext();
-
-export function ToastProvider({ children }) {
+export default function ToastProvider({ children }) {
   const [messages, setMessages] = useState([]);
 
   const addMessage = useCallback((message, options = {}) => {
@@ -86,5 +85,3 @@ export function ToastProvider({ children }) {
     {children}
   </ToastContext.Provider>;
 }
-
-export const useToast = () => useContext(ToastContext);

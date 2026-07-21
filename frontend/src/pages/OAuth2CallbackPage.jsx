@@ -3,8 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { oAuth2Callback } from '../services/oauth2provider.service.js';
 import { setCredentials, clearCredentials } from '../services/login.service.js';
 import { ErrorDialog } from '../components/dialogs';
-import { useToast } from '../states/toast.jsx';
-import { useGlobal } from '../states/global.jsx';
+import useToast from '../states/useToast.jsx';
+import useGlobal from '../states/useGlobal.jsx';
 
 export default function OAuth2CallbackPage() {
   const { name, action } = useParams();
@@ -47,10 +47,9 @@ export default function OAuth2CallbackPage() {
         setErrorMessage(message); 
         setErrorTitle('Error al autorizar');
         setMessage('Error al autorizar. Por favor, inténtelo de nuevo.');
-        sm.error('Error al autorizar: ' + message);
+        addMessage('Error al autorizar: ' + message);
       });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [name, action]);
+  }, [name, action, updateSession, navigate, addMessage]);
 
   return <>
     <ErrorDialog title={errorTitle}>

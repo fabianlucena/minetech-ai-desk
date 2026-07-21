@@ -2,8 +2,8 @@ import { useEffect, useCallback } from 'react';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { useRoutes } from './routes.jsx';
 import { autoLoginService, clearCredentials } from './services/login.service.js';
-import { useGlobal } from './states/global.jsx';
-import { useToast } from './states/toast.jsx';
+import useGlobal from './states/useGlobal.jsx';
+import useToast from './states/useToast.jsx';
 
 export default function App() {
   const routes = useRoutes();
@@ -30,7 +30,7 @@ export default function App() {
       console.warn('Error al iniciar sesión:', error);
       addWarning('No se pudo iniciar sesión automáticamente');
     }
-  }, [updateSession, addInfo]);
+  }, [updateSession, addInfo, addWarning]);
 
   useEffect(() => {
     autoLogin();

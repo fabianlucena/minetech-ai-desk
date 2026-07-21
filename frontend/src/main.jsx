@@ -4,8 +4,8 @@ import './index.css';
 import App from './App.jsx';
 import { ThemeProvider } from '@mui/material/styles';
 import { mineTechTheme } from './theme/mineTechTheme';
-import { GlobalProvider } from './states/global.jsx';
-import { ToastProvider } from './states/toast.jsx';
+import GlobalProvider from './states/GlobalProvider.jsx';
+import ToastProvider from './states/ToastProvider.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

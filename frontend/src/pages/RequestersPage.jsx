@@ -1,12 +1,13 @@
 import { useState, useEffect, useMemo } from 'react';
 import Grid from '../components/Grid.jsx';
-import { useToast } from '../states/toast.jsx';
-import { hasPermission } from '../states/global.jsx';
+import useToast from '../states/useToast.jsx';
+import usePermissions from '../states/usePermissions.jsx';
 import { formatDate } from '../utils/date.js';
 import { getRequesters } from '../services/requester.service.js';
 import SwitchField from '../components/fields/SwitchField.jsx';
 
 export default function RequestersPage() {
+  const { hasPermission } = usePermissions();
   const { addError } = useToast();
   const [data, setData] = useState([]);
   const [includeDeleted, setIncludeDeleted] = useState(false);

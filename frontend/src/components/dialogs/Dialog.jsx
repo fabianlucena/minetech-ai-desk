@@ -6,6 +6,8 @@ export default function Dialog({
   onCancel,
   onConfirm,
   title = '',
+  message = '',
+  content = '',
   children,
   closeOnCancel = true,
   closeOnConfirm = true,

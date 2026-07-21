@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import Grid from '../components/Grid.jsx';
-import { useToast } from '../states/toast.jsx';
-import { hasPermission } from '../states/global.jsx';
+import useToast from '../states/useToast.jsx';
+import usePermissions from '../states/usePermissions.jsx';
 import { formatDate } from '../utils/date.js';
 import Chip from '../components/Chip.jsx';
 import { getTechnicians, deleteTechnician, restoreTechnician } from '../services/technician.service.js';
@@ -9,6 +9,7 @@ import SwitchField from '../components/fields/SwitchField.jsx';
 import { getLighterColor } from '../utils/color.js';
 
 export default function TechniciansPage() {
+  const { hasPermission } = usePermissions();
   const { addMessage, addError } = useToast();
   const [data, setData] = useState([]);
   const [includeDeleted, setIncludeDeleted] = useState(false);

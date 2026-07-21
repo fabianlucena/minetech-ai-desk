@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Form from '../components/Form.jsx';
 import { TextField, SwitchField, ChippedCheckboxSelectField } from '../components/fields/index.jsx';
-import { useToast } from '../states/toast.jsx';
+import useToast from '../states/useToast.jsx';
 import { getClient, getStatus, updateClient, createClient } from '../services/client.service.js';
 import { generateClientIdentifiers } from '../utils/client.js';
 import RenewButton from '../components/buttons/renew.button.jsx';

@@ -1,4 +1,4 @@
-import { useGlobal } from './states/global.jsx';
+import useGlobal from './states/useGlobal.jsx';
 import { HomeIcon, DashboardIcon, UsersIcon, AboutIcon, LoginIcon, LogoutIcon, TechnicianIcon, ClientIcon, RequesterIcon, ShiftIcon } from './components/icons/index.jsx';
 import Layout from './components/Layout.jsx';
 import HomePage from './pages/HomePage.jsx';

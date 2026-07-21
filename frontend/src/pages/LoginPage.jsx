@@ -5,8 +5,8 @@ import { TextField, PasswordField } from '../components/fields';
 import Button from '../components/Button';
 import { loginService } from '../services/login.service.js';
 import { getOAuth2ProvidersService } from '../services/oauth2provider.service';
-import { useGlobal } from '../states/global.jsx';
-import { useToast } from '../states/toast.jsx';
+import useGlobal from '../states/useGlobal.jsx';
+import useToast from '../states/useToast.jsx';
 
 export default function LoginPage() {
   const { updateSession } = useGlobal();

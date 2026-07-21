@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Form from '../components/Form.jsx';
 import { TextField, SwitchField, ColorField } from '../components/fields/index.jsx';
-import { useToast } from '../states/toast.jsx';
+import useToast from '../states/useToast.jsx';
 import { getTechnician, updateTechnician, createTechnician } from '../services/technician.service.js';
 
 export default function TechnicianPage() {

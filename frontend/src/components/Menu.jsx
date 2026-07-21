@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Box, List, ListItemButton, ListItemText, ListItemIcon } from '@mui/material';
 import { Link, useLocation  } from 'react-router-dom';
-import { useGlobal } from '../states/global.jsx';
+import useGlobal from '../states/useGlobal.jsx';
 import { useRoutes } from '../routes.jsx';
 
 function flattenNavigableRoutes(routes) {
