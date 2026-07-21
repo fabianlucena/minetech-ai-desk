@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Form from '../components/Form';
 import { TextField, PasswordField } from '../components/fields';
 import Button from '../components/Button';
 import { loginService } from '../services/login.service.js';
+import { getOAuth2ProvidersService } from '../services/oauth2provider.service';
 import { useGlobal } from '../states/global.jsx';
 import { useToast } from '../states/toast.jsx';
 
