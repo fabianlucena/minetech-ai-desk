@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import Grid from '../components/Grid.jsx';
 import useToast from '../states/useToast.jsx';
 import usePermissions from '../states/usePermissions.jsx';
@@ -13,6 +13,10 @@ export default function ClientsPage() {
   const [includeDeleted, setIncludeDeleted] = useState(false);
   const [showAccessCode, setShowAccessCode] = useState(false);
   const [status, setStatus] = useState([]);
+
+  const getStatusNameByValue = useCallback((value) => {
+    return status.find(s => s.value === value)?.name ?? value;
+  }, [status]);
 
   const columns = useMemo(() => {
     const baseColumns = [
@@ -53,10 +57,9 @@ export default function ClientsPage() {
     ];
 
     return baseColumns.filter(col => !col.condition || col.condition());
-  // oxlint-disable-next-line react-hooks/exhaustive-deps
-  }, [includeDeleted, showAccessCode]);
+  }, [includeDeleted, showAccessCode, getStatusNameByValue]);
 
-  async function load() {
+  const load = useCallback(async () => {
     try {
       const query = {};
       if (includeDeleted) {
@@ -69,9 +72,9 @@ export default function ClientsPage() {
       addError('Error al obtener los clientes');
       console.error('Error al obtener los clientes:', error);
     }
-  }
+  }, [includeDeleted, addError]);
 
-  async function loadStatus() {
+  const loadStatus = useCallback(async () => {
     try {
       const res = await getStatus();
       setStatus(res);
@@ -79,7 +82,7 @@ export default function ClientsPage() {
       addError('Error al obtener los estados');
       console.error('Error al obtener los estados:', error);
     }
-  }
+  }, [addError]);
 
   async function deleteClientHandler({ uuid }) {
     try {
@@ -103,19 +106,8 @@ export default function ClientsPage() {
     }
   }
 
-  function getStatusNameByValue(value) {
-    return status.find(s => s.value === value)?.name ?? value;
-  }
-
-  useEffect(() => {
-    loadStatus();
-  // oxlint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    load();
-  // oxlint-disable-next-line react-hooks/exhaustive-deps
-  }, [includeDeleted]);
+  useEffect(() => { loadStatus(); }, [loadStatus]);
+  useEffect(() => { load(); }, [load]);
 
   return <Grid
     title="Clientes"
