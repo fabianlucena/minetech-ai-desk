@@ -39,8 +39,12 @@ export default function LoginPage() {
   
   useEffect(() => {
     getOAuth2ProvidersService()
-      .then(setProviders);
-  }, []);
+      .then(setProviders)
+      .catch(error => {
+        console.error('Error al obtener los proveedores de OAuth2:', error);
+        addError('Error al obtener los proveedores de autorización: ' + (error.data?.message || error.message || error.data?.error || error.error || 'Error desconocido'));
+      });
+  }, [addError]);
 
   return <Form
     title="Ingresar"
