@@ -6,7 +6,7 @@ import { hasPermission } from '../state/global.jsx';
 import { useToast } from '../state/toast.jsx';
 import SwitchField from '../components/fields/SwitchField.jsx';
 
-export default function Shifts() {
+export default function ShiftsPage() {
   const [shifts, setShifts] = useState([]);
   const [firstDate, setFirstDate] = useState(null);
   const [lastDate, setLastDate] = useState(null);
@@ -34,6 +34,7 @@ export default function Shifts() {
 
   useEffect(() => {
     load();
+  // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [firstDate, lastDate, includeDeleted]);
 
   function createShiftHandler({date}) {

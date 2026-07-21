@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Form from '../components/Form.jsx';
-import { TextField, SwitchField, PasswordField, ChippedCheckboxSelectField } from '../components/fields/index.jsx';
+import { TextField, SwitchField, ChippedCheckboxSelectField } from '../components/fields/index.jsx';
 import { useToast } from '../state/toast.jsx';
 import { getClient, getStatus, updateClient, createClient } from '../services/client.service.js';
 import { generateClientIdentifiers } from '../utils/client.js';
 import RenewButton from '../components/buttons/renew.button.jsx';
 
-export default function Client() {
+export default function ClientPage() {
   const defaultData = {
     name: '',
     code: '',
@@ -72,6 +72,7 @@ export default function Client() {
         disabledMessage: 'Creando cliente...',
       });
     }
+  // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [uuid]);
 
   async function onSubmit() {
@@ -112,6 +113,7 @@ export default function Client() {
 
       setData({...data, code, accessCode});
     }
+  // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [data.name, uuid]);
 
   function getValidationError() {

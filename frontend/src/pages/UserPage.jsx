@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Form from '../components/Form.jsx';
-import { TextField, SwitchField, PasswordField, ChippedCheckboxSelectField } from '../components/fields';
+import { TextField, SwitchField, PasswordField, ChippedCheckboxSelectField } from '../components/fields/index.jsx';
 import { useToast } from '../state/toast.jsx';
 import { getUser, getRoles, updateUser, createUser } from '../services/user.service.js';
 
-export default function User() {
+export default function UserPage() {
   const defaultData = {
     username: '',
     displayName: '',
@@ -72,6 +72,7 @@ export default function User() {
         disabledMessage: 'Creando usuario...',
       });
     }
+  // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [uuid]);
 
   async function onSubmit() {

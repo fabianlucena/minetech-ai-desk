@@ -1,18 +1,13 @@
 import { useState, useEffect, useMemo } from 'react';
 import Grid from '../components/Grid.jsx';
-import { GridActionsCellItem } from '@mui/x-data-grid';
-import { useNavigate } from 'react-router-dom';
 import { useToast } from '../state/toast.jsx';
 import { hasPermission } from '../state/global.jsx';
 import { formatDate } from '../utils/date.js';
-import Chips from '../components/Chips.jsx';
 import { getRequesters } from '../services/requester.service.js';
-import { PasswordIcon } from '../components/icons/index.jsx';
 import SwitchField from '../components/fields/SwitchField.jsx';
 
-export default function Requesters() {
-  const navigate = useNavigate();
-  const { addMessage, addError } = useToast();
+export default function RequestersPage() {
+  const { addError } = useToast();
   const [data, setData] = useState([]);
   const [includeDeleted, setIncludeDeleted] = useState(false);
 
@@ -62,6 +57,7 @@ export default function Requesters() {
 
   useEffect(() => {
     load();
+  // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [includeDeleted]);
 
   return <Grid

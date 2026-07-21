@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Form from '../components/Form.jsx';
-import { TextField, SwitchField, PasswordField, ChippedCheckboxSelectField, ColorField } from '../components/fields/index.jsx';
+import { TextField, SwitchField, ColorField } from '../components/fields/index.jsx';
 import { useToast } from '../state/toast.jsx';
 import { getTechnician, updateTechnician, createTechnician } from '../services/technician.service.js';
 
-export default function Technician() {
+export default function TechnicianPage() {
   const defaultData = {
     fullName: '',
     phone: '',
@@ -56,6 +56,7 @@ export default function Technician() {
         disabledMessage: 'Creando técnico...',
       });
     }
+  // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [uuid]);
 
   async function onSubmit() {

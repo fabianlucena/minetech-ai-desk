@@ -1,17 +1,12 @@
 import { useState, useEffect, useMemo } from 'react';
 import Grid from '../components/Grid.jsx';
-import { GridActionsCellItem } from '@mui/x-data-grid';
-import { useNavigate } from 'react-router-dom';
 import { useToast } from '../state/toast.jsx';
 import { hasPermission } from '../state/global.jsx';
 import { formatDate } from '../utils/date.js';
-import Chips from '../components/Chips.jsx';
 import { getClients, deleteClient, restoreClient, getStatus } from '../services/client.service.js';
-import { PasswordIcon } from '../components/icons/index.jsx';
 import SwitchField from '../components/fields/SwitchField.jsx';
 
-export default function Clients() {
-  const navigate = useNavigate();
+export default function ClientsPage() {
   const { addMessage, addError } = useToast();
   const [data, setData] = useState([]);
   const [includeDeleted, setIncludeDeleted] = useState(false);
@@ -57,6 +52,7 @@ export default function Clients() {
     ];
 
     return baseColumns.filter(col => !col.condition || col.condition());
+  // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [includeDeleted, showAccessCode]);
 
   async function load() {
@@ -112,10 +108,12 @@ export default function Clients() {
 
   useEffect(() => {
     loadStatus();
+  // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     load();
+  // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [includeDeleted]);
 
   return <Grid

@@ -5,7 +5,7 @@ import { TextField, PasswordField } from '../components/fields';
 import { useToast } from '../state/toast.jsx';
 import { getUser, updateUserPassword } from '../services/user.service.js';
 
-export default function UserChangePassword() {
+export default function UserChangePasswordPage() {
   const defaultData = {
     username: '',
     displayName: '',
@@ -45,6 +45,7 @@ export default function UserChangePassword() {
     }
 
     load();
+  // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [uuid]);
 
   async function onSubmit() {

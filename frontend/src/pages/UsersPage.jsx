@@ -10,7 +10,7 @@ import { getUsers, deleteUser, restoreUser } from '../services/user.service.js';
 import { PasswordIcon } from '../components/icons';
 import SwitchField from '../components/fields/SwitchField.jsx';
 
-export default function Usuarios() {
+export default function UsuariosPage() {
   const navigate = useNavigate();
   const { addMessage, addError } = useToast();
   const [data, setData] = useState([]);
@@ -111,6 +111,7 @@ export default function Usuarios() {
 
   useEffect(() => {
     load();
+  // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [includeDeleted]);
 
   return <Grid
@@ -133,6 +134,7 @@ export default function Usuarios() {
     </>}
     rowsActions={({row}) => [
       hasPermission('users.update') && !row.deletedAt && <GridActionsCellItem
+        key="change-password"
         icon={<PasswordIcon />}
         label="Cambiar contraseña"
         onClick={() => navigate(`/users/${row.uuid}/change-password`)}

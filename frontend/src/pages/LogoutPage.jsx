@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useGlobal } from '../state/global.jsx';
 import { useToast } from '../state/toast.jsx';
 
-export default function Logout() {
+export default function LogoutPage() {
   const navigate = useNavigate();
   const { updateSession } = useGlobal();
   const { addWarning, addError } = useToast();
@@ -21,6 +21,7 @@ export default function Logout() {
       console.error('Error al cerrar sesión:', error);
       addError('Error al cerrar sesión: ' + (error.data?.message || error.message || error.data?.error));
     }
+  // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return <h6>Cerrando sesión...</h6>;

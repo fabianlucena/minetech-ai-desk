@@ -6,7 +6,7 @@ import { loginService } from '../services/login.service.js';
 import { useGlobal } from '../state/global.jsx';
 import { useToast } from '../state/toast.jsx';
 
-export default function Login() {
+export default function LoginPage() {
   const { updateSession } = useGlobal();
   const { addInfo, addError } = useToast();
   const navigate = useNavigate();

@@ -1,18 +1,14 @@
 import { useState, useEffect, useMemo } from 'react';
 import Grid from '../components/Grid.jsx';
-import { GridActionsCellItem } from '@mui/x-data-grid';
-import { useNavigate } from 'react-router-dom';
 import { useToast } from '../state/toast.jsx';
 import { hasPermission } from '../state/global.jsx';
 import { formatDate } from '../utils/date.js';
 import Chip from '../components/Chip.jsx';
 import { getTechnicians, deleteTechnician, restoreTechnician } from '../services/technician.service.js';
-import { PasswordIcon } from '../components/icons/index.jsx';
 import SwitchField from '../components/fields/SwitchField.jsx';
 import { getLighterColor } from '../utils/color.js';
 
-export default function Technicians() {
-  const navigate = useNavigate();
+export default function TechniciansPage() {
   const { addMessage, addError } = useToast();
   const [data, setData] = useState([]);
   const [includeDeleted, setIncludeDeleted] = useState(false);
@@ -99,6 +95,7 @@ export default function Technicians() {
 
   useEffect(() => {
     load();
+  // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [includeDeleted]);
 
   return <Grid

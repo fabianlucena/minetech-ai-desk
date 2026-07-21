@@ -1,21 +1,22 @@
 import { useGlobal } from './state/global.jsx';
 import { HomeIcon, DashboardIcon, UsersIcon, AboutIcon, LoginIcon, LogoutIcon, TechnicianIcon, ClientIcon, RequesterIcon, ShiftIcon } from './components/icons/index.jsx';
 import Layout from './components/Layout.jsx';
-import Home from './pages/Home.jsx';
-import Login from './pages/Login.jsx';
-import Logout from './pages/Logout.jsx';
-import About from './pages/About.jsx';
-import NotFound from './pages/NotFound.jsx';
-import Dashboard from './pages/Dashboard.jsx';
-import Users from './pages/Users.jsx';
-import User from './pages/User.jsx';
-import UserChangePassword from './pages/UserChangePassword.jsx';
-import Technicians from './pages/Technicians.jsx';
-import Technician from './pages/Technician.jsx';
-import Clients from './pages/Clients.jsx';
-import Client from './pages/Client.jsx';
-import Requesters from './pages/Requesters.jsx';
-import Shifts from './pages/Shifts.jsx';
+import HomePage from './pages/HomePage.jsx';
+import OAuth2CallbackPage from './pages/OAuth2CallbackPage.jsx';
+import LoginPage from './pages/Login.jsx';
+import LogoutPage from './pages/LogoutPage.jsx';
+import AboutPage from './pages/AboutPage.jsx';
+import NotFoundPage from './pages/NotFoundPage.jsx';
+import DashboardPage from './pages/DashboardPage.jsx';
+import UsersPage from './pages/Users.jsx';
+import UserPage from './pages/UserPage.jsx';
+import UserChangePasswordPage from './pages/UserChangePassword.jsx';
+import TechniciansPage from './pages/TechniciansPage.jsx';
+import TechnicianPage from './pages/TechnicianPage.jsx';
+import ClientsPage from './pages/ClientsPage.jsx';
+import ClientPage from './pages/ClientPage.jsx';
+import RequestersPage from './pages/RequestersPage.jsx';
+import ShiftsPage from './pages/ShiftsPage.jsx';
 
 export const allRoutes = [
   {
@@ -23,18 +24,22 @@ export const allRoutes = [
     element: <Layout />,
     children: [
       {
+        path: '/oauth2callback/:name/:action',
+        element: <OAuth2CallbackPage />,
+      },
+      {
         index: true,
         label: 'Inicio',
         icon: <HomeIcon />,
         menuItemOrder: 1,
-        element: <Home />,
+        element: <HomePage />,
       },
       {
         path: '/dashboard',
         label: 'Panel de control',
         icon: <DashboardIcon />,
         menuItemOrder: 2,
-        element: <Dashboard />,
+        element: <DashboardPage />,
         condition: ({ user }) => !!user,
       },
       {
@@ -42,22 +47,22 @@ export const allRoutes = [
         label: 'Usuarios',
         icon: <UsersIcon />,
         menuItemOrder: 3,
-        element: <Users />,
+        element: <UsersPage />,
         condition: ({ permissions }) => permissions.includes('users.list'),
       },
       {
         path: '/users/new',
-        element: <User />,
+        element: <UserPage />,
         condition: ({ permissions }) => permissions.includes('users.create'),
       },
       {
         path: '/users/:uuid/edit',
-        element: <User />,
+        element: <UserPage />,
         condition: ({ permissions }) => permissions.includes('users.update'),
       },
       {
         path: '/users/:uuid/change-password',
-        element: <UserChangePassword />,
+        element: <UserChangePasswordPage />,
         condition: ({ permissions }) => permissions.includes('users.update'),
       },
       {
@@ -65,17 +70,17 @@ export const allRoutes = [
         label: 'Técnicos',
         icon: <TechnicianIcon />,
         menuItemOrder: 3,
-        element: <Technicians />,
+        element: <TechniciansPage />,
         condition: ({ permissions }) => permissions.includes('technicians.list'),
       },
       {
         path: '/technicians/new',
-        element: <Technician />,
+        element: <TechnicianPage />,
         condition: ({ permissions }) => permissions.includes('technicians.create'),
       },
       {
         path: '/technicians/:uuid/edit',
-        element: <Technician />,
+        element: <TechnicianPage />,
         condition: ({ permissions }) => permissions.includes('technicians.update'),
       },
       {
@@ -83,7 +88,7 @@ export const allRoutes = [
         label: 'Turnos',
         icon: <ShiftIcon />,
         menuItemOrder: 3,
-        element: <Shifts />,
+        element: <ShiftsPage />,
         condition: ({ permissions }) => permissions.includes('shifts.list'),
       },
       {
@@ -91,17 +96,17 @@ export const allRoutes = [
         label: 'Clientes',
         icon: <ClientIcon />,
         menuItemOrder: 3,
-        element: <Clients />,
+        element: <ClientsPage />,
         condition: ({ permissions }) => permissions.includes('clients.list'),
       },
       {
         path: '/clients/new',
-        element: <Client />,
+        element: <ClientPage />,
         condition: ({ permissions }) => permissions.includes('clients.create'),
       },
       {
         path: '/clients/:uuid/edit',
-        element: <Client />,
+        element: <ClientPage />,
         condition: ({ permissions }) => permissions.includes('clients.update'),
       },
       {
@@ -109,7 +114,7 @@ export const allRoutes = [
         label: 'Solicitantes',
         icon: <RequesterIcon />,
         menuItemOrder: 3,
-        element: <Requesters />,
+        element: <RequestersPage />,
         condition: ({ permissions }) => permissions.includes('requesters.list'),
       },
       {
@@ -117,19 +122,19 @@ export const allRoutes = [
         label: 'Acerca de',
         icon: <AboutIcon />,
         menuItemOrder: 98,
-        element: <About />,
+        element: <AboutPage />,
       },
       {
         path: '/logout',
         label: 'Salir',
         icon: <LogoutIcon />,
         menuItemOrder: 99,
-        element: <Logout />,
+        element: <LogoutPage />,
         condition: ({ user }) => !!user,
       },
       {
         path: '*',
-        element: <NotFound />,
+        element: <NotFoundPage />,
       },
     ],
   },
@@ -139,7 +144,7 @@ export const allRoutes = [
     label: 'Ingresar',
     icon: <LoginIcon />,
     menuItemOrder: 2,
-    element: <Login />,
+    element: <LoginPage />,
     condition: ({ user }) => !user,
   },
 ];
