@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import GlobalContext from './GlobalContext.jsx';
 
 export default function GlobalProvider({ children }) {
@@ -17,13 +17,15 @@ export default function GlobalProvider({ children }) {
     }));
   }, []);
 
-  return <GlobalContext.Provider
-    value={{
-      menuOpen, setMenuOpen, toggleMenuOpen,
+  const value = useMemo(() => ({
+    menuOpen, setMenuOpen, toggleMenuOpen,
+    loading, setLoading,
+    session, setSession, updateSession,
+  }), [menuOpen, setMenuOpen, toggleMenuOpen,
       loading, setLoading,
-      session, setSession, updateSession,
-    }}
-  >
+      session, setSession, updateSession]);
+
+  return <GlobalContext.Provider value={value} >
     {children}
   </GlobalContext.Provider>;
 }

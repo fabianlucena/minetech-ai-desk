@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import Snackbar from '../components/Snackbar.jsx';
 import ToastContext from './ToastContext.jsx';
 
@@ -69,16 +69,16 @@ export default function ToastProvider({ children }) {
     addMessage(message);
   }, [addMessage]);
 
-  return <ToastContext.Provider
-    value={{
-      messages, setMessages,
-      addMessage,
-      addInfo,
-      addSuccess,
-      addWarning,
-      addError,
-    }}
-  >
+  const value = useMemo(() => ({
+    messages, setMessages,
+    addMessage,
+    addInfo,
+    addSuccess,
+    addWarning,
+    addError,
+  }), [messages, setMessages, addMessage, addInfo, addSuccess, addWarning, addError]);
+
+  return <ToastContext.Provider value={value} >
     {messages.map((message) => (
       <Snackbar key={message.id} {...message} />
     ))}
