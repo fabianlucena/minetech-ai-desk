@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Box, Button, Typography } from '@mui/material';
-import { ReloadButton, /* CreateButton,*/ PriorButton, NextButton, EditButton, DeleteButton, RestoreButton } from './buttons';
+import { ReloadButton, CreateButton, PriorButton, NextButton, EditButton, DeleteButton, RestoreButton } from './buttons';
 import { ArrowBackIcon, ArrowForwardIcon } from './icons';
 import SelectField from './fields/SelectField';
 import TextField from './fields/TextField';
@@ -99,7 +99,7 @@ export default function Week({
   description,
   tools,
   onReload,
-  // onCreate,
+  onCreate,
   onDelete,
   onEdit,
   onRestore,
@@ -122,6 +122,9 @@ export default function Week({
   const [isShowingToday, setIsShowingToday] = useState(false);
   const [normalizedEvents, setNormalizedEvents] = useState([]);
   const [slotsByDay, setSlotsByDay] = useState({});
+  const gridRef = useRef(null);
+  const createRef = useRef(null);
+  const timeRef = useRef(null);
   const pixelsPerHour = 28;
 
   const updateDateEntries = useCallback(() => {
@@ -232,6 +235,58 @@ export default function Week({
     return !!result;
   }
 
+  const updateCreatePosition = useCallback((e) => {
+    if (!onCreate || !gridRef.current || !createRef.current || !timeRef.current) {
+      createRef.current.style.display = 'none';
+      return;
+    }
+
+    const grid = gridRef.current;
+    const rect = grid.getBoundingClientRect();
+    const timeRect = timeRef.current.getBoundingClientRect();
+
+    const timeRowHeight = timeRect.height;
+    const yPos = e.clientY - rect.top - timeRowHeight;
+    if (yPos < 0) {
+      createRef.current.style.display = 'none';
+      return;
+    }
+    
+    const rowIndex = 1 + Math.floor(yPos / pixelsPerHour);
+    if (rowIndex > 24) {
+      createRef.current.style.display = 'none';
+      return;
+    }
+
+    const timeColumnWidth = timeRect.width;
+    const xPos = e.clientX - rect.left - timeColumnWidth;
+    if (xPos < 0) {
+      createRef.current.style.display = 'none';
+      return;
+    }
+    
+    const colWidth = (rect.width - timeColumnWidth) / 7;
+    const colIndex = 1 + Math.floor(xPos / colWidth);
+    if (colIndex > 7) {
+      createRef.current.style.display = 'none';
+      return;
+    }
+
+    createRef.current.style.gridArea = `${rowIndex + 1} / ${colIndex + 1} / span 1 / span 1`;
+    createRef.current.style.display = 'flex';
+    createRef.current.dataset.hour = rowIndex - 1;
+    createRef.current.dataset.dayIndex = colIndex - 1;
+  }, [pixelsPerHour, onCreate]);
+
+  const handleMouseMove = (e) => updateCreatePosition(e);
+
+  useEffect(() => {
+    if (createRef.current) {
+      createRef.current.style.display = 'none';
+      return;
+    }
+  }, []);
+
   return <Box
     sx={{
       minHeight: '100%',
@@ -303,6 +358,7 @@ export default function Week({
     </Box>
 
     <Box
+      ref={gridRef}
       style={{
         display: 'grid',
         gridTemplateColumns: '1fr repeat(7, 3fr)',
@@ -312,8 +368,34 @@ export default function Week({
         overflow: 'visible',
         border: '#4b4b4b solid 1px',
       }}
+      onMouseMove={handleMouseMove}
     >
       <Box
+        ref={createRef}
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100%',
+          width: '100%',
+          gridArea: `1 / 1 / span 1 / span 1`,
+          zIndex: 10,
+        }}
+      >
+        <CreateButton
+          size="small"
+          onClick={event => {
+            const dataset = createRef.current.dataset;
+            const hour = parseInt(dataset.hour, 10);
+            const dayIndex = parseInt(dataset.dayIndex, 10);
+            const date = new Date(dateEntries[dayIndex].date);
+            date.setHours(hour, 0, 0, 0);
+            onCreate?.({event, date});
+          }}
+        />
+      </Box>
+      <Box
+        ref={timeRef}
         style={{
           display: 'flex',
           justifyContent: 'center',
@@ -395,7 +477,6 @@ export default function Week({
           style={{
             gridArea: `2 / ${i + 2} / span 24 / span 1`,
             position: 'relative',
-            zIndex: 1,
             display: 'grid',
             gridTemplateColumns: `repeat(${slotsByDay[dateInfo.isoDate] || 1}, 1fr)`,
             gridTemplateRows: '1fr',
