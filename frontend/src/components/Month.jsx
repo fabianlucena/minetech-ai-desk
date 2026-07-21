@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Box, Button, Typography } from '@mui/material';
 import { ReloadButton, CreateButton, PriorButton, NextButton, EditButton, DeleteButton, RestoreButton } from './buttons';
 import { ArrowBackIcon, ArrowForwardIcon } from './icons';
@@ -6,22 +6,31 @@ import SelectField from './fields/SelectField';
 import TextField from './fields/TextField';
 import ConfirmDialog from './dialogs/ConfirmDialog.jsx';
 
-function addEventsToDatesInfo(datesInfo, events) {
+function getEventsToDateEntries(dateEntries, events) {
   for (const event of events) {
     event.startTimeStampMS = event.start.getTime();
     event.endTimeStampMS = event.end.getTime();
   }
 
-  for (const dateInfo of datesInfo) {
-    dateInfo.events = events.filter(event => event.startTimeStampMS <= dateInfo.toTimeStampMS 
-      && event.endTimeStampMS >= dateInfo.fromTimeStampMS)
+  const dateEntriesWithEvents = dateEntries.map(dateEntry => ({
+    ...dateEntry,
+    events: events.filter(event => event.startTimeStampMS <= dateEntry.toTimeStampMS 
+      && event.endTimeStampMS >= dateEntry.fromTimeStampMS)
       .map(event => ({
         ...event,
-        fromPreviousDay: event.startTimeStampMS < dateInfo.fromTimeStampMS,
-        toNextDay: event.endTimeStampMS > dateInfo.toTimeStampMS,
-      }));
-  }
+        fromPreviousDay: event.startTimeStampMS < dateEntry.fromTimeStampMS,
+        toNextDay: event.endTimeStampMS > dateEntry.toTimeStampMS,
+      })),
+  }));
+
+  return dateEntriesWithEvents;
 }
+
+const weekDayNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+const monthNames = [
+  'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+  'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+];
 
 export default function Month({
   title,
@@ -38,12 +47,7 @@ export default function Month({
   onLastDate,
   deleteConfirmationMessage = '¿Está seguro de que desea eliminar este elemento?',
 }) {
-  const weekDayNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-  const monthNames = [
-    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
-  ];
-  const [datesInfo, setDatesInfo] = useState([]);
+  const [dateEntries, setDateEntries] = useState([]);
   const [effectiveDate, setEffectiveDate] = useState(date);
   const [confirmation, setConfirmation] = useState({
     open: false,
@@ -56,17 +60,17 @@ export default function Month({
     const firstDayOfMonth = new Date(effectiveDate.getFullYear(), effectiveDate.getMonth(), 1);
     const from = new Date(effectiveDate.getFullYear(), effectiveDate.getMonth(), -firstDayOfMonth.getDay());
     const date = new Date(from);
-    const datesInfo = [];
     const currentMonth = effectiveDate.getMonth();
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const todayTimeStampMS = today.getTime();
     const dateDuration = 24 * 60 * 60 * 1000 - 1;
-
+    
+    const dateEntries = [];
     for (let i = 0; i < 42; i++) {
       date.setDate(date.getDate() + 1);
       const timeStampMS = date.getTime();
-      datesInfo[i] = {
+      dateEntries[i] = {
         date: new Date(date),
         isCurrentMonth: date.getMonth() === currentMonth,
         isPreviousDay: timeStampMS < todayTimeStampMS,
@@ -76,21 +80,17 @@ export default function Month({
       };
     }
 
-    addEventsToDatesInfo(datesInfo, events);
-    setDatesInfo(datesInfo);
-    onFirstDate?.(datesInfo[0].date);
-    onLastDate?.(datesInfo[datesInfo.length - 1].date);
-  // oxlint-disable-next-line react-hooks/exhaustive-deps
-  }, [effectiveDate]);
+    setDateEntries(dateEntries);
+    onFirstDate?.(dateEntries[0].date);
+    onLastDate?.(dateEntries[dateEntries.length - 1].date);
+  }, [effectiveDate, onFirstDate, onLastDate]);
 
-  useEffect(() => {
-    if (datesInfo.length === 0)
-      return;
-      
-    addEventsToDatesInfo(datesInfo, events);
-    setDatesInfo([...datesInfo]);
-  // oxlint-disable-next-line react-hooks/exhaustive-deps
-  }, [events]);
+  const dateEntriesWithEvents = useMemo(() => {
+    if (dateEntries.length === 0)
+      return [];
+
+    return getEventsToDateEntries(dateEntries, events);
+  }, [events, dateEntries]);
 
   function deleteHandler(event, eventInfo) {
     if (!onDelete)
@@ -220,17 +220,17 @@ export default function Month({
           </Typography>
         </Box>
       ))}
-      {datesInfo.map((dateInfo) => (
+      {dateEntriesWithEvents.map((dateEntry) => (
         <Box
-          key={dateInfo.date.toISOString()}
+          key={dateEntry.date.toISOString()}
           sx={{
             display: 'flex',
             flexDirection: 'column',
             minHeight: 100,
             padding: 0,
-            backgroundColor: dateInfo.isCurrentMonth ?
-              dateInfo.isToday ? '#e3e8f8' :
-              dateInfo.isPreviousDay ? '#e8e8e8' :
+            backgroundColor: dateEntry.isCurrentMonth ?
+              dateEntry.isToday ? '#e3e8f8' :
+              dateEntry.isPreviousDay ? '#e8e8e8' :
               '#f8f8f8' :
               '#dadada',
           }}
@@ -254,15 +254,15 @@ export default function Month({
               <Typography
                 variant="body2"
                 sx={{
-                  fontWeight: dateInfo.isToday ? 600 : 400,
+                  fontWeight: dateEntry.isToday ? 600 : 400,
                   padding: '0 6px',
-                  backgroundColor: dateInfo.isToday ? '#1976d2' : 'transparent',
-                  color: dateInfo.isToday ? '#fff' : dateInfo.isCurrentMonth ? 'inherit' : '#808080',
+                  backgroundColor: dateEntry.isToday ? '#1976d2' : 'transparent',
+                  color: dateEntry.isToday ? '#fff' : dateEntry.isCurrentMonth ? 'inherit' : '#808080',
                   borderRadius: '50%',
                   margin: 'auto',
                 }}
               >
-                {dateInfo.date.getDate()}
+                {dateEntry.date.getDate()}
               </Typography>
             </Box>
             {onCreate && (
@@ -272,7 +272,7 @@ export default function Month({
                   padding: 0,
                 }}
                 onClick={event => {
-                  onCreate?.({event, date: dateInfo.date});
+                  onCreate?.({event, date: dateEntry.date});
                 }}
               />
             )}
@@ -286,7 +286,7 @@ export default function Month({
               width: '100%',
             }}
           >
-            {dateInfo.events?.map((eventInfo, index) => (
+            {dateEntry.events?.map((eventInfo, index) => (
               <Box
                 key={index}
                 sx={{
