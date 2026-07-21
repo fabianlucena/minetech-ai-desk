@@ -33,9 +33,18 @@ export default function ShiftsPage() {
     setShifts(shifts);
   }, [firstDate, lastDate, includeDeleted]);
 
-  useEffect(() => {
-    load();
-  }, [load]);
+  useEffect(() => { load(); }, [load]);
+
+  const events = useMemo(() => {
+    return shifts.map(shift => ({
+      id: shift.uuid,
+      start: shift.start,
+      end: shift.end,
+      title: shift.technician.fullName,
+      color: shift.technician.color,
+      isDeleted: !!shift.deletedAt,
+    }));
+  }, [shifts]);
 
   function createShiftHandler({date}) {
     setShiftDialogUuid(null);
@@ -82,14 +91,7 @@ export default function ShiftsPage() {
 
     <Calendar
       title="Turnos"
-      events={shifts.map(shift => ({
-        id: shift.uuid,
-        start: shift.start,
-        end: shift.end,
-        title: shift.technician.fullName,
-        color: shift.technician.color,
-        isDeleted: !!shift.deletedAt,
-      }))}
+      events={events}
       onReload={() => load()}
       onCreate={hasPermission('shifts.create') && createShiftHandler}
       onDelete={hasPermission('shifts.delete') && deleteShiftHandler}
