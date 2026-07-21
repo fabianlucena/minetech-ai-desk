@@ -21,8 +21,7 @@ export default function LogoutPage() {
       console.error('Error al cerrar sesión:', error);
       addError('Error al cerrar sesión: ' + (error.data?.message || error.message || error.data?.error));
     }
-  // oxlint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [updateSession, navigate, addWarning, addError]);
 
   return <h6>Cerrando sesión...</h6>;
 }

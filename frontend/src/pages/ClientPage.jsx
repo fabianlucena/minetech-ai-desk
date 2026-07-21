@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Form from '../components/Form.jsx';
 import { TextField, SwitchField, ChippedCheckboxSelectField } from '../components/fields/index.jsx';
@@ -7,15 +7,15 @@ import { getClient, getStatus, updateClient, createClient } from '../services/cl
 import { generateClientIdentifiers } from '../utils/client.js';
 import RenewButton from '../components/buttons/renew.button.jsx';
 
-export default function ClientPage() {
-  const defaultData = {
-    name: '',
-    code: '',
-    accessCode: '',
-    isActive: true,
-    status: 'active',
-  };
+const defaultData = {
+  name: '',
+  code: '',
+  accessCode: '',
+  isActive: true,
+  status: 'active',
+};
 
+export default function ClientPage() {
   const navigate = useNavigate();
   const { uuid } = useParams();
   const { addInfo, addError } = useToast();
@@ -23,23 +23,22 @@ export default function ClientPage() {
   const [data, setData] = useState({...defaultData});
   const [unchangedData, setUnchangedData] = useState({...defaultData});
   const [status, setStatus] = useState([]);
-  
   const [formConfig, setFormConfig] = useState({
     title: 'Crear nuevo cliente',
     description: 'Ingrese los datos del nuevo cliente',
     disabledMessage: 'Creando cliente...',
   });
   
-  async function loadStatus() {
+  const loadStatus = useCallback(async () => {
     try {
       setStatus(await getStatus());
     } catch (error) {
       addError('Error al obtener los estados');
       console.error('Error al obtener los estados:', error);
     }
-  }
+  }, [addError]);
 
-  async function load() {
+  const load = useCallback(async () => {
     try {
       const res = await getClient(uuid);
       const data = {
@@ -52,7 +51,7 @@ export default function ClientPage() {
       addError('Error al obtener el cliente');
       console.error('Error al obtener el cliente:', error);
     }
-  }
+  }, [addError, uuid]);
 
   useEffect(() => {
     loadStatus();
@@ -72,8 +71,7 @@ export default function ClientPage() {
         disabledMessage: 'Creando cliente...',
       });
     }
-  // oxlint-disable-next-line react-hooks/exhaustive-deps
-  }, [uuid]);
+  }, [uuid, loadStatus, load]);
 
   async function onSubmit() {
     setDisabled(true);
@@ -106,15 +104,15 @@ export default function ClientPage() {
   }
 
   useEffect(() => {
-    if (!uuid) {
-      let { code, accessCode } = generateClientIdentifiers(data.name);
-      if (accessCode.substring(0, 3) === data.accessCode.substring(0, 3))
-        accessCode = data.accessCode;
+    let { code, accessCode } = generateClientIdentifiers(data.name);
+    if (accessCode.substring(0, 3) === data.accessCode.substring(0, 3))
+      accessCode = data.accessCode;
 
-      setData({...data, code, accessCode});
-    }
-  // oxlint-disable-next-line react-hooks/exhaustive-deps
-  }, [data.name, uuid]);
+    if (code === data.code && accessCode === data.accessCode)
+      return;
+
+    setData({...data, code, accessCode});
+  }, [data]);
 
   function getValidationError() {
     if (!data.name)

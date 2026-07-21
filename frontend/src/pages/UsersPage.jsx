@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import Grid from '../components/Grid.jsx';
 import { GridActionsCellItem } from '@mui/x-data-grid';
 import { useNavigate } from 'react-router-dom';
@@ -73,7 +73,7 @@ export default function UsuariosPage() {
     return baseColumns;
   }, [includeDeleted]);
 
-  async function load() {
+  const load = useCallback(async () => {
     try {
       const query = {};
       if (includeDeleted) {
@@ -86,7 +86,7 @@ export default function UsuariosPage() {
       addError('Error al obtener los usuarios');
       console.error('Error al obtener los usuarios:', error);
     }
-  }
+  }, [addError, includeDeleted]);
 
   async function deleteUserHandler({ uuid }) {
     try {
@@ -112,8 +112,7 @@ export default function UsuariosPage() {
 
   useEffect(() => {
     load();
-  // oxlint-disable-next-line react-hooks/exhaustive-deps
-  }, [includeDeleted]);
+  }, [load, includeDeleted]);
 
   return <Grid
     title="Usuarios"

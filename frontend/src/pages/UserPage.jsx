@@ -1,20 +1,20 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Form from '../components/Form.jsx';
 import { TextField, SwitchField, PasswordField, ChippedCheckboxSelectField } from '../components/fields/index.jsx';
 import useToast from '../states/useToast.jsx';
 import { getUser, getRoles, updateUser, createUser } from '../services/user.service.js';
 
-export default function UserPage() {
-  const defaultData = {
-    username: '',
-    displayName: '',
-    isActive: true,
-    canLogin: false,
-    password: '',
-    roles: [],
-  };
+const defaultData = {
+  username: '',
+  displayName: '',
+  isActive: true,
+  canLogin: false,
+  password: '',
+  roles: [],
+};
 
+export default function UserPage() {
   const navigate = useNavigate();
   const { uuid } = useParams();
   const { addInfo, addError } = useToast();
@@ -29,16 +29,16 @@ export default function UserPage() {
     disabledMessage: 'Creando usuario...',
   });
 
-  async function loadRoles() {
+  const loadRoles = useCallback(async () => {
     try {
       setRoles(await getRoles());
     } catch (error) {
       addError('Error al obtener los roles: ' + (error.data?.message || error.message || error.data?.error));
       console.error('Error al obtener los roles:', error);
     }
-  }
+  }, [addError]);
 
-  async function load() {
+  const load = useCallback(async () => {
     try {
       const res = await getUser(uuid);
       const data = {
@@ -52,7 +52,7 @@ export default function UserPage() {
       addError('Error al obtener el usuario');
       console.error('Error al obtener el usuario:', error);
     }
-  }
+  }, [uuid, addError]);
 
   useEffect(() => {
     loadRoles();
@@ -72,8 +72,7 @@ export default function UserPage() {
         disabledMessage: 'Creando usuario...',
       });
     }
-  // oxlint-disable-next-line react-hooks/exhaustive-deps
-  }, [uuid]);
+  }, [uuid, load, loadRoles]);
 
   async function onSubmit() {
     setDisabled(true);

@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
 import { Box, Typography } from '@mui/material';
@@ -34,7 +34,7 @@ export default function Grid({
     content: '',
   });
 
-  function handleDelete(row) {
+  const handleDelete = useCallback((row) => {
     if (!onDelete)
       return;
 
@@ -52,7 +52,7 @@ export default function Grid({
         onDelete(row);
       },
     });
-  }
+  }, [onDelete, deleteConfirmationMessage, confirmation]);
 
   const effectiveColumns = useMemo(() => {
     const effectiveColumns = [...columns];
@@ -97,8 +97,7 @@ export default function Grid({
     }
 
     return effectiveColumns;
-  // oxlint-disable-next-line react-hooks/exhaustive-deps
-  }, [columns, onDelete, onEdit, editPath, onRestore, rowsActions, columnIdName, navigate]);
+  }, [columns, onDelete, onEdit, editPath, onRestore, rowsActions, columnIdName, navigate, handleDelete]);
 
   return <Box
     sx={{
