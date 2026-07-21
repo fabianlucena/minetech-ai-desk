@@ -371,30 +371,6 @@ export default function Week({
       onMouseMove={handleMouseMove}
     >
       <Box
-        ref={createRef}
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '100%',
-          width: '100%',
-          gridArea: `1 / 1 / span 1 / span 1`,
-          zIndex: 10,
-        }}
-      >
-        <CreateButton
-          size="small"
-          onClick={event => {
-            const dataset = createRef.current.dataset;
-            const hour = parseInt(dataset.hour, 10);
-            const dayIndex = parseInt(dataset.dayIndex, 10);
-            const date = new Date(dateEntries[dayIndex].date);
-            date.setHours(hour, 0, 0, 0);
-            onCreate?.({event, date});
-          }}
-        />
-      </Box>
-      <Box
         ref={timeRef}
         style={{
           display: 'flex',
@@ -549,6 +525,29 @@ export default function Week({
         }}>
         </div>
       </div>}
+      <Box
+        ref={createRef}
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100%',
+          width: '100%',
+          gridArea: `1 / 1 / span 1 / span 1`,
+        }}
+      >
+        <CreateButton
+          size="small"
+          onClick={event => {
+            const dataset = createRef.current.dataset;
+            const hour = parseInt(dataset.hour, 10);
+            const dayIndex = parseInt(dataset.dayIndex, 10);
+            const date = new Date(dateEntries[dayIndex].date);
+            date.setHours(hour, 0, 0, 0);
+            onCreate?.({event, date});
+          }}
+        />
+      </Box>
     </Box>
   </Box>
 }
