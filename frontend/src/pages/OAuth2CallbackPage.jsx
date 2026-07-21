@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { oAuth2Callback } from '../services/oauth2provider.service.js';
 import { setCredentials, clearCredentials } from '../services/login.service.js';
-import ErrorMessage from '../components/ErrorMessage.jsx';
-import * as sm from '../components/StackMessage';
+import { ErrorDialog } from '../components/dialogs';
+import { useToast } from '../states/toast.jsx';
 import { useGlobal } from '../states/global.jsx';
 
 export default function OAuth2CallbackPage() {
@@ -13,6 +13,7 @@ export default function OAuth2CallbackPage() {
   const [message, setMessage] = useState('Autorizando...');
   const navigate = useNavigate();
   const { updateSession } = useGlobal();
+  const { addMessage } = useToast();
 
   useEffect(() => {
     console.log(`Handling OAuth2 callback for provider: ${name}, action: ${action}`);
@@ -32,7 +33,7 @@ export default function OAuth2CallbackPage() {
         setErrorMessage(null); 
         setErrorTitle(null);
         setMessage('Autorizado correctamente. Redirigiendo...');
-        sm.success('Autorizado correctamente');
+        addMessage('Autorizado correctamente');
         navigate('/');
       })
       .catch(({ data, res, error }) => {
@@ -52,9 +53,9 @@ export default function OAuth2CallbackPage() {
   }, [name, action]);
 
   return <>
-    <ErrorMessage title={errorTitle}>
+    <ErrorDialog title={errorTitle}>
       {errorMessage}
-    </ErrorMessage>
+    </ErrorDialog>
     {message}
   </>
 }

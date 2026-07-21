@@ -2,13 +2,15 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Form from '../components/Form';
 import { TextField, PasswordField } from '../components/fields';
+import Button from '../components/Button';
 import { loginService } from '../services/login.service.js';
-import { useGlobal } from '../state/global.jsx';
-import { useToast } from '../state/toast.jsx';
+import { useGlobal } from '../states/global.jsx';
+import { useToast } from '../states/toast.jsx';
 
 export default function LoginPage() {
   const { updateSession } = useGlobal();
   const { addInfo, addError } = useToast();
+  const [providers, setProviders] = useState([]);
   const navigate = useNavigate();
   const [disabled, setDisabled] = useState(false);
   const [data, setData] = useState({
@@ -33,6 +35,11 @@ export default function LoginPage() {
     }
     setDisabled(false);
   }
+  
+  useEffect(() => {
+    getOAuth2ProvidersService()
+      .then(setProviders);
+  }, []);
 
   return <Form
     title="Ingresar"
@@ -62,5 +69,13 @@ export default function LoginPage() {
       value={data.password}
       onChange={(e) => setData({...data, password: e.target.value})}
     />
+    {providers.map(provider => (
+      <Button
+        key={provider.name}
+        onClick={() => window.location.href = provider.url}
+      >
+        {provider.label ?? provider.displayName ?? provider.name}
+      </Button>
+    ))}
   </Form>;
 }

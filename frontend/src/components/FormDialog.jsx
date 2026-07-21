@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Dialog } from '@mui/material';
 import Form from './Form';
 import { CloseButton } from './buttons';
-import ConfirmDialog from './ConfirmDialog';
+import ConfirmDialog from './dialogs/ConfirmDialog';
 
 export default function FormDialog({
   title = '',

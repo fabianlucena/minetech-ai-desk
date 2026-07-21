@@ -4,7 +4,7 @@ import { ReloadButton, CreateButton, PriorButton, NextButton, EditButton, Delete
 import { ArrowBackIcon, ArrowForwardIcon } from './icons';
 import SelectField from './fields/SelectField';
 import TextField from './fields/TextField';
-import ConfirmDialog from './ConfirmDialog.jsx';
+import ConfirmDialog from './dialogs/ConfirmDialog.jsx';
 
 function addEventsToDatesInfo(datesInfo, events) {
   for (const event of events) {
@@ -80,6 +80,7 @@ export default function Month({
     setDatesInfo(datesInfo);
     onFirstDate?.(datesInfo[0].date);
     onLastDate?.(datesInfo[datesInfo.length - 1].date);
+  // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [effectiveDate]);
 
   useEffect(() => {
@@ -88,11 +89,8 @@ export default function Month({
       
     addEventsToDatesInfo(datesInfo, events);
     setDatesInfo([...datesInfo]);
+  // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [events]);
-
-  function getMonthName(monthIndex) {
-    return monthNames[monthIndex];
-  }
 
   function deleteHandler(event, eventInfo) {
     if (!onDelete)
@@ -228,7 +226,6 @@ export default function Month({
           sx={{
             display: 'flex',
             flexDirection: 'column',
-            backgroundColor: '#f5f5f5',
             minHeight: 100,
             padding: 0,
             backgroundColor: dateInfo.isCurrentMonth ?

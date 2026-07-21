@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
 import FormDialog from './FormDialog.jsx';
 import SelectField from './fields/SelectField.jsx';
-import TextField from './fields/TextField.jsx';
 import DateTimeField from './fields/DateTimeField.jsx';
 import SliderField from './fields/SliderField.jsx';
-import { useToast } from '../state/toast.jsx';
+import { useToast } from '../states/toast.jsx';
 import { diffHours, addHours, diffHoursMinutes } from '../utils/time.js';
 import { getTechnicians, getTypes, getShift, createShift, updateShift } from '../services/shift.service.js';
 
@@ -28,6 +27,16 @@ export default function ShiftDialog({
   const [unchangedData, setUnchangedData] = useState({...defaultData});
   const { addInfo, addError } = useToast();
 
+  const loadShift = useCallback(async () => {
+    if (uuid) {
+      const data = await getShift(uuid);
+      data.technicianUuid ??= data.technician?.uuid;
+      
+      setData({...data});
+      setUnchangedData({...data});
+    }
+  }, [uuid]);
+
   useEffect(() => {
     if (uuid) {
       loadShift();
@@ -41,17 +50,7 @@ export default function ShiftDialog({
       setData(data);
       setUnchangedData(data);
     }
-  }, [uuid, start]);
-
-  async function loadShift() {
-    if (uuid) {
-      const data = await getShift(uuid);
-      data.technicianUuid ??= data.technician?.uuid;
-      
-      setData({...data});
-      setUnchangedData({...data});
-    }
-  }
+  }, [uuid, start, loadShift]);
 
   async function loadTechnicians() {
     const techniciansData = await getTechnicians();

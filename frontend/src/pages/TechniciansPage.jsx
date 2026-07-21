@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import Grid from '../components/Grid.jsx';
-import { useToast } from '../state/toast.jsx';
-import { hasPermission } from '../state/global.jsx';
+import { useToast } from '../states/toast.jsx';
+import { hasPermission } from '../states/global.jsx';
 import { formatDate } from '../utils/date.js';
 import Chip from '../components/Chip.jsx';
 import { getTechnicians, deleteTechnician, restoreTechnician } from '../services/technician.service.js';

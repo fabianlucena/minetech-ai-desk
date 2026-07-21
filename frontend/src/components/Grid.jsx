@@ -1,10 +1,10 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
 import { Box, Typography } from '@mui/material';
 import { ReloadButton, CreateButton } from './buttons';
 import { DeleteIcon, EditIcon, RestoreIcon } from './icons';
-import ConfirmDialog from './ConfirmDialog.jsx';
+import ConfirmDialog from './dialogs/ConfirmDialog.jsx';
 
 export default function Grid({
   title,
@@ -67,25 +67,28 @@ export default function Grid({
         effectiveColumns.push(actionsField);
       }
 
-      const previousGetActions = actionsField.getActions;
       actionsField.getActions = (params) => [
         ...rowsActions?.(params) || [],
         onDelete && !params.row.deletedAt && <GridActionsCellItem
+          key="delete"
           icon={<DeleteIcon />}
           label="Eliminar"
           onClick={() => handleDelete(params.row)}
         />,
         onEdit && !params.row.deletedAt && <GridActionsCellItem
+          key="edit"
           icon={<EditIcon />}
           label="Editar"
           onClick={() => onEdit(params.row)}
         />,
         editPath && !params.row.deletedAt && <GridActionsCellItem
+          key="edit"
           icon={<EditIcon />}
           label="Editar"
           onClick={() => navigate(editPath.replace(':uuid', params.row[columnIdName]))}
         />,
         onRestore && params.row.deletedAt && <GridActionsCellItem
+          key="restore"
           icon={<RestoreIcon />}
           label="Restaurar"
           onClick={() => onRestore(params.row)}
@@ -94,7 +97,8 @@ export default function Grid({
     }
 
     return effectiveColumns;
-  }, [columns, onDelete, onEdit, editPath, onRestore]);
+  // oxlint-disable-next-line react-hooks/exhaustive-deps
+  }, [columns, onDelete, onEdit, editPath, onRestore, rowsActions, columnIdName, navigate]);
 
   return <Box
     sx={{

@@ -4,7 +4,7 @@ import { ReloadButton, CreateButton, PriorButton, NextButton, EditButton, Delete
 import { ArrowBackIcon, ArrowForwardIcon } from './icons';
 import SelectField from './fields/SelectField';
 import TextField from './fields/TextField';
-import ConfirmDialog from './ConfirmDialog.jsx';
+import ConfirmDialog from './dialogs/ConfirmDialog.jsx';
 import { getDarkerColor } from '../utils/color.js';
 
 function splitMultiDayEvent(event) {
@@ -179,6 +179,7 @@ export default function Week({
     const datesInfo = updateDatesInfo();
     onFirstDate?.(datesInfo[0].date);
     onLastDate?.(datesInfo[datesInfo.length - 1].date);
+  // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [effectiveDate]);
 
   useEffect(() => {
@@ -187,10 +188,6 @@ export default function Week({
     setNormalizedEvents(slotted.events);
     setSlotsByDay(slotted.slotsByDay);
   }, [effectiveDate, events]);
-
-  function getMonthName(monthIndex) {
-    return monthNames[monthIndex];
-  }
 
   function deleteHandler(event, eventInfo) {
     if (!onDelete)
@@ -387,6 +384,7 @@ export default function Week({
       </>)}
       {datesInfo.map((dateInfo, i) => {
         return <Box
+          key={i}
           style={{
             gridArea: `2 / ${i + 2} / span 24 / span 1`,
             position: 'relative',
@@ -399,7 +397,6 @@ export default function Week({
           {normalizedEvents.filter(eventInfo => eventInfo.isoDate === dateInfo.isoDate).map((eventInfo, i) => {
             const start = new Date(eventInfo.start);
             const end = new Date(eventInfo.end);
-            const dayIndex = start.getDay();
             const startHour = start.getHours() + start.getMinutes() / 60 + start.getSeconds() / 3600 + start.getMilliseconds() / 3600000;
             const endHour = end.getHours() + end.getMinutes() / 60 + end.getSeconds() / 3600 + end.getMilliseconds() / 3600000;
             
