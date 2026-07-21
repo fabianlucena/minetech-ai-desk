@@ -34,13 +34,6 @@ export default class ClientService extends ModelService {
     return await this.getFirstOrDefault({ ...options, where: { accessCode } });
   }
 
-  async getByName(name, options) {
-    if (!name)
-      throw new Error('El nombre es obligatorio');
-
-    return await this.getFirstOrDefault({ ...options, where: { name } });
-  }
-
   get validPropertiesForCreation() {
     return ['name', 'code', 'accessCode', 'isActive', 'status'];
   }

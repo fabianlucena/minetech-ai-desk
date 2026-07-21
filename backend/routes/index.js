@@ -22,7 +22,9 @@ async function run() {
       .filter(file => file.endsWith('.routes.js') && file !== 'index.js');
 
     for (const file of files) {
-      const endPointPath = '/' + file.replace('.routes.js', '');
+      const endPointPath = '/' + file
+        .replace('.routes.js', '')
+        .replaceAll('.', '/');
 
       logger.info(`    ${endPointPath} -> ${file}`);
       const fullPath = path.join(__dirname, file);
