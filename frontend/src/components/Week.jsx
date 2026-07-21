@@ -1,11 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Box, Button, Typography } from '@mui/material';
-import { ReloadButton, CreateButton, PriorButton, NextButton, EditButton, DeleteButton, RestoreButton } from './buttons';
+import { ReloadButton, /* CreateButton,*/ PriorButton, NextButton, EditButton, DeleteButton, RestoreButton } from './buttons';
 import { ArrowBackIcon, ArrowForwardIcon } from './icons';
 import SelectField from './fields/SelectField';
 import TextField from './fields/TextField';
 import ConfirmDialog from './dialogs/ConfirmDialog.jsx';
 import { getDarkerColor } from '../utils/color.js';
+
+const weekDayNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+const monthNames = [
+  'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+  'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+];
 
 function splitMultiDayEvent(event) {
   const start = new Date(event.start);
@@ -93,7 +99,7 @@ export default function Week({
   description,
   tools,
   onReload,
-  onCreate,
+  // onCreate,
   onDelete,
   onEdit,
   onRestore,
@@ -103,12 +109,7 @@ export default function Week({
   onLastDate,
   deleteConfirmationMessage = '¿Está seguro de que desea eliminar este elemento?',
 }) {
-  const weekDayNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-  const monthNames = [
-    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
-  ];
-  const [datesInfo, setDatesInfo] = useState([]);
+  const [dateEntries, setDateEntries] = useState([]);
   const [effectiveDate, setEffectiveDate] = useState(date);
   const [confirmation, setConfirmation] = useState({
     open: false,
@@ -117,33 +118,22 @@ export default function Week({
     content: '',
   });
   const [now, setNow] = useState(new Date());
+  const [today] = useState(new Date(now.getFullYear(), now.getMonth(), now.getDate()));
   const [isShowingToday, setIsShowingToday] = useState(false);
   const [normalizedEvents, setNormalizedEvents] = useState([]);
   const [slotsByDay, setSlotsByDay] = useState({});
   const pixelsPerHour = 28;
 
-  function updateNow() {
-    setNow(prev => {
-      const date = new Date();
-      if (prev.getDate() !== date.getDate()) {
-        updateDatesInfo();
-      }
-
-      return date;
-    });
-  }
-
-  function updateDatesInfo() {
+  const updateDateEntries = useCallback(() => {
     const from = new Date(effectiveDate.getFullYear(), effectiveDate.getMonth(), effectiveDate.getDate() - effectiveDate.getDay() - 1);
     const nextDate = new Date(from);
-    const datesInfo = [];
+    const dateEntries = [];
     const currentMonth = effectiveDate.getMonth();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const todayTimeStampMS = today.getTime();
 
     for (let i = 0; i < 7; i++) {
       nextDate.setDate(nextDate.getDate() + 1);
-      datesInfo[i] = {
+      dateEntries[i] = {
         date: new Date(nextDate),
         isoDate: nextDate.toISOString().split("T")[0],
         isCurrentMonth: nextDate.getMonth() === currentMonth,
@@ -153,20 +143,20 @@ export default function Week({
       };
     }
 
-    setIsShowingToday(datesInfo.some(dateInfo => dateInfo.isToday));
-    setDatesInfo(datesInfo);
+    setIsShowingToday(dateEntries.some(dateInfo => dateInfo.isToday));
+    setDateEntries(dateEntries);
 
-    return datesInfo;
-  }    
+    return dateEntries;
+  }, [effectiveDate, today]);    
 
   useEffect(() => {
-    updateNow();
+    const now = new Date();
     const msToNextMinute = (60 - now.getSeconds()) * 1000;
 
     const timeout = setTimeout(() => {
-      updateNow();
+      setNow(new Date());
       const interval = setInterval(() => {
-        updateNow();
+        setNow(new Date());
       }, 60 * 1000);
 
       return () => clearInterval(interval);
@@ -176,11 +166,32 @@ export default function Week({
   }, []);
 
   useEffect(() => {
-    const datesInfo = updateDatesInfo();
-    onFirstDate?.(datesInfo[0].date);
-    onLastDate?.(datesInfo[datesInfo.length - 1].date);
-  // oxlint-disable-next-line react-hooks/exhaustive-deps
-  }, [effectiveDate]);
+    const now = new Date();
+    const newToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    
+    if (today.getTime() !== newToday.getTime()) {
+      setToday(newToday);
+    }
+
+    const msToNextDay = (24 - now.getHours()) * 60 * 60 * 1000 - now.getMinutes() * 60 * 1000 - now.getSeconds() * 1000 - now.getMilliseconds();
+
+    const timeout = setTimeout(() => {
+      setToday(new Date());
+      const interval = setInterval(() => {
+        setToday(new Date());
+      }, 60 * 1000);
+
+      return () => clearInterval(interval);
+    }, msToNextDay);
+
+    return () => clearTimeout(timeout);
+  }, [today]);
+
+  useEffect(() => {
+    const dateEntries = updateDateEntries();
+    onFirstDate?.(dateEntries[0].date);
+    onLastDate?.(dateEntries[dateEntries.length - 1].date);
+  }, [effectiveDate, onFirstDate, onLastDate, updateDateEntries]);
 
   useEffect(() => {
     const normalized = events.flatMap(splitMultiDayEvent);
@@ -263,13 +274,13 @@ export default function Week({
         onClick={() => setEffectiveDate(new Date(effectiveDate.getFullYear(), effectiveDate.getMonth(), effectiveDate.getDate() - 7))}
       />
 
-      <SelectField
+      {<SelectField
         variant="standard"
         options={monthNames.map((name, index) => ({ value: index, label: name }))}
         value={effectiveDate.getMonth()}
         onChange={(event) => setEffectiveDate(new Date(effectiveDate.getFullYear(), event.target.value, 1))}
         sx={{ width: 120 }}
-      />
+      />}
       
       <TextField
         variant="standard"
@@ -318,7 +329,7 @@ export default function Week({
           Hora
         </Typography>
       </Box>
-      {datesInfo.map((dateInfo, i) => (
+      {dateEntries.map((dateInfo, i) => (
         <Box
           key={i}
           style={{
@@ -339,50 +350,46 @@ export default function Week({
           </Typography>
         </Box>
       ))}
-      {Array(24).fill().map((_, h) => <>
-        <Box
-          key={h}
+      {Array(24).fill().map((_, h) => <Box
+        key={h}
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          backgroundColor: '#f5f5f5',
+          padding: 0,
+          borderBottom: '#a8a8a8 dotted 1px',
+          gridArea: `${h + 2} / 1 / span 1 / span 1`,
+        }}
+      >
+        <Typography
+          variant="body2"
           sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            backgroundColor: '#f5f5f5',
-            padding: 0,
-            borderBottom: '#a8a8a8 dotted 1px',
-            gridArea: `${h + 2} / 1 / span 1 / span 1`,
+            padding: '0 6px',
+            borderRadius: '50%',
+            margin: 'auto',
           }}
         >
-          <Typography
-            variant="body2"
-            sx={{
-              padding: '0 6px',
-              borderRadius: '50%',
-              margin: 'auto',
-            }}
-          >
-            {h.toString().padStart(2, '0')}:00
-          </Typography>
-        </Box>
-        {datesInfo.map((dateInfo, i) => <>
-          <Box
-            key={i}
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              backgroundColor: dateInfo.isToday ?
-                ( h < now.getHours() ? '#e1e1ee' : h == now.getHours() ? '#d6e3fd' : '#e3e8f8' ):
-                dateInfo.isPreviousDay ?
-                '#e8e8e8' :
-                '#f5f5f5',
-              padding: 0,
-              borderLeft: '#a8a8a8 dotted 1px',
-              borderBottom: '#a8a8a8 dotted 1px',
-              gridArea: `${h + 2} / ${i + 2} / span 1 / span 1`,
-            }}
-          >
-          </Box>
-        </>)}
-      </>)}
-      {datesInfo.map((dateInfo, i) => {
+          {h.toString().padStart(2, '0')}:00
+        </Typography>
+      </Box>)}
+      {Array(24).fill().map((_, h) => dateEntries.map((dateInfo, i) => <Box
+        key={i}
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          backgroundColor: dateInfo.isToday ?
+            ( h < now.getHours() ? '#e1e1ee' : h == now.getHours() ? '#d6e3fd' : '#e3e8f8' ):
+            dateInfo.isPreviousDay ?
+            '#e8e8e8' :
+            '#f5f5f5',
+          padding: 0,
+          borderLeft: '#a8a8a8 dotted 1px',
+          borderBottom: '#a8a8a8 dotted 1px',
+          gridArea: `${h + 2} / ${i + 2} / span 1 / span 1`,
+        }}
+      >
+      </Box>))}
+      {dateEntries.map((dateInfo, i) => {
         return <Box
           key={i}
           style={{
@@ -448,19 +455,18 @@ export default function Week({
           })}
           </Box>;
       })}
-      {isShowingToday &&
-        <div
-          style={{
-            gridArea: `2 / ${datesInfo.findIndex(dateInfo => dateInfo.isToday) + 2} / span 24 / span 1`,
-            position: 'relative',
-            paddingBottom: 1,
-          }}
-        >
-          <div style={{
-            height: (now.getHours() + now.getMinutes() / 60 + now.getSeconds() / 3600) * (100 / 24) + '%',
-            borderBottom: '2px solid red'
-          }}>
-          </div>
+      {isShowingToday && <div
+        style={{
+          gridArea: `2 / ${dateEntries.findIndex(dateInfo => dateInfo.isToday) + 2} / span 24 / span 1`,
+          position: 'relative',
+          paddingBottom: 1,
+        }}
+      >
+        <div style={{
+          height: (now.getHours() + now.getMinutes() / 60 + now.getSeconds() / 3600) * (100 / 24) + '%',
+          borderBottom: '2px solid red'
+        }}>
+        </div>
       </div>}
     </Box>
   </Box>
