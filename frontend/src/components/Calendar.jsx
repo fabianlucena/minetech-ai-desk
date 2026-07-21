@@ -43,7 +43,7 @@ export default function Calendar({
           {description}
         </Typography>}
       </Box>
-      {(tools || onReload || onCreate || true) && <Box sx={{ marginTop: 1 }}>
+      {(tools || onReload || onCreate) && <Box sx={{ marginTop: 1 }}>
         {tools}
         {onCreate && <CreateButton onClick={onCreate} />}
         {onReload && <ReloadButton onClick={onReload} />}
