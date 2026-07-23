@@ -31,7 +31,7 @@ export default class OAuth2Service {
     return url.toString();
   }
 
-  async callback(provider, action, data, options) {
+  async callback({ provider, action, data, options }) {
     if (!provider)
       throw new Error('No hay parámetro de proveedor.');
 
@@ -84,8 +84,11 @@ export default class OAuth2Service {
     let session = await sessionService.create({
       userId,
       deviceId,
-      data: { identityProvider: provider.name },
-    }, options.req);
+      data: {
+        service: 'oauth2',
+        identityProvider: provider.name
+      },
+    }, options);
 
     session = await sessionService.decorateWithCredentials(session);
     
