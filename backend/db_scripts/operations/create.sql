@@ -268,12 +268,16 @@ insert into auth.roles (
   deleted_at, deleted_by_id
 ) select 
     gen_random_uuid(),
-    'admin', 'Administrator', 'Administrator role with full privileges',
+    r.name, r.title, r.description,
     true,
     now(), system.id,
     now(), system.id,
     null, null
   from auth.users system
+  cross join (values
+    ('admin', 'Administrador', 'Administrador de sistema con privilegios completos'),
+    ('technician', 'Técnico', 'Técnico para atender solicitudes de clientes')
+  ) as r(name, title, description)
   where system.username = 'system'
 on conflict (name) do nothing;
 
@@ -441,7 +445,7 @@ create schema if not exists ia_desk;
 
 -- Table technicians
 create table if not exists ia_desk.technicians(
-    id bigint generated always as identity primary key,
+    user_id bigint primary key,
     uuid uuid not null default gen_random_uuid(),
 
     created_at timestamp not null default now(),
@@ -453,13 +457,14 @@ create table if not exists ia_desk.technicians(
     deleted_at timestamp null,
     deleted_by_id bigint null,
 
-    full_name varchar(128) not null,
     phone varchar(64) not null,
     is_active boolean not null,
     color varchar(10) null,
     
     constraint uk_ia_desk_technicians_uuid unique (uuid),
-    constraint uk_ia_desk_technicians_full_name unique (full_name),
+    
+    constraint uk_ia_desk_technicians_user_id foreign key (user_id)
+      references auth.users(id) on delete restrict,
     
     constraint uk_ia_desk_technicians_created_by_id foreign key (created_by_id)
       references auth.users(id) on delete restrict,
@@ -562,7 +567,7 @@ create table if not exists ia_desk.shifts(
 
     type varchar(64) not null,
     start timestamp not null,
-    end timestamp not null,
+    "end" timestamp not null,
     
     constraint uk_ia_desk_shifts_uuid unique (uuid),
     
