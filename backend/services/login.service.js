@@ -22,7 +22,7 @@ export default class LoginService {
     if (!user || !user.isActive|| !user.canLogin)
       throw new Error403('Usuario o contraseña incorrecta');
 
-    const userPassword = await this.userPasswordService.getByUserId(user.id);
+    const userPassword = await this.userPasswordService.getById(user.id);
     if (!userPassword)
       throw new Error403('Usuario o contraseña incorrecta');
 

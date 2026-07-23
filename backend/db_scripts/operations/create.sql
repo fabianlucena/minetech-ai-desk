@@ -97,7 +97,7 @@ end $$;
 
 -- user_passwords table
 create table if not exists auth.user_passwords (
-  user_id bigint not null primary key,
+  id bigint not null primary key,
 
   created_at timestamp not null default now(),
   created_by_id bigint not null,
@@ -110,10 +110,10 @@ create table if not exists auth.user_passwords (
 
   password_hash varchar(256) not null,
 
-  constraint uk_auth_users_passwords_user_id unique (user_id),
+  constraint uk_auth_users_passwords_id unique (id),
 
-  constraint fk_auth_user_passwords_user_id
-    foreign key (user_id) references auth.users(id) on delete restrict,
+  constraint fk_auth_user_passwords_id
+    foreign key (id) references auth.users(id) on delete restrict,
 
   constraint fk_auth_user_passwords_created_by_id
     foreign key (created_by_id) references auth.users(id) on delete restrict,
@@ -159,7 +159,7 @@ end $$;
 
 -- Insert default admin user pasword (only if admin does not have password) 1234
 insert into auth.user_passwords (
-  user_id,
+  id,
   password_hash,
   created_at, updated_at, deleted_at,
   created_by_id, updated_by_id, deleted_by_id
@@ -171,7 +171,7 @@ select admin.id,
 from auth.users admin, auth.users system
 where admin.username = 'admin'
   and system.username = 'system'
-on conflict (user_id) do nothing;
+on conflict (id) do nothing;
 
 -- devices table
 create table if not exists auth.devices (
@@ -445,7 +445,7 @@ create schema if not exists ia_desk;
 
 -- Table technicians
 create table if not exists ia_desk.technicians(
-    user_id bigint primary key,
+    id bigint primary key,
     uuid uuid not null default gen_random_uuid(),
 
     created_at timestamp not null default now(),
@@ -460,10 +460,12 @@ create table if not exists ia_desk.technicians(
     phone varchar(64) not null,
     is_active boolean not null,
     color varchar(10) null,
+  
+    constraint uk_ia_desk_technicians_id unique (id),
     
     constraint uk_ia_desk_technicians_uuid unique (uuid),
     
-    constraint uk_ia_desk_technicians_user_id foreign key (user_id)
+    constraint uk_ia_desk_technicians_id foreign key (id)
       references auth.users(id) on delete restrict,
     
     constraint uk_ia_desk_technicians_created_by_id foreign key (created_by_id)

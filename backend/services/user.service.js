@@ -96,7 +96,7 @@ export default class UserService extends ModelService {
 
     if (data.password) {
       const userPasswordService = getDependency('userPasswordService');
-      await userPasswordService.setPasswordForUser(user.id, data.password, globalOptions);
+      await userPasswordService.setPasswordById(user.id, data.password, globalOptions);
     }
 
     if (data.roles && Array.isArray(data.roles)) {
@@ -124,7 +124,7 @@ export default class UserService extends ModelService {
 
     if (data.password) {
       const userPasswordService = getDependency('userPasswordService');
-      await userPasswordService.setPasswordForUser(user.id, data.password, globalOptions);
+      await userPasswordService.setPasswordById(user.id, data.password, globalOptions);
     }
 
     if (data.roles && Array.isArray(data.roles)) {
@@ -148,7 +148,7 @@ export default class UserService extends ModelService {
 
     const globalOptions = { session: options?.session };
     const userPasswordService = getDependency('userPasswordService');
-    return await userPasswordService.setPasswordForUser(user.id, password, globalOptions);
+    return await userPasswordService.setPasswordById(user.id, password, globalOptions);
   }
 
   async getIdByUsername(username, options) {

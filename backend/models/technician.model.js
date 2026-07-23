@@ -2,7 +2,7 @@ import { DataTypes } from 'sequelize';
 
 export default (sequelize) => {
   const Technician = sequelize.define('Technician', {
-    userId: { field: 'user_id', type: DataTypes.BIGINT, primaryKey: true },
+    id: { field: 'id', type: DataTypes.BIGINT, primaryKey: true },
     uuid: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4 },
     createdAt: { field: 'created_at', type: DataTypes.DATE, defaultValue: DataTypes.NOW, allowNull: false },
     createdById: { field: 'created_by_id', type: DataTypes.BIGINT, allowNull: false },
@@ -21,7 +21,7 @@ export default (sequelize) => {
 
   Technician.associate = (models) => {
     Technician.belongsTo(models.User, {
-      foreignKey: 'user_id',
+      foreignKey: 'id',
       as: 'user',
     });
 

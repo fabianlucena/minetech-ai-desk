@@ -1,8 +1,8 @@
-import sequelize, { DataTypes } from 'sequelize';
+import { DataTypes } from 'sequelize';
 
 export default (sequelize) => {
   const UserPassword = sequelize.define('UserPassword', {
-    userId: { field: 'user_id', type: DataTypes.BIGINT, autoIncrement: true, primaryKey: true },
+    id: { field: 'id', type: DataTypes.BIGINT, autoIncrement: true, primaryKey: true },
     createdAt: { field: 'created_at', type: DataTypes.DATE, defaultValue: DataTypes.NOW, allowNull: false },
     createdById: { field: 'created_by_id', type: DataTypes.BIGINT, allowNull: false },
     updatedAt: { field: 'updated_at', type: DataTypes.DATE, defaultValue: DataTypes.NOW, allowNull: false },
@@ -18,7 +18,7 @@ export default (sequelize) => {
 
   UserPassword.associate = (models) => {
     UserPassword.belongsTo(models.User, {
-      foreignKey: 'userId',
+      foreignKey: 'id',
       as: 'user',
     });
 

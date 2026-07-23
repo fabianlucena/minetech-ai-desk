@@ -149,14 +149,11 @@ export default class ModelService {
     if (!id)
       throw new Error('ID es obligatorio');
 
+    if (Array.isArray(id)) {
+      return await this.getList({ ...options, where: { ...options?.where, id } });
+    }
+
     return this.getFirstOrDefault({ ...options, where: { ...options?.where, id } });
-  }
-
-  async getByIds(ids, options) {
-    if (!ids || !Array.isArray(ids))
-      throw new Error('IDs es obligatorio y debe ser un array');
-
-    return await this.getList({ ...options, where: { ...options?.where, id: ids } });
   }
 
   async getByUuid(uuid, options) {
@@ -228,6 +225,18 @@ export default class ModelService {
       throw new Error(`No se encontró el registro con ID ${id}`);
 
     return await this.getById(id);
+  }
+
+  async updateByUuid(uuid, data, options) {
+    if (!uuid)
+      throw new Error('El UUID es obligatorio');
+
+    const id = await this.getIdByUuid(uuid);
+    if (!id)
+      throw new Error('Elemento no encontrado');
+
+    const globalOptions = { session: options?.session };
+    return await this.updateById(id, data, globalOptions);
   }
 
   async deleteByWhere(where, options) {

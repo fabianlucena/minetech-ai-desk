@@ -39,7 +39,7 @@ export default class RoleXUserService extends ModelService {
       throw new Error('El ID de usuario es obligatorio');
 
     const rolesIds = await this.getRoleIdsByUserId(userId);
-    return await this.roleService.getByIds(rolesIds.map(r => r.roleId));
+    return await this.roleService.getById(rolesIds.map(r => r.roleId));
   }
 
   async getAllRolesByUserId(userId) {
@@ -48,7 +48,7 @@ export default class RoleXUserService extends ModelService {
     
     let rolesIds = await this.getRoleIdsByUserId(userId);
     rolesIds = await this.roleIncludeService.getAllIdsByIds(rolesIds);
-    return await this.roleService.getByIds(rolesIds);
+    return await this.roleService.getById(rolesIds);
   }
 
   async updateRoleIdsByUserId(userId, roleIds, options) {
@@ -73,7 +73,7 @@ export default class RoleXUserService extends ModelService {
 
     const existingRoleIds = await this.getRoleIdsByUserId(userId, globalOptions,);
     const deleteingRoleIds = existingRoleIds.filter(roleId => !roleIds.includes(roleId));
-    const addingRoleIds = roleIds.filter(roleId => !existingRoleIds.includes(roleId));
+    //const addingRoleIds = roleIds.filter(roleId => !existingRoleIds.includes(roleId));
 
     if (deleteingRoleIds.length > 0)
       await this.deleteByWhere({ userId, roleId: deleteingRoleIds }, globalOptions);

@@ -22,6 +22,6 @@ export default class PermissionXRoleService extends ModelService {
       throw new Error('El ID de rol es obligatorio');
 
     const permissionIds = await this.getPermissionIdsByRoleId(roleId);
-    return await this.permissionService.getByIds(permissionIds);
+    return await this.permissionService.getById(permissionIds);
   }
 }

@@ -11,13 +11,13 @@ export default class UserPasswordService extends ModelService {
   }
 
   async validateForCreation(data, options) {
-    if (!data.userId)
+    if (!data.id)
       throw new Error('El ID de usuario es obligatorio');
 
     if (!data.passwordHash)
       throw new Error('El hash de la contraseña es obligatorio');
 
-    const existing = await this.getByUserId(data.userId, { includeDeleted: true });
+    const existing = await this.getById(data.id, { includeDeleted: true });
     if (existing)
       throw new Error('El usuario ya posee contraseña, debe modificarla');
 
@@ -43,30 +43,23 @@ export default class UserPasswordService extends ModelService {
     return await super.validateForUpdate(data, options);
   }
 
-  async getByUserId(userId) {
-    if (!userId)
-      throw new Error('El ID de usuario es obligatorio');
-
-    return await this.getFirstOrDefault({ where: { userId } });
-  }
-
-  async setPasswordHashForUser(userId, passwordHash) {
-    if (!userId)
+  async setPasswordHashById(id, passwordHash) {
+    if (!id)
       throw new Error('El ID de usuario es obligatorio');
 
     if (!passwordHash)
       throw new Error('El hash de la contraseña es obligatorio');
 
-    const existingPassword = await this.getByUserId(userId);
+    const existingPassword = await this.getById(id);
     if (existingPassword) {
-      await this.updateByWhere({ passwordHash }, { userId });
+      await this.updateByWhere({ passwordHash }, { id });
     } else {
-      await this.create({ userId, passwordHash });
+      await this.create({ id, passwordHash });
     }
   }
 
-  async setPasswordForUser(userId, password) {
-    if (!userId)
+  async setPasswordById(id, password) {
+    if (!id)
       throw new Error('El ID de usuario es obligatorio');
 
     if (!password)
@@ -74,6 +67,6 @@ export default class UserPasswordService extends ModelService {
 
     this.passwordService = getDependency('passwordService');
 
-    return await this.setPasswordHashForUser(userId, await this.passwordService.hashPassword(password));
+    return await this.setPasswordHashById(id, await this.passwordService.hashPassword(password));
   }
 }

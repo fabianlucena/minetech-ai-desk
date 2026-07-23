@@ -21,13 +21,6 @@ export default class TechnicianService extends ModelService {
     
     return options;
   }
-  
-  getByUserId(userId, options) {
-    if (!userId)
-      throw new Error('El ID de usuario es obligatorio');
-
-    return this.getFirstOrDefault({ ...options, where: { ...options?.where, userId } });
-  }
 
   getByPhone(phone, options) {
     if (!phone)
@@ -47,21 +40,21 @@ export default class TechnicianService extends ModelService {
   async validateForCreation(data, options) {
     data = { ...data };
 
-    if (!data.userId) {
+    if (!data.id) {
       if (data.userUuid) {
         const userService = getDependency('userService');
-        data.userId = await userService.getIdByUuid(data.userUuid);
+        data.id = await userService.getIdByUuid(data.userUuid);
         delete data.userUuid;
       }
 
-      if (!data.userId)
+      if (!data.id)
         throw new Error('El ID de usuario es obligatorio');
     }
 
     if (!data.phone)
       throw new Error('El teléfono es obligatorio');
 
-    const existentUser = await this.getByUserId(data.userId);
+    const existentUser = await this.getById(data.id);
     if (existentUser)
       throw new Error('El usuario ya está configurado como técnico');
 
@@ -94,18 +87,6 @@ export default class TechnicianService extends ModelService {
       throw new Error('El nombre completo es obligatorio');
 
     return await this.getFirstOrDefault({ where: { fullName } });
-  }
-
-  async updateByUuid(uuid, data, options) {
-    if (!uuid)
-      throw new Error('El UUID del técnico es obligatorio');
-
-    const technician = await this.getByUuid(uuid);
-    if (!technician)
-      throw new Error('Técnico no encontrado');
-
-    const globalOptions = { session: options?.session };
-    return await this.updateById(technician.id, data, globalOptions);
   }
 
   async getUsers(options) {
