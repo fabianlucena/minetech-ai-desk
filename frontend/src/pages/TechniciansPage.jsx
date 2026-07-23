@@ -18,7 +18,7 @@ export default function TechniciansPage() {
   const columns = useMemo(() => {
     const baseColumns = [
       {
-        field: 'fullName',
+        field: 'displayName',
         headerName: 'Nombre completo',
         flex: 1,
       },

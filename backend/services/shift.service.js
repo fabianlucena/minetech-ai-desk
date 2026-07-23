@@ -9,12 +9,13 @@ export default class ShiftService extends ModelService {
 
   getModelOptions(options) {
     options = super.getModelOptions(options);
+    
     if (options.includeTechnician) {
       options.include = options.include || [];
       options.include.push({
         model: getDependency('technicianModel'),
         as: 'technician'
-      }),
+      });
       delete options.includeTechnician;
     }
 
@@ -81,7 +82,7 @@ export default class ShiftService extends ModelService {
 
     const globalOptions = { session: options?.session };
 
-    return await this.getById(shift.id, { includeTechnician: true });
+    return await this.getById(shift.id, { ...globalOptions, includeTechnician: true });
   }
 
   async updateByUuid(uuid, data, options) {

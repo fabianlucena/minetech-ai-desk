@@ -9,6 +9,15 @@ export default class TechnicianService extends ModelService {
 
   getModelOptions(options) {
     options = super.getModelOptions(options);
+
+    if (options.includeUser) {
+      options.include = options.include || [];
+      options.include.push({
+        model: getDependency('userModel'),
+        as: 'user'
+      });
+      delete options.includeTechnician;
+    }
     
     return options;
   }
