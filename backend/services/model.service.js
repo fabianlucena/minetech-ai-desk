@@ -6,11 +6,13 @@ export default class ModelService {
     traceable = true,
     auditable = true,
     softDelete = true,
+    allowIdForCreation = false,
   }) {
     this.model = model;
     this.traceable = traceable;
     this.auditable = auditable;
     this.softDelete = softDelete;
+    this.allowIdForCreation = allowIdForCreation;
   }
 
   async getSystemUserId() {
@@ -62,7 +64,7 @@ export default class ModelService {
     if (!data || typeof data !== 'object')
       throw new Error('Data es obligatorio y debe ser un objeto');
 
-    if (data.id)
+    if (data.id && !this.allowIdForCreation)
       throw new Error('El ID no debe ser proporcionado');
 
     if (data.uuid)

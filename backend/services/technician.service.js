@@ -4,7 +4,10 @@ import { Op } from 'sequelize';
 
 export default class TechnicianService extends ModelService {
   constructor() {
-    super({ model: getDependency('technicianModel') });
+    super({
+      allowIdForCreation: true,
+      model: getDependency('technicianModel'),
+    });
   }
 
   getModelOptions(options) {
@@ -30,7 +33,7 @@ export default class TechnicianService extends ModelService {
   }
 
   get validPropertiesForCreation() {
-    return ['userId', 'phone', 'isActive', 'color'];
+    return ['id', 'userId', 'phone', 'isActive', 'color'];
   }
 
   get validPropertiesForUpdate() {
