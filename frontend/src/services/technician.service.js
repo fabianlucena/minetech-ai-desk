@@ -23,3 +23,7 @@ export async function deleteTechnician(uuid) {
 export async function restoreTechnician(uuid) {
   return await Api.patchJson(`v1/technicians/${uuid}/restore`);
 }
+
+export async function getTechnicianUsers(params) {
+  return await Api.getJson('v1/technicians/users', params);
+}

@@ -1,12 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Form from '../components/Form.jsx';
-import { TextField, SwitchField, ColorField } from '../components/fields/index.jsx';
+import { TextField, SelectField, SwitchField, ColorField } from '../components/fields/index.jsx';
 import useToast from '../states/useToast.jsx';
-import { getTechnician, updateTechnician, createTechnician } from '../services/technician.service.js';
+import { getTechnician, updateTechnician, createTechnician, getTechnicianUsers } from '../services/technician.service.js';
 
 const defaultData = {
-  fullName: '',
+  userUuid: '',
   phone: '',
   isActive: true,
 };
@@ -18,12 +18,21 @@ export default function TechnicianPage() {
   const [disabled, setDisabled] = useState(false);
   const [data, setData] = useState({...defaultData});
   const [unchangedData, setUnchangedData] = useState({...defaultData});
-  
+  const [technicianUsers, setTechnicianUsers] = useState([]);
   const [formConfig, setFormConfig] = useState({
     title: 'Crear nuevo técnico',
     description: 'Ingrese los datos del nuevo técnico',
     disabledMessage: 'Creando técnico...',
   });
+
+  const loadTechnicianUsers = useCallback(async () => {
+    try {
+      setTechnicianUsers(await getTechnicianUsers());
+    } catch (error) {
+      addError('Error al obtener los usuarios técnicos: ' + (error.data?.message || error.message || error.data?.error));
+      console.error('Error al obtener los usuarios técnicos:', error);
+    }
+  }, [addError]);
 
   const load = useCallback(async () => {
     try {
@@ -41,6 +50,8 @@ export default function TechnicianPage() {
   }, [uuid, addError]);
 
   useEffect(() => {
+    loadTechnicianUsers();
+
     if (uuid) {
       setFormConfig({
         title: 'Editar técnico',
@@ -56,14 +67,14 @@ export default function TechnicianPage() {
         disabledMessage: 'Creando técnico...',
       });
     }
-  }, [uuid, load, addError, navigate]);
+  }, [uuid, load, addError, loadTechnicianUsers]);
 
   async function onSubmit() {
     setDisabled(true);
     try {
       if (uuid) {
         await updateTechnician(uuid, {
-          fullName: data.fullName,
+          userUuid: data.userUuid,
           phone: data.phone,
           isActive: data.isActive,
           color: data.color,
@@ -88,8 +99,8 @@ export default function TechnicianPage() {
   }
 
   function getValidationError() {
-    if (!data.fullName)
-      return 'Debe proporcionar el nombre completo del técnico';
+    if (!data.userUuid)
+      return 'Debe proporcionar el usuario del técnico';
 
     if (!data.phone)
       return 'Debe proporcionar el número de teléfono del técnico';
@@ -109,13 +120,15 @@ export default function TechnicianPage() {
       checked={data.isActive}
       onChange={(e) => setData({...data, isActive: e.target.checked})}
     />
-    <TextField
-      label="Nombre"
+    <SelectField
+      label="Usuario"
       disabled={disabled}
-      required
-      autoFocus
-      value={data.fullName}
-      onChange={(e) => setData({...data, fullName: e.target.value})}
+      value={data.userUuid}
+      onChange={(e) => setData({...data, userUuid: e.target.value})}
+      options={technicianUsers.map((user) => ({
+        value: user.uuid,
+        label: user.displayName || user.username,
+      }))}
     />
     <TextField
       label="Teléfono"
