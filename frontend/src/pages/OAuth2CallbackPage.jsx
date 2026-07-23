@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { oAuth2Callback } from '../services/oauth2provider.service.js';
 import { setCredentials, clearCredentials } from '../services/login.service.js';
@@ -13,7 +13,10 @@ export default function OAuth2CallbackPage() {
   const [message, setMessage] = useState('Autorizando...');
   const navigate = useNavigate();
   const { updateSession } = useGlobal();
-  const { addMessage } = useToast();
+  const { addMessage, addError } = useToast();
+
+  // oxlint-disable-next-line react-hooks/exhaustive-deps
+  const goHome = useCallback(() => { navigate('/'); }, []);
 
   useEffect(() => {
     console.log(`Handling OAuth2 callback for provider: ${name}, action: ${action}`);
@@ -34,7 +37,7 @@ export default function OAuth2CallbackPage() {
         setErrorTitle(null);
         setMessage('Autorizado correctamente. Redirigiendo...');
         addMessage('Autorizado correctamente');
-        navigate('/');
+        goHome();
       })
       .catch(({ data, res, error }) => {
         clearCredentials();
@@ -47,9 +50,9 @@ export default function OAuth2CallbackPage() {
         setErrorMessage(message); 
         setErrorTitle('Error al autorizar');
         setMessage('Error al autorizar. Por favor, inténtelo de nuevo.');
-        addMessage('Error al autorizar: ' + message);
+        addError('Error al autorizar: ' + message);
       });
-  }, [name, action, updateSession, navigate, addMessage]);
+  }, [name, action, updateSession, goHome, addMessage, addError]);
 
   return <>
     <ErrorDialog title={errorTitle}>

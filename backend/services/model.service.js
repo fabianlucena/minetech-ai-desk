@@ -51,9 +51,6 @@ export default class ModelService {
     if (options.includeDeleted !== undefined)
       delete options.includeDeleted;
 
-    if (options.attributes)
-      options.attributes = options.attributes;
-
     return options;
   }
 
@@ -61,7 +58,7 @@ export default class ModelService {
     return [];
   }
 
-  async validateForCreation(data, options) {
+  async validateForCreation(data) {
     if (!data || typeof data !== 'object')
       throw new Error('Data es obligatorio y debe ser un objeto');
 
@@ -186,7 +183,7 @@ export default class ModelService {
     return [];
   }
 
-  async validateForUpdate(data, options) {
+  async validateForUpdate(data) {
     if (!data || typeof data !== 'object')
       throw new Error('Data es obligatorio y debe ser un objeto');
 
