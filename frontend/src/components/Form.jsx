@@ -1,5 +1,6 @@
-import { Box, Paper, Typography, Button, Stack, CircularProgress } from '@mui/material';
+import { Box, Paper, Typography, Stack, CircularProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import Button from './buttons/Button.jsx';
 
 export default function Form({
   title,
@@ -25,29 +26,29 @@ export default function Form({
     elevation={0}
     sx={{
       p: 3,
-      display: "flex",
-      flexDirection: "column",
+      display: 'flex',
+      flexDirection: 'column',
       gap: 3,
-      border: "1px solid",
-      borderColor: "divider",
+      border: '1px solid',
+      borderColor: 'divider',
       borderRadius: 3,
       ...sx,
     }}
   >
     {disabled && <Box
       sx={{
-        position: "absolute",
+        position: 'absolute',
         top: 0,
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: "rgba(63, 63, 63, 0.8)",
-        display: "flex",
-        color: "white",
-        alignItems: "center",
-        justifyContent: "center",
+        backgroundColor: 'rgba(63, 63, 63, 0.8)',
+        display: 'flex',
+        color: 'white',
+        alignItems: 'center',
+        justifyContent: 'center',
         zIndex: 1,
-        flexDirection: "column",
+        flexDirection: 'column',
       }}
     >
       <CircularProgress
@@ -66,9 +67,9 @@ export default function Form({
     {(title || titleTools || description) && <Box>
       {(title || titleTools) && <Box
         sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
         }}
       >
         {title && <Typography variant="h6" fontWeight={600}>
@@ -85,9 +86,9 @@ export default function Form({
 
     <Typography
       variant="body2"
-      color={validationError ? "error" : unchangedData ? "warning" : "text.secondary" }
+      color={validationError ? 'error' : unchangedData ? 'warning' : 'text.secondary' }
     >
-      {validationError || (unchangedData ? "No se han realizado cambios" : "Listo para enviar")}
+      {validationError || (unchangedData ? 'No se han realizado cambios' : 'Listo para enviar')}
     </Typography>
 
     <form onSubmit={(e) => { e.preventDefault(); onSubmit?.(e); }}>
@@ -96,24 +97,22 @@ export default function Form({
       </Stack>
 
       {(footer || onSubmit || submitText || onCancel || onCancelGoBack) && <Box
-          sx={{
-            pt: 2,
-            borderTop: "1px solid",
-            borderColor: "divider",
-          display: "flex",
-          justifyContent: "flex-end",
+        sx={{
+          marginTop: 2,
+          display: 'flex',
+          justifyContent: 'flex-end',
           gap: 2,
         }}
       >
         {footer}
-        {(onCancel) && <Button variant="outlined" onClick={onCancel}>
-          {cancelText || "Cancelar"}
+        {(onCancel) && <Button secondary onClick={onCancel}>
+          {cancelText || 'Cancelar'}
         </Button>}
-        {(onCancelGoBack) && <Button variant="outlined" onClick={() => navigate(-1)}>
-          {cancelText || "Cancelar"}
+        {(onCancelGoBack) && <Button secondary onClick={() => navigate(-1)}>
+          {cancelText || 'Cancelar'}
         </Button>}
-        {(onSubmit || submitText) && <Button variant="contained" type="submit" disabled={!canSubmit || validationError || unchangedData || disabled}>
-          {submitText || "Enviar"}
+        {(onSubmit || submitText) && <Button type="submit" disabled={!canSubmit || validationError || unchangedData || disabled}>
+          {submitText || 'Enviar'}
         </Button>}
       </Box> }
     </form>

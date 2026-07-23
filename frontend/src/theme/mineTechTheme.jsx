@@ -8,23 +8,23 @@ export const mineTechTheme = createTheme(
 
       primary: {
         main: '#F4C300',       // Amarillo MineTech
-        contrastText: '#4A4A4A'
+        contrastText: '#4A4A4A',
       },
 
       secondary: {
         main: '#888888', //'#D62828',       // Rojo MineTech
-        contrastText: '#FFFFFF'
+        contrastText: '#FFFFFF',
       },
 
       text: {
         primary: '#1A1A1A',
-        secondary: '#4A4A4A'
+        secondary: '#4A4A4A',
       },
 
       background: {
         default: '#FFFFFF',
-        paper: '#F9F9F9'
-      }
+        paper: '#F9F9F9',
+      },
     },
 
     typography: {
@@ -39,8 +39,8 @@ export const mineTechTheme = createTheme(
 
       button: {
         textTransform: 'none',
-        fontWeight: 600
-      }
+        fontWeight: 600,
+      },
     },
 
     components: {
@@ -50,25 +50,28 @@ export const mineTechTheme = createTheme(
             backgroundColor: '#1A1A1A', // Negro técnico
             color: '#888888',
             position: 'static',
-          }
-        }
+          },
+        },
       },
 
       MuiDrawer: {
         styleOverrides: {
           paper: {
             backgroundColor: '#1A1A1A',
-            color: '#FFFFFF'
-          }
-        }
+            color: '#FFFFFF',
+          },
+        },
       },
 
       MuiButton: {
         styleOverrides: {
           root: {
-            borderRadius: 6
-          }
-        }
+            borderRadius: 6,
+            '&.default': {
+              color: '#D62828',
+            },
+          },
+        },
       },
 
       MuiListItemButton: {
