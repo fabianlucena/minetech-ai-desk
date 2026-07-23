@@ -31,7 +31,7 @@ export default class OAuth2Service {
     return url.toString();
   }
 
-  async callback(provider, action, data) {
+  async callback(provider, action, data, options) {
     if (!provider)
       throw new Error('No hay parámetro de proveedor.');
 
@@ -42,12 +42,12 @@ export default class OAuth2Service {
     provider = await oauth2ProviderService.getSingleByName(provider);
 
     if (action === 'authorize')
-      return await this.callbackAuthorize(provider, data);
+      return await this.callbackAuthorize(provider, data, options);
   
     throw new Error(`Acción no soportada para el proveedor ${provider.name}.`);
   }
 
-  async callbackAuthorize(provider, data, req) {
+  async callbackAuthorize(provider, data, options) {
     if (!data?.code)
       throw new Error('No hay parámetro de código.');
 
@@ -84,8 +84,8 @@ export default class OAuth2Service {
     let session = await sessionService.create({
       userId,
       deviceId,
-      data: { provider: provider.name },
-    }, { req });
+      data: { identityProvider: provider.name },
+    }, options.req);
 
     session = await sessionService.decorateWithCredentials(session);
     

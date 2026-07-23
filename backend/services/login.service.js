@@ -11,7 +11,7 @@ export default class LoginService {
     this.sessionService = getDependency('sessionService');
   }
 
-  async login(data, req) {
+  async login(data, options) {
     if (!data.username)
       throw new Error400('El nombre de usuario es obligatorio');
 
@@ -35,15 +35,18 @@ export default class LoginService {
     let session = await this.sessionService.create({
       userId: user.id,
       deviceId: device.id,
-      data: { identityProvider: 'local' },
-    }, { req });
+      data: {
+        service: 'login',
+        identityProvider: 'local',
+      },
+    }, options);
 
     session = await this.sessionService.decorateWithCredentials(session);
 
     return session;
   }
 
-  async autoLogin(data) {
+    async autoLogin(data, options) {
     if (!data.autoLoginToken)
       throw new Error400('El token de inicio de sesión automático (autoLoginToken) es obligatorio');
 
@@ -61,7 +64,12 @@ export default class LoginService {
     let session = await this.sessionService.create({
       userId: previousSession.userId,
       deviceId: previousSession.deviceId,
-    });
+      data: {
+        service: 'autologin',
+        identityProvider: 'local',
+        previousSessionId: previousSession.id,
+      },
+    }, options);
 
     session = await this.sessionService.decorateWithCredentials(session);
 

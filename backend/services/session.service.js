@@ -35,12 +35,15 @@ export default class SessionService extends ModelService {
     const req = options?.req;
     if (req) {
       data.data = {
-        ip: options.req.headers('X-Forwarded-For') || options.req.connection?.remoteAddress || options.req.socket?.remoteAddress || null,
-        userAgent: options.req.headers('User-Agent'),
-        service: 'oauth2',
-        identityProvider: options.provider.name,
+        ip: options.req?.headers['x-forwarded-for'] || options.req.connection?.remoteAddress || options.req.socket?.remoteAddress || null,
+        userAgent: options.req.headers['user-agent'],
         ...data.data,
       };
+    }
+
+    if (options.provider?.name) {
+      data.data ||= {};
+      data.data.identityProvider = options.provider.name;
     }
 
     if (data.data) {
