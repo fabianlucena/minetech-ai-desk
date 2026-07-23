@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useGlobal from '../states/useGlobal.jsx';
 import useToast from '../states/useToast.jsx';
+import { clearCredentials } from '../services/login.service.js';
 
 export default function LogoutPage() {
   const navigate = useNavigate();
@@ -10,6 +11,7 @@ export default function LogoutPage() {
 
   useEffect(() => {
     try {
+      clearCredentials();
       updateSession({
         user: null,
         roles: null,
