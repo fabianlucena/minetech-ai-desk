@@ -8,8 +8,8 @@ export default class ModelService {
     softDelete = true,
   }) {
     this.model = model;
-    this.traceable = true;
-    this.auditable = true;
+    this.traceable = traceable;
+    this.auditable = auditable;
     this.softDelete = softDelete;
   }
 
@@ -171,10 +171,10 @@ export default class ModelService {
       throw new Error('UUID es obligatorio');
 
     if (Array.isArray(uuid)) {
-      const rows = await this.getList({ ...options, where: { ...options?.where, uuid } });
+      const rows = await this.getList({ ...options, attributes: ['id'], where: { ...options?.where, uuid } });
       return rows.map(r => r.id);
     } else {
-      const row = await this.getFirstOrDefault({ ...options, where: { ...options?.where, uuid } });
+      const row = await this.getFirstOrDefault({ ...options, attributes: ['id'], where: { ...options?.where, uuid } });
       return row?.id;
     }
   }

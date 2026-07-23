@@ -16,7 +16,7 @@ export default class UserService extends ModelService {
         through: {
           where: { deletedAt: null },
         },
-      }),
+      });
       delete options.includeRoles;
     }
 
@@ -86,20 +86,6 @@ export default class UserService extends ModelService {
     return ['username', 'displayName', 'isActive', 'canLogin', 'password', 'roles', 'lastLoginAt'];
   }
 
-  async validateForCreation(data, options) {
-    if (!data.username)
-      throw new Error('El nombre de usuario es obligatorio');
-
-    if (!data.displayName)
-      throw new Error('El nombre para mostrar es obligatorio');
-
-    const existing = await this.getByUsername(data.username, { includeDeleted: true });
-    if (existing)
-      throw new Error('El nombre de usuario ya está en uso');
-
-    return await super.validateForCreation(data, options);
-  }
-
   async updateByUuid(uuid, data, options) {
     if (!uuid)
       throw new Error('El UUID de usuario es obligatorio');
@@ -138,5 +124,31 @@ export default class UserService extends ModelService {
     const globalOptions = { session: options?.session };
     const userPasswordService = getDependency('userPasswordService');
     return await userPasswordService.setPasswordForUser(user.id, password, globalOptions);
+  }
+
+  async getIdByUsername(username, options) {
+    if (!username)
+      throw new Error('El nombre de usuario es obligatorio');
+
+    if (Array.isArray(username)) {
+      const rows = await this.getList({ ...options, attributes: ['id'], where: { ...options?.where, username } });
+      return rows.map(r => r.id);
+    } else {
+      const row = await this.getFirstOrDefault({ ...options, attributes: ['id'], where: { ...options?.where, username } });
+      return row?.id;
+    }
+  }
+
+  async getIdByEmail(email, options) {
+    if (!email)
+      throw new Error('El correo electrónico es obligatorio');
+
+    if (Array.isArray(email)) {
+      const rows = await this.getList({ ...options, attributes: ['id'], where: { ...options?.where, email } });
+      return rows.map(r => r.id);
+    } else {
+      const row = await this.getFirstOrDefault({ ...options, attributes: ['id'], where: { ...options?.where, email } });
+      return row?.id;
+    }
   }
 }

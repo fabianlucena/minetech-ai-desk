@@ -1,5 +1,4 @@
 import { getDependency } from '../dependency.js';
-import argon2 from 'argon2';
 import { Error400 } from '../errors/error400.js';
 import { Error403 } from '../errors/error403.js';
 import { SessionResponse } from '../dto/session.dto.js';
@@ -13,7 +12,7 @@ export default class LoginService {
     this.sessionService = getDependency('sessionService');
   }
 
-  async login(data) {
+  async login(data, req) {
     if (!data.username)
       throw new Error400('El nombre de usuario es obligatorio');
 
@@ -37,7 +36,8 @@ export default class LoginService {
     let session = await this.sessionService.create({
       userId: user.id,
       deviceId: device.id,
-    });
+      data: { identityProvider: 'local' },
+    }, { req });
 
     session = await this.sessionService.decorateWithCredentials(session);
     const response = new SessionResponse(session);

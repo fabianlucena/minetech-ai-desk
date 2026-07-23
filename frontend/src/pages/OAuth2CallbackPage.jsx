@@ -46,7 +46,7 @@ export default function OAuth2CallbackPage() {
           roles: null,
           permissions: null,
         });
-        const message = data?.message || res?.statusText || error?.message || 'Error desconocido';
+        const message = data?.message || data?.error || res?.statusText || error?.message || error?.error || 'Error desconocido';
         setErrorMessage(message); 
         setErrorTitle('Error al autorizar');
         setMessage('Error al autorizar. Por favor, inténtelo de nuevo.');

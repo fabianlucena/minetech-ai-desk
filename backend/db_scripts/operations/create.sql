@@ -20,9 +20,11 @@ begin
     is_active boolean not null,
     can_login boolean not null,
     last_login_at timestamp null,
+    email varchar(255) null,
 
     constraint uk_auth_users_uuid unique (uuid),
-    constraint uk_auth_users_username unique (username)
+    constraint uk_auth_users_username unique (username),
+    constraint uk_auth_users_email unique (email)
   );
 
   if not exists (

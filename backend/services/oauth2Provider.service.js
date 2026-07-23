@@ -4,7 +4,7 @@ export default class OAuth2ProviderService {
   constructor() {
   }
 
-  getList() {
+  async getList() {
     const config = getDependency('config');
     const providers = [];
     for (var name in config.oAuth2Providers) {
@@ -14,7 +14,7 @@ export default class OAuth2ProviderService {
     return providers;
   }
   
-  getFirstOrDefaultByName(name) {
+  async getFirstOrDefaultByName(name) {
     const config = getDependency('config');
     const providerConfig = config.oAuth2Providers[name];
     if (!providerConfig) {
@@ -22,5 +22,13 @@ export default class OAuth2ProviderService {
     }
     
     return { name, ...providerConfig };
+  }
+
+  async getSingleByName(name) {
+    const provider = await this.getFirstOrDefaultByName(name);
+    if (!provider)
+      throw new Error(`Proveedor ${name} no encontrado.`);
+
+    return provider;
   }
 }

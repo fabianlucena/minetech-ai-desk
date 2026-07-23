@@ -16,7 +16,7 @@ export default class SessionService extends ModelService {
   }
 
   get validPropertiesForCreation() {
-    return ['userId', 'deviceId', 'authorizationToken', 'autoLoginToken', 'expiresAt', 'lastUsedAt'];
+    return ['userId', 'deviceId', 'authorizationToken', 'autoLoginToken', 'expiresAt', 'lastUsedAt', 'dataJson'];
   }
 
   async validateForCreation(data, options) {
@@ -26,10 +26,30 @@ export default class SessionService extends ModelService {
     if (!data.deviceId)
       throw new Error('El ID del dispositivo es obligatorio');
 
+    data = { ...data };
     data.authorizationToken ||= generateToken(this.config.tokenSize);
     data.autoLoginToken ||= generateToken(this.config.tokenSize);
     data.expiresAt ||= new Date(Date.now() + this.config.sessionExpiration * 1000);
     data.lastUsedAt ||= new Date();
+
+    const req = options?.req;
+    if (req) {
+      data.data = {
+        ip: options.req.headers('X-Forwarded-For') || options.req.connection?.remoteAddress || options.req.socket?.remoteAddress || null,
+        userAgent: options.req.headers('User-Agent'),
+        service: 'oauth2',
+        identityProvider: options.provider.name,
+        ...data.data,
+      };
+    }
+
+    if (data.data) {
+      if (data.dataJson)
+        data.data = { ...JSON.parse(data.dataJson), ...data.data };
+
+      data.dataJson = JSON.stringify(data.data);
+      delete data.data;
+    }
 
     return await super.validateForCreation(data, options);
   }
