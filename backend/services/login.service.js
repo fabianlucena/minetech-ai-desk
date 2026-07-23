@@ -1,7 +1,6 @@
 import { getDependency } from '../dependency.js';
 import { Error400 } from '../errors/error400.js';
 import { Error403 } from '../errors/error403.js';
-import { SessionResponse } from '../dto/session.dto.js';
 
 export default class LoginService {
   constructor() {
@@ -40,9 +39,8 @@ export default class LoginService {
     }, { req });
 
     session = await this.sessionService.decorateWithCredentials(session);
-    const response = new SessionResponse(session);
 
-    return response;
+    return session;
   }
 
   async autoLogin(data) {
@@ -66,8 +64,7 @@ export default class LoginService {
     });
 
     session = await this.sessionService.decorateWithCredentials(session);
-    const response = new SessionResponse(session);
 
-    return response;
+    return session;
   }
 }

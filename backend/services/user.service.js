@@ -47,7 +47,7 @@ export default class UserService extends ModelService {
   }
 
   get validPropertiesForCreation() {
-    return ['username', 'displayName', 'isActive', 'canLogin', 'password', 'roles', 'lastLoginAt'];
+    return ['username', 'displayName', 'isActive', 'canLogin', 'password', 'roles', 'lastLoginAt', 'email'];
   }
 
   async validateForCreation(data, options) {

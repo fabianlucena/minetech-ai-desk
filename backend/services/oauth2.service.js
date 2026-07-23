@@ -60,14 +60,14 @@ export default class OAuth2Service {
         throw new Error('No se recibió información del usuario.');
 
     const userService = getDependency('userService');
-    const username = userInfo.preferredUsername || userInfo.username || userInfo.name || userInfo.email || userInfo.sub;
+    const username = userInfo.preferredUsername || userInfo.username || userInfo.email || userInfo.name || userInfo.sub;
     let userId = await userService.getIdByUsername(username);
 
     if (!userId) {
       userId = await userService.getIdByEmail(userInfo.email);
       if (!userId) {
         if (!provider.features?.allowSelfRegistration
-          || !provider.features.selfRegistrationAllowedDomains.includes(userInfo.email.split('@')[1])
+          || !provider.features.selfRegistrationAllowedDomains.includes('@' + userInfo.email.split('@')[1])
         )
           throw new Error('Usuario no registrado.');
 
@@ -79,7 +79,7 @@ export default class OAuth2Service {
     const deviceService = getDependency('deviceService');
     const sessionService = getDependency('sessionService');
 
-    const deviceId = await deviceService.getOrCreateByToken(data?.deviceToken || '');
+    const deviceId = await deviceService.getIdOrCreateByToken(data?.deviceToken || '');
     
     let session = await sessionService.create({
       userId,
@@ -87,7 +87,7 @@ export default class OAuth2Service {
       data: { provider: provider.name },
     }, { req });
 
-    session = await this.sessionService.decorateWithCredentials(session);
+    session = await sessionService.decorateWithCredentials(session);
     
     return session;
   }
