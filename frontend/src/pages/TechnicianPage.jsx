@@ -74,7 +74,6 @@ export default function TechnicianPage() {
     try {
       if (uuid) {
         await updateTechnician(uuid, {
-          userUuid: data.userUuid,
           phone: data.phone,
           isActive: data.isActive,
           color: data.color,
