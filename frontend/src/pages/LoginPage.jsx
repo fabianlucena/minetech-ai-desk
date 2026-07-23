@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Form from '../components/Form';
 import { TextField, PasswordField } from '../components/fields';
-import Button from '../components/Button';
+import Button from '../components/buttons/Button.jsx';
 import { loginService } from '../services/login.service.js';
 import { getOAuth2ProvidersService } from '../services/oauth2provider.service';
 import useGlobal from '../states/useGlobal.jsx';
