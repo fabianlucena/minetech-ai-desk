@@ -4,10 +4,7 @@ export default class OAuth2ProviderService {
 
   getList() {
     return [
-      { name: 'Google' },
-      { name: 'Facebook' },
-      { name: 'GitHub' },
-      { name: 'Twitter' },
+      { name: 'Minetech' },
     ];
   }
 }

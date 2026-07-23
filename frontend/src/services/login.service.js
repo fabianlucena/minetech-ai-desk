@@ -2,7 +2,7 @@ import Api from '../utils/api.js';
 
 export async function loginService(data) {
   return _loginService(
-    'login',
+    'v1/login',
     {
       ...data,
       deviceToken: localStorage.getItem('deviceToken'),
@@ -17,11 +17,11 @@ export async function autoLoginService() {
   };
 
   if (body.autoLoginToken && body.deviceToken)
-    return _loginService('auto-login', body);
+    return _loginService('v1/auto-login', body);
 }
 
 export async function logoutService() {
-  await Api.getJson('logout');
+  await Api.getJson('v1/logout');
   localStorage.removeItem('autoLoginToken');
   if (Api.Authorization)
     Api.Authorization = null;
