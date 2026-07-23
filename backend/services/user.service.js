@@ -8,11 +8,36 @@ export default class UserService extends ModelService {
 
   getModelOptions(options) {
     options = super.getModelOptions(options);
-    if (options.includeRoles) {
+    if (options.includeRoles || options.where?.roles || options.where?.role) {
+      const where = { deletedAt: null };
+      const roles = []
+      if (options.where?.roles) {
+        if (Array.isArray(options.where.roles)) {
+          roles.push(...options.where.roles);
+        } else {
+          roles.push(options.where.roles);
+        }
+
+        delete options.where.roles;
+      }
+      if (options.where?.role) {
+        if (Array.isArray(options.where.role)) {
+          roles.push(...options.where.role);
+        } else {
+          roles.push(options.where.role);
+        }
+
+        delete options.where.role;
+      }
+
+      if (roles.length > 0)
+        where.name = roles;
+
       options.include = options.include || [];
       options.include.push({
         model: getDependency('roleModel'),
         as: 'roles',
+        where,
         through: {
           where: { deletedAt: null },
         },

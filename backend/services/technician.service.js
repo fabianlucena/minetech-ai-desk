@@ -77,4 +77,10 @@ export default class TechnicianService extends ModelService {
     const globalOptions = { session: options?.session };
     return await this.updateById(technician.id, data, globalOptions);
   }
+
+  async getUsers(options) {
+    const userService = getDependency('userService');
+    const users = await userService.getList({ where: { role: 'technician' }, ...options });
+    return users;
+  }
 }
