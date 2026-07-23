@@ -14,7 +14,13 @@ export default class ShiftService extends ModelService {
       options.include = options.include || [];
       options.include.push({
         model: getDependency('technicianModel'),
-        as: 'technician'
+        as: 'technician',
+        include: [
+        {
+          model: getDependency('userModel'),
+          as: 'user'
+        }
+      ]
       });
       delete options.includeTechnician;
     }
