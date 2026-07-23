@@ -12,6 +12,13 @@ export default class TechnicianService extends ModelService {
     
     return options;
   }
+  
+  getByUserId(userId, options) {
+    if (!userId)
+      throw new Error('El ID de usuario es obligatorio');
+
+    return this.getFirstOrDefault({ ...options, where: { ...options?.where, userId } });
+  }
 
   getByPhone(phone, options) {
     if (!phone)
@@ -21,22 +28,36 @@ export default class TechnicianService extends ModelService {
   }
 
   get validPropertiesForCreation() {
-    return ['fullName', 'phone', 'isActive', 'color'];
+    return ['userId', 'phone', 'isActive', 'color'];
   }
 
   get validPropertiesForUpdate() {
-    return ['fullName', 'phone', 'isActive', 'color'];
+    return ['phone', 'isActive', 'color'];
   }
 
   async validateForCreation(data, options) {
-    if (!data.fullName)
-      throw new Error('El nombre completo es obligatorio');
+    data = { ...data };
+
+    if (!data.userId) {
+      if (data.userUuid) {
+        const userService = getDependency('userService');
+        data.userId = await userService.getIdByUuid(data.userUuid);
+        delete data.userUuid;
+      }
+
+      if (!data.userId)
+        throw new Error('El ID de usuario es obligatorio');
+    }
 
     if (!data.phone)
       throw new Error('El teléfono es obligatorio');
 
-    const existent = await this.getByPhone(data.phone);
-    if (existent)
+    const existentUser = await this.getByUserId(data.userId);
+    if (existentUser)
+      throw new Error('El usuario ya está configurado como técnico');
+
+    const existentPhone = await this.getByPhone(data.phone);
+    if (existentPhone)
       throw new Error('El teléfono del técnico ya existe');
 
     return await super.validateForCreation(data, options);
