@@ -40,7 +40,7 @@ export default function ShiftsPage() {
       id: shift.uuid,
       start: shift.start,
       end: shift.end,
-      title: shift.technician.fullName,
+      title: shift.technician.displayName,
       color: shift.technician.color,
       isDeleted: !!shift.deletedAt,
     }));

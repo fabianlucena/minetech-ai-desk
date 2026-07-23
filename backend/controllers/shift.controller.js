@@ -33,6 +33,7 @@ export async function getByUuid(req, res) {
 export async function getTechnicians(req, res) {
   const technicianService = getDependency('technicianService');
   const technicians = await technicianService.getList({
+    includeUser: true,
     session: req.session,
   });
   res.json(technicians.map(t => new TechnicianMinDTO(t)));

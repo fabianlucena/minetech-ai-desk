@@ -122,7 +122,7 @@ export default function ShiftDialog({
       label="Técnico"
       value={data.technicianUuid || ''}
       onChange={(e) => setData({ ...data, technicianUuid: e.target.value })}
-      options={technicians.map(t => ({ value: t.uuid, label: t.fullName }))}
+      options={technicians.map(t => ({ value: t.uuid, label: t.displayName }))}
     />
 
     <SelectField 
