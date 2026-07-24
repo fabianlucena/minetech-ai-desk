@@ -35,7 +35,7 @@ export default function Form({
   const navigate = useNavigate();
   const [confirmDialog, setConfirmDialog] = useState({
     open: false,
-    onClose: () => setConfirmDialog({ ...confirmDialog, open: false }),
+    onClose: () => setConfirmDialog(prev => ({ ...prev, open: false })),
   });
 
   function handleSubmit(event) {
