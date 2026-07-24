@@ -40,7 +40,7 @@ export default (sequelize) => {
 
     User.hasOne(models.UserPassword, {
       as: 'password',
-      foreignKey: 'userId'
+      foreignKey: 'id'
     });
 
     User.belongsToMany(models.Role, {

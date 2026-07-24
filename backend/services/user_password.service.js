@@ -3,11 +3,14 @@ import ModelService from './model.service.js';
 
 export default class UserPasswordService extends ModelService {
   constructor() {
-    super({ model: getDependency('userPasswordModel') });
+    super({
+      allowIdForCreation: true,
+      model: getDependency('userPasswordModel'),
+    });
   }
 
   get validPropertiesForCreation() {
-    return ['userId', 'passwordHash'];
+    return ['id', 'userId', 'passwordHash'];
   }
 
   async validateForCreation(data, options) {
