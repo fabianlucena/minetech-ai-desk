@@ -119,16 +119,23 @@ export default function TechnicianPage() {
       checked={data.isActive}
       onChange={(e) => setData({...data, isActive: e.target.checked})}
     />
-    <SelectField
-      label="Usuario"
-      disabled={disabled}
-      value={data.userUuid}
-      onChange={(e) => setData({...data, userUuid: e.target.value})}
-      options={technicianUsers.map((user) => ({
-        value: user.uuid,
-        label: user.displayName || user.username,
-      }))}
-    />
+    {uuid &&
+      <TextField
+        label="Usuario"
+        disabled={true}
+        value={data.displayName}
+      /> || 
+      <SelectField
+        label="Usuario"
+        disabled={disabled}
+        value={data.userUuid}
+        onChange={(e) => setData({...data, userUuid: e.target.value})}
+        options={technicianUsers.map((user) => ({
+          value: user.uuid,
+          label: user.displayName || user.username,
+        }))}
+      />
+    }
     <TextField
       label="Teléfono"
       disabled={disabled}
