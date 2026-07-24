@@ -1,6 +1,8 @@
-import { Box, Paper, Typography, Stack, CircularProgress } from '@mui/material';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Box, Paper, Typography, Stack, CircularProgress } from '@mui/material';
 import Button from './buttons/Button.jsx';
+import ConfirmDialog from './dialogs/ConfirmDialog.jsx';
 
 export default function Form({
   title,
@@ -16,11 +18,74 @@ export default function Form({
   onCancel,
   cancelText = 'Cancelar',
   onCancelGoBack,
+  onEscape,
+  cancelOnEscape = true,
   disabled,
   disabledMessage = 'Procesando...',
+  cancelConfirmTitle = 'Hay cambios sin guardar',
+  cancelConfirmMessage = '¿Está seguro de que desea cancelar? Se perderán los cambios realizados.',
+  cancelConfirmText = 'Cancelar edición',
+  cancelCancelText = 'Continuar editando',
+  submitConfirmTitle = '¿Está seguro de que desea enviar?',
+  submitConfirmMessage = 'Una vez enviado, no podrá deshacer los cambios.',
+  submitConfirmText = 'Enviar',
+  submitCancelText = 'Cancelar',
   sx,
 }) {
   const navigate = useNavigate();
+  const [confirmDialog, setConfirmDialog] = useState({
+    open: false,
+    onClose: () => setConfirmDialog({ ...confirmDialog, open: false }),
+  });
+
+  function handleSubmit(event) {
+    event.preventDefault();
+    if (!submitConfirmMessage) {
+      onSubmit?.(event);
+      return;
+    }
+
+    setConfirmDialog(data => ({
+      ...data,
+      title: submitConfirmTitle,
+      message: submitConfirmMessage,
+      confirmText: submitConfirmText,
+      cancelText: submitCancelText,
+      open: true,
+      onConfirm: () => onSubmit?.(event),
+    }));
+  }
+
+  function handleCancel(event, callback) {
+    if (unchangedData) {
+      callback(event);
+      return;
+    }
+
+    setConfirmDialog(data => ({
+      ...data,
+      title: cancelConfirmTitle,
+      message: cancelConfirmMessage,
+      confirmText: cancelConfirmText,
+      cancelText: cancelCancelText,
+      open: true,
+      onConfirm: () => callback(event),
+    }));
+  }
+
+  function handleKeyDown(event) {
+    if (event.key === 'Escape') {
+      handleEscape(event);
+    }
+  }
+
+  function handleEscape(event) {
+    event.preventDefault();
+    onEscape?.(event);
+    if (event.defaultPrevented && cancelOnEscape) {
+      handleCancel(event, () => navigate(-1));
+    }
+  }
 
   return <Paper
     elevation={0}
@@ -35,6 +100,7 @@ export default function Form({
       ...sx,
     }}
   >
+    <ConfirmDialog {...confirmDialog} />
     {disabled && <Box
       sx={{
         position: 'absolute',
@@ -91,7 +157,10 @@ export default function Form({
       {validationError || (unchangedData ? 'No se han realizado cambios' : 'Listo para enviar')}
     </Typography>
 
-    <form onSubmit={(e) => { e.preventDefault(); onSubmit?.(e); }}>
+    <form
+      onSubmit={handleSubmit}
+      onKeyDown={handleKeyDown}
+    >
       <Stack spacing={2}>
         {children}
       </Stack>
@@ -105,10 +174,10 @@ export default function Form({
         }}
       >
         {footer}
-        {(onCancel) && <Button secondary onClick={onCancel}>
+        {(onCancel) && <Button secondary onClick={e => handleCancel(e, onCancel)}>
           {cancelText || 'Cancelar'}
         </Button>}
-        {(onCancelGoBack) && <Button secondary onClick={() => navigate(-1)}>
+        {(onCancelGoBack) && <Button secondary onClick={e => handleCancel(e, () => navigate(-1))}>
           {cancelText || 'Cancelar'}
         </Button>}
         {(onSubmit || submitText) && <Button type="submit" disabled={!canSubmit || validationError || unchangedData || disabled}>
