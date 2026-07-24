@@ -98,7 +98,7 @@ export default class Api {
         throw {
           error: new Error('Error en la respuesta de la API: ' + res.status + ' ' + res.statusText),
           data,
-          res,
+          response: res,
         };
       }
     }

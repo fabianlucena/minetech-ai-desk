@@ -1,0 +1,568 @@
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { Box, Button, Typography } from '@mui/material';
+import { ReloadButton, CreateButton, PriorButton, NextButton, EditButton, DeleteButton, RestoreButton } from './buttons';
+import { ArrowBackIcon, ArrowForwardIcon } from './icons';
+import SelectField from './fields/SelectField';
+import TextField from './fields/TextField';
+import ConfirmDialog from './dialogs/ConfirmDialog.jsx';
+import { getDarkerColor } from '../utils/color.js';
+
+const weekDayNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+const monthNames = [
+  'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+  'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+];
+
+function splitMultiDayEvent(event) {
+  const start = new Date(event.start);
+  const end = new Date(event.end);
+
+  const days = [];
+  let current = new Date(start);
+  let fromPreviousDay = false;
+
+  while (current.toDateString() !== end.toDateString()) {
+    const dayEnd = new Date(current);
+    dayEnd.setHours(24, 0, 0, 0);
+
+    days.push({
+      ...event,
+      isoDate: current.toISOString().split("T")[0],
+      start: new Date(current),
+      end: (new Date()).setTime(dayEnd.getTime() - 1),
+      originalId: event.id,
+      fromPreviousDay,
+      toNextDay: true,
+    });
+
+    current = new Date(dayEnd);
+    fromPreviousDay = true;
+  }
+
+  days.push({
+    ...event,
+    isoDate: current.toISOString().split("T")[0],
+    start: current,
+    end: end,
+    originalId: event.id,
+    fromPreviousDay,
+    toNextDay: false,
+  });
+
+  return days;
+}
+
+function assignSlots(events) {
+  const eventsByDay = {};
+
+  events.forEach(ev => {
+    const isoDate = ev.isoDate;
+    if (!eventsByDay[isoDate])
+      eventsByDay[isoDate] = [];
+    eventsByDay[isoDate].push(ev);
+  });
+
+  const slotsByDay = {};
+
+  Object.entries(eventsByDay).forEach(([isoDate, dayEvents]) => {
+    const sorted = [...dayEvents].sort((a, b) => a.start - b.start);
+    const slots = [];
+
+    sorted.forEach(event => {
+      let assigned = false;
+
+      for (let i = 0; i < slots.length; i++) {
+        const last = slots[i][slots[i].length - 1];
+
+        if (event.start >= last.end) {
+          slots[i].push(event);
+          event.slot = i;
+          assigned = true;
+          break;
+        }
+      }
+
+      if (!assigned) {
+        slots.push([event]);
+        event.slot = slots.length - 1;
+      }
+    });
+
+    slotsByDay[isoDate] = slots.length;
+  });
+
+  return { events, slotsByDay };
+}
+
+export default function Week({
+  title,
+  description,
+  tools,
+  onReload,
+  onCreate,
+  onDelete,
+  onEdit,
+  onRestore,
+  events = [],
+  date = new Date(),
+  onFirstDate,
+  onLastDate,
+  deleteConfirmationMessage = '¿Está seguro de que desea eliminar este elemento?',
+}) {
+  const [dateEntries, setDateEntries] = useState([]);
+  const [effectiveDate, setEffectiveDate] = useState(date);
+  const [confirmation, setConfirmation] = useState({
+    open: false,
+    onClose: () => setConfirmation({...confirmation, open: false}),
+    title: 'Confirmar',
+    content: '',
+  });
+  const [now, setNow] = useState(new Date());
+  const [today] = useState(new Date(now.getFullYear(), now.getMonth(), now.getDate()));
+  const [isShowingToday, setIsShowingToday] = useState(false);
+  const [normalizedEvents, setNormalizedEvents] = useState([]);
+  const [slotsByDay, setSlotsByDay] = useState({});
+  const gridRef = useRef(null);
+  const createRef = useRef(null);
+  const timeRef = useRef(null);
+  const dateEntriesRef = useRef([]);
+  const pixelsPerHour = 28;
+
+  const updateDateEntries = useCallback(() => {
+    const from = new Date(effectiveDate.getFullYear(), effectiveDate.getMonth(), effectiveDate.getDate() - effectiveDate.getDay() - 1);
+    const nextDate = new Date(from);
+    const dateEntries = [];
+    const currentMonth = effectiveDate.getMonth();
+    const todayTimeStampMS = today.getTime();
+
+    for (let i = 0; i < 7; i++) {
+      nextDate.setDate(nextDate.getDate() + 1);
+      dateEntries[i] = {
+        date: new Date(nextDate),
+        isoDate: nextDate.toISOString().split("T")[0],
+        isCurrentMonth: nextDate.getMonth() === currentMonth,
+        isToday: nextDate.getTime() === todayTimeStampMS,
+        isPreviousDay: nextDate.getTime() < todayTimeStampMS,
+        weekDayName: weekDayNames[nextDate.getDay()],
+      };
+    }
+
+    setIsShowingToday(dateEntries.some(dateInfo => dateInfo.isToday));
+    setDateEntries(dateEntries);
+
+    return dateEntries;
+  }, [effectiveDate, today]);    
+
+  useEffect(() => {
+    const now = new Date();
+    const msToNextMinute = (60 - now.getSeconds()) * 1000;
+
+    const timeout = setTimeout(() => {
+      setNow(new Date());
+      const interval = setInterval(() => {
+        setNow(new Date());
+      }, 60 * 1000);
+
+      return () => clearInterval(interval);
+    }, msToNextMinute);
+
+    return () => clearTimeout(timeout);
+  }, []);
+
+  useEffect(() => {
+    const now = new Date();
+    const newToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    
+    if (today.getTime() !== newToday.getTime()) {
+      setToday(newToday);
+    }
+
+    const msToNextDay = (24 - now.getHours()) * 60 * 60 * 1000 - now.getMinutes() * 60 * 1000 - now.getSeconds() * 1000 - now.getMilliseconds();
+
+    const timeout = setTimeout(() => {
+      setToday(new Date());
+      const interval = setInterval(() => {
+        setToday(new Date());
+      }, 60 * 1000);
+
+      return () => clearInterval(interval);
+    }, msToNextDay);
+
+    return () => clearTimeout(timeout);
+  }, [today]);
+
+  useEffect(() => {
+    const dateEntries = updateDateEntries();
+    onFirstDate?.(dateEntries[0].date);
+    onLastDate?.(dateEntries[dateEntries.length - 1].date);
+  }, [effectiveDate, onFirstDate, onLastDate, updateDateEntries]);
+
+  useEffect(() => {
+    const normalized = events.flatMap(splitMultiDayEvent);
+    const slotted = assignSlots(normalized);
+    setNormalizedEvents(slotted.events);
+    setSlotsByDay(slotted.slotsByDay);
+  }, [effectiveDate, events]);
+
+  function deleteHandler(event, eventInfo) {
+    if (!onDelete)
+      return;
+
+    if (!deleteConfirmationMessage) {
+      onDelete({ event, eventInfo });
+      return;
+    }
+
+    setConfirmation({
+      ...confirmation,
+      open: true,
+      title: 'Confirmar eliminación',
+      content: deleteConfirmationMessage,
+      onConfirm: () => onDelete({ event, eventInfo }),
+    });
+  }
+
+  function getEventCapability(event, capability, defaultValue = false) {
+    if (!event || !capability)
+      return false;
+
+    let result = event[capability];
+    if (result === undefined || result === null)
+      return defaultValue;
+
+    if (typeof result === 'function')
+      result = result(event);
+
+    return !!result;
+  }
+
+  const updateCreatePosition = useCallback((e) => {
+    if (!onCreate || !gridRef.current || !createRef.current || !timeRef.current) {
+      createRef.current.style.display = 'none';
+      return;
+    }
+
+    const grid = gridRef.current;
+    const rect = grid.getBoundingClientRect();
+    const timeRect = timeRef.current.getBoundingClientRect();
+
+    const timeRowHeight = timeRect.height;
+    const yPos = e.clientY - rect.top - timeRowHeight;
+    if (yPos < 0) {
+      createRef.current.style.display = 'none';
+      return;
+    }
+    
+    const rowIndex = 1 + Math.floor(yPos / pixelsPerHour);
+    if (rowIndex > 24) {
+      createRef.current.style.display = 'none';
+      return;
+    }
+
+    const timeColumnWidth = timeRect.width;
+    let xPos = e.clientX - rect.left - timeColumnWidth;
+    if (xPos < 0) {
+      createRef.current.style.display = 'none';
+      return;
+    }
+
+    let lastDateEntry = dateEntriesRef.current.length;
+    if (lastDateEntry > 7)
+      lastDateEntry = 7;
+
+    let dateEntryIndex = 0;
+    while (xPos > 0) {
+      const dateEntryRect = dateEntriesRef.current[dateEntryIndex]?.getBoundingClientRect();
+      const colWidth = dateEntryRect.width;
+      xPos -= colWidth;
+      dateEntryIndex++;
+      if (dateEntryIndex > lastDateEntry) {
+        createRef.current.style.display = 'none';
+        return;
+      }
+    }
+    
+    const colIndex = dateEntryIndex;
+    if (colIndex > 7) {
+      createRef.current.style.display = 'none';
+      return;
+    }
+
+    createRef.current.style.gridArea = `${rowIndex + 1} / ${colIndex + 1} / span 1 / span 1`;
+    createRef.current.style.display = 'flex';
+    createRef.current.dataset.hour = rowIndex - 1;
+    createRef.current.dataset.dayIndex = colIndex - 1;
+  }, [pixelsPerHour, onCreate]);
+
+  const handleMouseMove = (e) => updateCreatePosition(e);
+
+  useEffect(() => {
+    if (createRef.current) {
+      createRef.current.style.display = 'none';
+      return;
+    }
+  }, []);
+
+  return <Box
+    sx={{
+      minHeight: '100%',
+      flex: 1,
+      display: 'flex',
+      flexDirection: 'column',
+      overflow: 'visible',
+    }}
+  >
+    <ConfirmDialog {...confirmation} />
+
+    {(title || description || tools || onReload) && <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'space-between',
+      }}
+    >
+      <Box>
+        {title && <Typography variant="h6" fontWeight={600}>
+          {title}
+        </Typography>}
+        {description && <Typography variant="body2" color="text.secondary">
+          {description}
+        </Typography>}
+      </Box>
+      {(tools || onReload) && <Box sx={{ marginTop: 1 }}>
+        {tools}
+        {onReload && <ReloadButton onClick={onReload} />}
+      </Box>}
+    </Box>}
+
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        flexDirection: 'row',
+      }}
+    >
+      <PriorButton
+        onClick={() => setEffectiveDate(new Date(effectiveDate.getFullYear(), effectiveDate.getMonth(), effectiveDate.getDate() - 7))}
+      />
+
+      {<SelectField
+        variant="standard"
+        options={monthNames.map((name, index) => ({ value: index, label: name }))}
+        value={effectiveDate.getMonth()}
+        onChange={(event) => setEffectiveDate(new Date(effectiveDate.getFullYear(), event.target.value, 1))}
+        sx={{ width: 120 }}
+      />}
+      
+      <TextField
+        variant="standard"
+        value={effectiveDate.getFullYear()}
+        onChange={(event) => setEffectiveDate(new Date(event.target.value, effectiveDate.getMonth(), 1))}
+        type="number"
+        sx={{ width: 80 }}
+      />
+
+      <Button
+        variant="contained"
+        onClick={() => setEffectiveDate(new Date())}
+      >
+        Ir a Hoy
+      </Button>
+
+      <NextButton
+        onClick={() => setEffectiveDate(new Date(effectiveDate.getFullYear(), effectiveDate.getMonth(), effectiveDate.getDate() + 7))}
+      />
+    </Box>
+
+    <Box
+      ref={gridRef}
+      style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr repeat(7, 3fr)',
+        gridTemplateRows: `1fr repeat(24, ${pixelsPerHour}px)`,
+        gap: 0,
+        backgroundColor: '#a1a1a1',
+        overflow: 'visible',
+        border: '#4b4b4b solid 1px',
+      }}
+      onMouseMove={handleMouseMove}
+    >
+      <Box
+        ref={timeRef}
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: '#bdbdbd',
+          borderBottom: '#4b4b4b solid 1px',
+          minHeight: 30,
+          padding: 4,
+          gridArea: '1 / 1 / span 1 / span 1',
+        }}
+      >
+        <Typography variant="body2" fontWeight={600}>
+          Hora
+        </Typography>
+      </Box>
+      {dateEntries.map((dateInfo, i) => (<Box
+        key={i}
+        ref={el => (dateEntriesRef.current[i] = el)}
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: dateInfo.isToday ? '#70a5db': dateInfo.isCurrentMonth ? '#bdbdbd' : '#d3d3d3',
+          color: (dateInfo.isPreviousDay || !dateInfo.isCurrentMonth) ? '#8b8b8b' : '#000000',
+          minHeight: 30,
+          padding: 4,
+          borderLeft: '#4b4b4b solid 1px',
+          borderBottom: '#4b4b4b solid 1px',
+          gridArea: `1 / ${i + 2} / span 1 / span 1`,
+        }}
+      >
+        <Typography variant="body2" fontWeight={600}>
+          {dateInfo.weekDayName} {dateInfo.date.getDate() || ''}
+        </Typography>
+      </Box>))}
+      {Array(24).fill().map((_, h) => <Box
+        key={h}
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          backgroundColor: '#f5f5f5',
+          padding: 0,
+          borderBottom: '#a8a8a8 dotted 1px',
+          gridArea: `${h + 2} / 1 / span 1 / span 1`,
+        }}
+      >
+        <Typography
+          variant="body2"
+          sx={{
+            padding: '0 6px',
+            borderRadius: '50%',
+            margin: 'auto',
+          }}
+        >
+          {h.toString().padStart(2, '0')}:00
+        </Typography>
+      </Box>)}
+      {Array(24).fill().map((_, h) => dateEntries.map((dateInfo, i) => <Box
+        key={i}
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          backgroundColor: dateInfo.isToday ?
+            ( h < now.getHours() ? '#e1e1ee' : h == now.getHours() ? '#d6e3fd' : '#e3e8f8' ):
+            dateInfo.isPreviousDay ?
+            '#e8e8e8' :
+            '#f5f5f5',
+          padding: 0,
+          borderLeft: '#a8a8a8 dotted 1px',
+          borderBottom: '#a8a8a8 dotted 1px',
+          gridArea: `${h + 2} / ${i + 2} / span 1 / span 1`,
+        }}
+      >
+      </Box>))}
+      {dateEntries.map((dateInfo, i) => {
+        return <Box
+          key={i}
+          style={{
+            gridArea: `2 / ${i + 2} / span 24 / span 1`,
+            position: 'relative',
+            display: 'grid',
+            gridTemplateColumns: `repeat(${slotsByDay[dateInfo.isoDate] || 1}, 1fr)`,
+            gridTemplateRows: '1fr',
+          }}
+        > 
+          {normalizedEvents.filter(eventInfo => eventInfo.isoDate === dateInfo.isoDate).map((eventInfo, i) => {
+            const start = new Date(eventInfo.start);
+            const end = new Date(eventInfo.end);
+            const startHour = start.getHours() + start.getMinutes() / 60 + start.getSeconds() / 3600 + start.getMilliseconds() / 3600000;
+            const endHour = end.getHours() + end.getMinutes() / 60 + end.getSeconds() / 3600 + end.getMilliseconds() / 3600000;
+            
+            return <Box
+              key={i}
+              style={{
+                gridColumn: `${eventInfo.slot + 1} / span 1`,
+                gridRow: `1 / span 1`,
+                marginTop: `${startHour * pixelsPerHour}px`,
+                height: `${(endHour - startHour) * pixelsPerHour}px`,
+                backgroundColor: `${eventInfo.color}40`,
+                border: `2px solid ${getDarkerColor(eventInfo.color)}`,
+                borderRadius: 4,
+                padding: 4,
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'start',
+                justifyContent: 'space-between',
+                boxSizing: 'border-box',
+              }}
+            >
+              <Typography
+                variant="body2"
+                sx={{
+                  fontSize: 12,
+                  flex: 1,
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                }}
+              >
+                {eventInfo.fromPreviousDay && <ArrowBackIcon title="Evento de día anterior" sx={{ fontSize: 16, color: '#606060' }} />}
+                {eventInfo.title}
+                {eventInfo.toNextDay && <ArrowForwardIcon title="Evento de día siguiente" sx={{ fontSize: 16, color: '#606060' }} />}
+              </Typography>
+              {onRestore && getEventCapability(eventInfo, 'canRestore', eventInfo.isDeleted) && <RestoreButton
+                size="small"
+                onClick={event => onRestore({ event, eventInfo })}
+              />}
+              {onEdit && getEventCapability(eventInfo, 'canEdit', !eventInfo.isDeleted) && <EditButton
+                size="small"
+                onClick={event => onEdit({ event, eventInfo })}
+              />}
+              {onDelete && getEventCapability(eventInfo, 'canDelete', !eventInfo.isDeleted) && <DeleteButton
+                size="small"
+                onClick={event => deleteHandler(event, eventInfo)}
+              />}
+            </Box>;
+          })}
+          </Box>;
+      })}
+      {isShowingToday && <div
+        style={{
+          gridArea: `2 / ${dateEntries.findIndex(dateInfo => dateInfo.isToday) + 2} / span 24 / span 1`,
+          position: 'relative',
+          paddingBottom: 1,
+        }}
+      >
+        <div style={{
+          height: (now.getHours() + now.getMinutes() / 60 + now.getSeconds() / 3600) * (100 / 24) + '%',
+          borderBottom: '2px solid red'
+        }}>
+        </div>
+      </div>}
+      <Box
+        ref={createRef}
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100%',
+          width: '100%',
+          gridArea: `1 / 1 / span 1 / span 1`,
+        }}
+      >
+        <CreateButton
+          size="small"
+          onClick={event => {
+            const dataset = createRef.current.dataset;
+            const hour = parseInt(dataset.hour, 10);
+            const dayIndex = parseInt(dataset.dayIndex, 10);
+            const date = new Date(dateEntries[dayIndex].date);
+            date.setHours(hour, 0, 0, 0);
+            onCreate?.({event, date});
+          }}
+        />
+      </Box>
+    </Box>
+  </Box>
+}

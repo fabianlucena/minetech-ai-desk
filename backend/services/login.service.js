@@ -1,8 +1,6 @@
 import { getDependency } from '../dependency.js';
-import argon2 from 'argon2';
 import { Error400 } from '../errors/error400.js';
 import { Error403 } from '../errors/error403.js';
-import { SessionResponse } from '../dto/session.dto.js';
 
 export default class LoginService {
   constructor() {
@@ -13,7 +11,7 @@ export default class LoginService {
     this.sessionService = getDependency('sessionService');
   }
 
-  async login(data) {
+  async login(data, options) {
     if (!data.username)
       throw new Error400('El nombre de usuario es obligatorio');
 
@@ -24,7 +22,7 @@ export default class LoginService {
     if (!user || !user.isActive|| !user.canLogin)
       throw new Error403('Usuario o contraseña incorrecta');
 
-    const userPassword = await this.userPasswordService.getByUserId(user.id);
+    const userPassword = await this.userPasswordService.getById(user.id);
     if (!userPassword)
       throw new Error403('Usuario o contraseña incorrecta');
 
@@ -37,15 +35,18 @@ export default class LoginService {
     let session = await this.sessionService.create({
       userId: user.id,
       deviceId: device.id,
-    });
+      data: {
+        service: 'login',
+        identityProvider: 'local',
+      },
+    }, options);
 
     session = await this.sessionService.decorateWithCredentials(session);
-    const response = new SessionResponse(session);
 
-    return response;
+    return session;
   }
 
-  async autoLogin(data) {
+    async autoLogin(data, options) {
     if (!data.autoLoginToken)
       throw new Error400('El token de inicio de sesión automático (autoLoginToken) es obligatorio');
 
@@ -63,11 +64,15 @@ export default class LoginService {
     let session = await this.sessionService.create({
       userId: previousSession.userId,
       deviceId: previousSession.deviceId,
-    });
+      data: {
+        service: 'autologin',
+        identityProvider: 'local',
+        previousSessionId: previousSession.id,
+      },
+    }, options);
 
     session = await this.sessionService.decorateWithCredentials(session);
-    const response = new SessionResponse(session);
 
-    return response;
+    return session;
   }
 }

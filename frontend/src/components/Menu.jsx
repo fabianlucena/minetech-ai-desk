@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Box, Typography, List, ListItemButton, ListItemText, ListItemIcon } from '@mui/material';
+import { Box, List, ListItemButton, ListItemText, ListItemIcon } from '@mui/material';
 import { Link, useLocation  } from 'react-router-dom';
-import { useGlobal } from '../state/global';
+import useGlobal from '../states/useGlobal.jsx';
 import { useRoutes } from '../routes.jsx';
 
 function flattenNavigableRoutes(routes) {
@@ -47,7 +47,8 @@ export default function Menu() {
     sx={{
       display: menuOpen ? 'flex' : 'none',
       flexDirection: 'column',
-      bgcolor: '#666666'
+      bgcolor: '#666666',
+      overflow: 'auto',
     }}
   >
     <List
@@ -57,7 +58,7 @@ export default function Menu() {
         flex: 1,
       }}
     >
-      {menuItems.map((route, index) => (
+      {menuItems.map((route) => (
         <ListItemButton
           key={route.id}
           selected={location.pathname === route.path}

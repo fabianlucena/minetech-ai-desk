@@ -15,22 +15,51 @@ export default class SessionService extends ModelService {
     this.config = getDependency('config');
   }
 
-  async create(data, options = {}) {
+  get validPropertiesForCreation() {
+    return ['userId', 'deviceId', 'authorizationToken', 'autoLoginToken', 'expiresAt', 'lastUsedAt', 'dataJson'];
+  }
+
+  async validateForCreation(data, options) {
     if (!data.userId)
       throw new Error('El ID de usuario es obligatorio');
 
     if (!data.deviceId)
       throw new Error('El ID del dispositivo es obligatorio');
 
+    data = { ...data };
     data.authorizationToken ||= generateToken(this.config.tokenSize);
     data.autoLoginToken ||= generateToken(this.config.tokenSize);
     data.expiresAt ||= new Date(Date.now() + this.config.sessionExpiration * 1000);
     data.lastUsedAt ||= new Date();
 
+    const req = options?.req;
+    if (req) {
+      data.data = {
+        ip: options.req?.headers['x-forwarded-for'] || options.req.connection?.remoteAddress || options.req.socket?.remoteAddress || null,
+        userAgent: options.req.headers['user-agent'],
+        ...data.data,
+      };
+    }
+
+    if (options.provider?.name) {
+      data.data ||= {};
+      data.data.identityProvider = options.provider.name;
+    }
+
+    if (data.data) {
+      if (data.dataJson)
+        data.data = { ...JSON.parse(data.dataJson), ...data.data };
+
+      data.dataJson = JSON.stringify(data.data);
+      delete data.data;
+    }
+
+    return await super.validateForCreation(data, options);
+  }
+
+  async create(data, options = {}) {
     const session = await super.create(data, options);
-
     await this.userService.updateLastLoginAtById(data.userId);
-
     return session;
   }
 

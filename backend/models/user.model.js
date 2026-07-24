@@ -1,4 +1,4 @@
-import sequelize, { DataTypes } from 'sequelize';
+import { DataTypes } from 'sequelize';
 
 export default (sequelize) => {
   const User = sequelize.define('User', {
@@ -15,6 +15,7 @@ export default (sequelize) => {
     isActive: { field: 'is_active', type: DataTypes.BOOLEAN, defaultValue: true },
     canLogin: { field: 'can_login', type: DataTypes.BOOLEAN, defaultValue: true },
     lastLoginAt: { field: 'last_login_at', type: DataTypes.DATE, allowNull: true },
+    email: { type: DataTypes.STRING, allowNull: true, unique: true },
   }, {
     tableName: 'users',
     schema: 'auth',
@@ -39,7 +40,7 @@ export default (sequelize) => {
 
     User.hasOne(models.UserPassword, {
       as: 'password',
-      foreignKey: 'userId'
+      foreignKey: 'id'
     });
 
     User.belongsToMany(models.Role, {

@@ -4,4 +4,44 @@ export default {
   dbPass: 'password',
   dbHost: 'localhost',
   dbPort: 5432,
+
+  oAuth2Providers: {
+    'minetech-google': {
+      isEnabled: true,
+      displayName: 'Ingresar con Minetech',
+
+      client: {
+        clientId: '{PUT HERE THE CLIENT ID}',
+        clientSecret: '{PUT HERE THE CLIENT SECRET}',
+        redirectUri: 'http://localhost:5173/oauth2callback/minetech-google/authorize',
+        urlBase: '',
+      },
+
+      endpoints: {
+        authorize: {
+          url: 'https://accounts.google.com/o/oauth2/v2/auth',
+          parameters: {
+            prompt: 'select_account',
+            response_type: 'code',
+            scope: 'openid email profile',
+            include_granted_scopes: true,
+          },
+          includeClientId: true,
+          includeRedirectUri: true,
+        },
+        token: {
+          url: 'https://oauth2.googleapis.com/token',
+          method: 'POST',
+        },
+        userInfo: {
+          url: 'https://openidconnect.googleapis.com/v1/userinfo',
+        },
+      },
+
+      features: {
+        allowSelfRegistration: true,
+        selfRegistrationAllowedDomains: ['@minetech.com'],
+      },
+    },
+  },
 };

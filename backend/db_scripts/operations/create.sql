@@ -20,9 +20,11 @@ begin
     is_active boolean not null,
     can_login boolean not null,
     last_login_at timestamp null,
+    email varchar(255) null,
 
     constraint uk_auth_users_uuid unique (uuid),
-    constraint uk_auth_users_username unique (username)
+    constraint uk_auth_users_username unique (username),
+    constraint uk_auth_users_email unique (email)
   );
 
   if not exists (
@@ -95,7 +97,7 @@ end $$;
 
 -- user_passwords table
 create table if not exists auth.user_passwords (
-  user_id bigint not null primary key,
+  id bigint not null primary key,
 
   created_at timestamp not null default now(),
   created_by_id bigint not null,
@@ -108,10 +110,10 @@ create table if not exists auth.user_passwords (
 
   password_hash varchar(256) not null,
 
-  constraint uk_auth_users_passwords_user_id unique (user_id),
+  constraint uk_auth_users_passwords_id unique (id),
 
-  constraint fk_auth_user_passwords_user_id
-    foreign key (user_id) references auth.users(id) on delete restrict,
+  constraint fk_auth_user_passwords_id
+    foreign key (id) references auth.users(id) on delete restrict,
 
   constraint fk_auth_user_passwords_created_by_id
     foreign key (created_by_id) references auth.users(id) on delete restrict,
@@ -157,7 +159,7 @@ end $$;
 
 -- Insert default admin user pasword (only if admin does not have password) 1234
 insert into auth.user_passwords (
-  user_id,
+  id,
   password_hash,
   created_at, updated_at, deleted_at,
   created_by_id, updated_by_id, deleted_by_id
@@ -169,7 +171,7 @@ select admin.id,
 from auth.users admin, auth.users system
 where admin.username = 'admin'
   and system.username = 'system'
-on conflict (user_id) do nothing;
+on conflict (id) do nothing;
 
 -- devices table
 create table if not exists auth.devices (
@@ -266,12 +268,16 @@ insert into auth.roles (
   deleted_at, deleted_by_id
 ) select 
     gen_random_uuid(),
-    'admin', 'Administrator', 'Administrator role with full privileges',
+    r.name, r.title, r.description,
     true,
     now(), system.id,
     now(), system.id,
     null, null
   from auth.users system
+  cross join (values
+    ('admin', 'Administrador', 'Administrador de sistema con privilegios completos'),
+    ('technician', 'Técnico', 'Técnico para atender solicitudes de clientes')
+  ) as r(name, title, description)
   where system.username = 'system'
 on conflict (name) do nothing;
 
@@ -416,7 +422,7 @@ insert into auth.permissions (
     ('technicians.create'),('technicians.delete'),('technicians.update'),('technicians.list'),('technicians.read'),('technicians.restore'),
     ('clients.create'),('clients.delete'),('clients.update'),('clients.list'),('clients.read'),('clients.restore'),
     ('requesters.create'),('requesters.delete'),('requesters.update'),('requesters.list'),('requesters.read'),('requesters.restore'),
-    ('turns.create'),('turns.delete'),('turns.update'),('turns.list'),('turns.read'),('turns.restore')
+    ('shifts.create'),('shifts.delete'),('shifts.update'),('shifts.list'),('shifts.read'),('shifts.restore')
   ) as p(name)
   join auth.users system on system.username = 'system'
 on conflict (name) do nothing;
@@ -439,7 +445,7 @@ create schema if not exists ia_desk;
 
 -- Table technicians
 create table if not exists ia_desk.technicians(
-    id bigint generated always as identity primary key,
+    id bigint primary key,
     uuid uuid not null default gen_random_uuid(),
 
     created_at timestamp not null default now(),
@@ -451,12 +457,16 @@ create table if not exists ia_desk.technicians(
     deleted_at timestamp null,
     deleted_by_id bigint null,
 
-    full_name varchar(128) not null,
     phone varchar(64) not null,
     is_active boolean not null,
+    color varchar(10) null,
+  
+    constraint uk_ia_desk_technicians_id unique (id),
     
     constraint uk_ia_desk_technicians_uuid unique (uuid),
-    constraint uk_ia_desk_technicians_full_name unique (full_name),
+    
+    constraint uk_ia_desk_technicians_id foreign key (id)
+      references auth.users(id) on delete restrict,
     
     constraint uk_ia_desk_technicians_created_by_id foreign key (created_by_id)
       references auth.users(id) on delete restrict,
@@ -538,5 +548,40 @@ create table if not exists ia_desk.requesters(
       references auth.users(id) on delete restrict,
     
     constraint uk_ia_desk_requesters_deleted_by_id foreign key (deleted_by_id)
+      references auth.users(id) on delete restrict
+);
+
+-- Table shifts
+create table if not exists ia_desk.shifts(
+    id bigint generated always as identity primary key,
+    uuid uuid not null default gen_random_uuid(),
+
+    created_at timestamp not null default now(),
+    created_by_id bigint not null,
+
+    updated_at timestamp not null default now(),
+    updated_by_id bigint not null,
+
+    deleted_at timestamp null,
+    deleted_by_id bigint null,
+    
+    technician_id bigint not null,
+
+    type varchar(64) not null,
+    start timestamp not null,
+    "end" timestamp not null,
+    
+    constraint uk_ia_desk_shifts_uuid unique (uuid),
+    
+    constraint uk_ia_desk_shifts_technician_id foreign key (technician_id)
+      references ia_desk.technicians(id) on delete restrict,
+    
+    constraint uk_ia_desk_shifts_created_by_id foreign key (created_by_id)
+      references auth.users(id) on delete restrict,
+    
+    constraint uk_ia_desk_shifts_updated_by_id foreign key (updated_by_id)
+      references auth.users(id) on delete restrict,
+    
+    constraint uk_ia_desk_shifts_deleted_by_id foreign key (deleted_by_id)
       references auth.users(id) on delete restrict
 );

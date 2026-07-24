@@ -1,10 +1,10 @@
-import IconButton from '@mui/material/IconButton';
-import DeleteIcon from '@mui/icons-material/DeleteTwoTone';
+import IconButton from './IconButton';
+import Icon from '@mui/icons-material/DeleteTwoTone';
 
 export default function DeleteButton(props) {
   return <IconButton
-    {...{title: 'Eliminar', ...props}}
-  >
-    <DeleteIcon />
-  </IconButton>;
+    title='Eliminar'
+    Icon={Icon}
+    {...props}
+  />;
 }

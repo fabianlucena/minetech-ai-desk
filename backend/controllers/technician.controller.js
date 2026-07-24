@@ -1,9 +1,10 @@
 import getDependency from '../dependency.js';
-import { TechnicianDTO } from '../dto/technician.dto.js';
+import { TechnicianDTO, TechnicianUserDTO } from '../dto/technician.dto.js';
 
 export async function getList(req, res) {
   const technicianService = getDependency('technicianService');
   const technicians = await technicianService.getList({
+    includeUser: true,
     includeDeleted: !!req.query.includeDeleted,
     session: req.session,
   });
@@ -13,6 +14,7 @@ export async function getList(req, res) {
 export async function getByUuid(req, res) {
   const technicianService = getDependency('technicianService');
   const technician = await technicianService.getByUuid(req.params.uuid, {
+    includeUser: true,
     session: req.session,
   });
   res.json(new TechnicianDTO(technician));
@@ -53,4 +55,13 @@ export async function restoreByUuid(req, res) {
     { session: req.session }
   );
   res.status(204).end();
+}
+
+export async function getUsers(req, res) {
+  const technicianService = getDependency('technicianService');
+  const users = await technicianService.getUsers({
+    session: req.session,
+    skipTechnicians: !!req.query.skipTechnicians,
+  });
+  res.json(users.map(u => new TechnicianUserDTO(u)));
 }

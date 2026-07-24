@@ -1,8 +1,8 @@
-import sequelize, { DataTypes } from 'sequelize';
+import { DataTypes } from 'sequelize';
 
 export default (sequelize) => {
   const Technician = sequelize.define('Technician', {
-    id: { type: DataTypes.BIGINT, autoIncrement: true, primaryKey: true },
+    id: { field: 'id', type: DataTypes.BIGINT, primaryKey: true },
     uuid: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4 },
     createdAt: { field: 'created_at', type: DataTypes.DATE, defaultValue: DataTypes.NOW, allowNull: false },
     createdById: { field: 'created_by_id', type: DataTypes.BIGINT, allowNull: false },
@@ -10,9 +10,9 @@ export default (sequelize) => {
     updatedById: { field: 'updated_by_id', type: DataTypes.BIGINT, allowNull: false },
     deletedAt: { field: 'deleted_at', type: DataTypes.DATE, allowNull: true },
     deletedById: { field: 'deleted_by_id', type: DataTypes.BIGINT, allowNull: true },
-    fullName: { field: 'full_name', type: DataTypes.STRING, allowNull: false, unique: true },
     phone: { field: 'phone', type: DataTypes.STRING, allowNull: false, unique: true },
     isActive: { field: 'is_active', type: DataTypes.BOOLEAN, defaultValue: true },
+    color: { field: 'color', type: DataTypes.STRING, allowNull: true },
   }, {
     tableName: 'technicians',
     schema: 'ia_desk',
@@ -20,6 +20,11 @@ export default (sequelize) => {
   });
 
   Technician.associate = (models) => {
+    Technician.belongsTo(models.User, {
+      foreignKey: 'id',
+      as: 'user',
+    });
+
     Technician.belongsTo(models.User, {
       foreignKey: 'createdById',
       as: 'createdBy',
@@ -35,9 +40,9 @@ export default (sequelize) => {
       as: 'deletedBy',
     });
 
-    Technician.hasMany(models.Turn, {
+    Technician.hasMany(models.Shift, {
       foreignKey: 'technicianId',
-      as: 'turns',
+      as: 'shifts',
     });
 
     Technician.hasMany(models.Ticket, {

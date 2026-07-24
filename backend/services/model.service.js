@@ -6,11 +6,13 @@ export default class ModelService {
     traceable = true,
     auditable = true,
     softDelete = true,
+    allowIdForCreation = false,
   }) {
     this.model = model;
-    this.traceable = true;
-    this.auditable = true;
+    this.traceable = traceable;
+    this.auditable = auditable;
     this.softDelete = softDelete;
+    this.allowIdForCreation = allowIdForCreation;
   }
 
   async getSystemUserId() {
@@ -51,15 +53,35 @@ export default class ModelService {
     if (options.includeDeleted !== undefined)
       delete options.includeDeleted;
 
-    if (options.attributes)
-      options.attributes = options.attributes;
-
     return options;
   }
 
-  async create(data, options = {}) {
+  get validPropertiesForCreation() {
+    return [];
+  }
+
+  async validateForCreation(data) {
     if (!data || typeof data !== 'object')
       throw new Error('Data es obligatorio y debe ser un objeto');
+
+    if (data.id && !this.allowIdForCreation)
+      throw new Error('El ID no debe ser proporcionado');
+
+    if (data.uuid)
+      throw new Error('El UUID no debe ser proporcionado');
+
+    const properties = Object.keys(data);
+    const validProperties = this.validPropertiesForCreation;
+    for (const prop of properties) {
+      if (!validProperties.includes(prop))
+        throw new Error(`Propiedad no válida: ${prop}`);
+    }
+
+    return data;
+  }
+
+  async create(data, options = {}) {
+    data = await this.validateForCreation(data, options);
 
     if (this.traceable) {
       data.createdAt ??= new Date();
@@ -120,18 +142,20 @@ export default class ModelService {
     return result.map(r => r.get({ plain: true }));
   }
 
+  async getIdList(options) {
+    return (await this.getList({ ...options, attributes: ['id'] }))
+      .map(r => r.id);
+  }
+
   async getById(id, options) {
     if (!id)
       throw new Error('ID es obligatorio');
 
+    if (Array.isArray(id)) {
+      return await this.getList({ ...options, where: { ...options?.where, id } });
+    }
+
     return this.getFirstOrDefault({ ...options, where: { ...options?.where, id } });
-  }
-
-  async getByIds(ids, options) {
-    if (!ids || !Array.isArray(ids))
-      throw new Error('IDs es obligatorio y debe ser un array');
-
-    return await this.getList({ ...options, where: { ...options?.where, id: ids } });
   }
 
   async getByUuid(uuid, options) {
@@ -146,17 +170,34 @@ export default class ModelService {
       throw new Error('UUID es obligatorio');
 
     if (Array.isArray(uuid)) {
-      const rows = await this.getList({ ...options, where: { ...options?.where, uuid } });
+      const rows = await this.getList({ ...options, attributes: ['id'], where: { ...options?.where, uuid } });
       return rows.map(r => r.id);
     } else {
-      const row = await this.getFirstOrDefault({ ...options, where: { ...options?.where, uuid } });
+      const row = await this.getFirstOrDefault({ ...options, attributes: ['id'], where: { ...options?.where, uuid } });
       return row?.id;
     }
   }
 
-  async update(data, options = {}) {
+  get validPropertiesForUpdate() {
+    return [];
+  }
+
+  async validateForUpdate(data) {
     if (!data || typeof data !== 'object')
       throw new Error('Data es obligatorio y debe ser un objeto');
+
+    const properties = Object.keys(data);
+    const validProperties = this.validPropertiesForUpdate;
+    for (const prop of properties) {
+      if (!validProperties.includes(prop))
+        throw new Error(`Propiedad no válida: ${prop}`);
+    }
+
+    return data;
+  }
+
+  async update(data, options = {}) {
+    await this.validateForUpdate(data, options);
 
     options = this.getModelOptions(options);
     if (this.auditable && !options.skipAudit) {
@@ -186,6 +227,18 @@ export default class ModelService {
       throw new Error(`No se encontró el registro con ID ${id}`);
 
     return await this.getById(id);
+  }
+
+  async updateByUuid(uuid, data, options) {
+    if (!uuid)
+      throw new Error('El UUID es obligatorio');
+
+    const id = await this.getIdByUuid(uuid);
+    if (!id)
+      throw new Error('Elemento no encontrado');
+
+    const globalOptions = { session: options?.session };
+    return await this.updateById(id, data, globalOptions);
   }
 
   async deleteByWhere(where, options) {

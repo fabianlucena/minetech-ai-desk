@@ -8,6 +8,24 @@ export default class RoleXUserService extends ModelService {
     this.roleIncludeService = getDependency('roleIncludeService');
   }
 
+  get validPropertiesForCreation() {
+    return ['userId', 'roleId'];
+  }
+
+  async validateForCreation(data, options) {
+    if (!data.userId)
+      throw new Error('El ID de usuario es obligatorio');
+
+    if (!data.roleId)
+      throw new Error('El ID de rol es obligatorio');
+
+    const existing = await this.getFirstOrDefault({ where: { userId: data.userId, roleId: data.roleId }, includeDeleted: true });
+    if (existing)
+      throw new Error('El usuario ya tiene asignado este rol');
+
+    return await super.validateForCreation(data, options);
+  }
+
   async getRoleIdsByUserId(userId, options) {
     if (!userId)
       throw new Error('El ID de usuario es obligatorio');
@@ -21,7 +39,7 @@ export default class RoleXUserService extends ModelService {
       throw new Error('El ID de usuario es obligatorio');
 
     const rolesIds = await this.getRoleIdsByUserId(userId);
-    return await this.roleService.getByIds(rolesIds.map(r => r.roleId));
+    return await this.roleService.getById(rolesIds.map(r => r.roleId));
   }
 
   async getAllRolesByUserId(userId) {
@@ -30,7 +48,7 @@ export default class RoleXUserService extends ModelService {
     
     let rolesIds = await this.getRoleIdsByUserId(userId);
     rolesIds = await this.roleIncludeService.getAllIdsByIds(rolesIds);
-    return await this.roleService.getByIds(rolesIds);
+    return await this.roleService.getById(rolesIds);
   }
 
   async updateRoleIdsByUserId(userId, roleIds, options) {
@@ -42,11 +60,7 @@ export default class RoleXUserService extends ModelService {
 
     const globalOptions = { session: options?.session };
 
-    await this.updateByWhere(
-      {
-        deletedAt: null,
-        deletedById: null,
-      },
+    await this.restoreByWhere(
       {
         userId,
         roleId: roleIds,
@@ -59,7 +73,7 @@ export default class RoleXUserService extends ModelService {
 
     const existingRoleIds = await this.getRoleIdsByUserId(userId, globalOptions,);
     const deleteingRoleIds = existingRoleIds.filter(roleId => !roleIds.includes(roleId));
-    const addingRoleIds = roleIds.filter(roleId => !existingRoleIds.includes(roleId));
+    //const addingRoleIds = roleIds.filter(roleId => !existingRoleIds.includes(roleId));
 
     if (deleteingRoleIds.length > 0)
       await this.deleteByWhere({ userId, roleId: deleteingRoleIds }, globalOptions);

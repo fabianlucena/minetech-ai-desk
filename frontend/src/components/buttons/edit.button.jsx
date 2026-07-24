@@ -1,10 +1,10 @@
-import IconButton from '@mui/material/IconButton';
-import EditIcon from '@mui/icons-material/EditTwoTone';
+import IconButton from './IconButton';
+import Icon from '@mui/icons-material/EditTwoTone';
 
 export default function EditButton(props) {
   return <IconButton
-    {...{title: 'Modificar', ...props}}
-  >
-    <EditIcon />
-  </IconButton>;
+    title='Modificar'
+    Icon={Icon}
+    {...props}
+  />;
 }
