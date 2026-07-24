@@ -80,9 +80,9 @@ export default function Form({
   }
 
   function handleEscape(event) {
-    event.preventDefault();
     onEscape?.(event);
-    if (event.defaultPrevented && cancelOnEscape) {
+    if (!event.defaultPrevented && cancelOnEscape) {
+      event.preventDefault();
       handleCancel(event, () => navigate(-1));
     }
   }
