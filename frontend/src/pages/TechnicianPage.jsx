@@ -122,8 +122,14 @@ export default function TechnicianPage() {
     {uuid &&
       <TextField
         label="Usuario"
-        disabled={true}
+        required
+        readOnly
         value={data.displayName}
+        slotProps={{
+          inputLabel: {
+            shrink: true
+          }
+        }}
       /> || 
       <SelectField
         label="Usuario"
