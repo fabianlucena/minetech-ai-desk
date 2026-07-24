@@ -125,6 +125,7 @@ export default function Week({
   const gridRef = useRef(null);
   const createRef = useRef(null);
   const timeRef = useRef(null);
+  const dateEntriesRef = useRef([]);
   const pixelsPerHour = 28;
 
   const updateDateEntries = useCallback(() => {
@@ -259,14 +260,29 @@ export default function Week({
     }
 
     const timeColumnWidth = timeRect.width;
-    const xPos = e.clientX - rect.left - timeColumnWidth;
+    let xPos = e.clientX - rect.left - timeColumnWidth;
     if (xPos < 0) {
       createRef.current.style.display = 'none';
       return;
     }
+
+    let lastDateEntry = dateEntriesRef.current.length;
+    if (lastDateEntry > 7)
+      lastDateEntry = 7;
+
+    let dateEntryIndex = 0;
+    while (xPos > 0) {
+      const dateEntryRect = dateEntriesRef.current[dateEntryIndex]?.getBoundingClientRect();
+      const colWidth = dateEntryRect.width;
+      xPos -= colWidth;
+      dateEntryIndex++;
+      if (dateEntryIndex > lastDateEntry) {
+        createRef.current.style.display = 'none';
+        return;
+      }
+    }
     
-    const colWidth = (rect.width - timeColumnWidth) / 7;
-    const colIndex = 1 + Math.floor(xPos / colWidth);
+    const colIndex = dateEntryIndex;
     if (colIndex > 7) {
       createRef.current.style.display = 'none';
       return;
@@ -387,27 +403,26 @@ export default function Week({
           Hora
         </Typography>
       </Box>
-      {dateEntries.map((dateInfo, i) => (
-        <Box
-          key={i}
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: dateInfo.isToday ? '#70a5db': dateInfo.isCurrentMonth ? '#bdbdbd' : '#d3d3d3',
-            color: (dateInfo.isPreviousDay || !dateInfo.isCurrentMonth) ? '#8b8b8b' : '#000000',
-            minHeight: 30,
-            padding: 4,
-            borderLeft: '#4b4b4b solid 1px',
-            borderBottom: '#4b4b4b solid 1px',
-            gridArea: `1 / ${i + 2} / span 1 / span 1`,
-          }}
-        >
-          <Typography variant="body2" fontWeight={600}>
-            {dateInfo.weekDayName} {dateInfo.date.getDate() || ''}
-          </Typography>
-        </Box>
-      ))}
+      {dateEntries.map((dateInfo, i) => (<Box
+        key={i}
+        ref={el => (dateEntriesRef.current[i] = el)}
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: dateInfo.isToday ? '#70a5db': dateInfo.isCurrentMonth ? '#bdbdbd' : '#d3d3d3',
+          color: (dateInfo.isPreviousDay || !dateInfo.isCurrentMonth) ? '#8b8b8b' : '#000000',
+          minHeight: 30,
+          padding: 4,
+          borderLeft: '#4b4b4b solid 1px',
+          borderBottom: '#4b4b4b solid 1px',
+          gridArea: `1 / ${i + 2} / span 1 / span 1`,
+        }}
+      >
+        <Typography variant="body2" fontWeight={600}>
+          {dateInfo.weekDayName} {dateInfo.date.getDate() || ''}
+        </Typography>
+      </Box>))}
       {Array(24).fill().map((_, h) => <Box
         key={h}
         sx={{
