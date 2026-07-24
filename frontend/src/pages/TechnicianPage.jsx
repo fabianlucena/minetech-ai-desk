@@ -27,7 +27,7 @@ export default function TechnicianPage() {
 
   const loadTechnicianUsers = useCallback(async () => {
     try {
-      setTechnicianUsers(await getTechnicianUsers());
+      setTechnicianUsers(await getTechnicianUsers({ query: { skipTechnicians: true }}));
     } catch (error) {
       addError('Error al obtener los usuarios técnicos: ' + (error.data?.message || error.message || error.data?.error));
       console.error('Error al obtener los usuarios técnicos:', error);

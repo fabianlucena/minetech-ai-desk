@@ -93,8 +93,17 @@ export default class TechnicianService extends ModelService {
   }
 
   async getUsers(options) {
+    if (options.skipTechnicians) {
+      const technicianModel = getDependency('technicianModel');
+      const technicians = await technicianModel.findAll({ attributes: ['id'] });
+      const technicianIds = technicians.map(t => t.id);
+      options.where = options.where || {};
+      options.where.id = { [Op.notIn]: technicianIds };
+      delete options.skipTechnicians;
+    }
+
     const userService = getDependency('userService');
-    const users = await userService.getList({ where: { role: 'technician' }, ...options });
+    const users = await userService.getList({...options, where: { ...options.where, role: 'technician' }});
     return users;
   }
 }

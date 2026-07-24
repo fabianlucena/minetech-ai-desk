@@ -59,6 +59,9 @@ export async function restoreByUuid(req, res) {
 
 export async function getUsers(req, res) {
   const technicianService = getDependency('technicianService');
-  const users = await technicianService.getUsers({ session: req.session });
+  const users = await technicianService.getUsers({
+    session: req.session,
+    skipTechnicians: !!req.query.skipTechnicians,
+  });
   res.json(users.map(u => new TechnicianUserDTO(u)));
 }
