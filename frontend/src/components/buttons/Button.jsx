@@ -2,6 +2,7 @@ import { Button as MUIButton } from '@mui/material';
 
 export default function Button({
   variant,
+  primary = false,
   secondary = false,
   default : defaultButton = false,
   className,
@@ -12,7 +13,7 @@ export default function Button({
     'outlined' :
     'contained';
 
-  className ??= (defaultButton || type === 'submit')?
+  className ??= (primary || defaultButton || type === 'submit')?
     'default' :
     'primary';
 
