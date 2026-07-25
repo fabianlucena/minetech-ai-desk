@@ -14,7 +14,11 @@ export default (sequelize) => {
     ticketId: { field: 'ticket_id', type: DataTypes.BIGINT, allowNull: false },
     senderType: { field: 'sender_type', type: DataTypes.ENUM(...senderTypeValues), allowNull: false },
     senderId: { field: 'sender_id', type: DataTypes.BIGINT, allowNull: false },
-    message: { field: 'message', type: DataTypes.TEXT, allowNull: false },
+    text: { field: 'text', type: DataTypes.TEXT, allowNull: false },
+    media: { field: 'media', type: DataTypes.BLOB('long'), allowNull: true },
+    receiverType: { field: 'receiver_type', type: DataTypes.ENUM(...senderTypeValues), allowNull: true },
+    receiverId: { field: 'receiver_id', type: DataTypes.BIGINT, allowNull: true },
+    sentAt: { field: 'sent_at', type: DataTypes.DATE, allowNull: true },
   }, {
     tableName: 'ticket_messages',
     schema: 'ia_desk',

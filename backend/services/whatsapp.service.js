@@ -21,63 +21,113 @@ export default class WhatsappService {
     return challenge;
   }
 
-  async incomingMessage({ /* entry, change, value, */ message }, options) {
-    if (!message)
-      return;
+  async incomingMessage(entries, options) {
+    const fromList = {};
+    const allContacts = [];
 
-    const from = message.from;
-    const type = message.type;
-    let text = null;
-    let mediaId = null;
+    for (const entry of entries) {
+      if (!entry?.changes?.length)
+        continue;
 
-    if (type === 'text')
-      text = message.text.body;
+      for (const change of entry.changes) {
+        if (!change || change.field !== 'messages' || !change.value)
+          continue;
 
-    if (type === 'image')
-      mediaId = message.image.id;
+        const value = change.value;
+        if (!value?.messages?.length
+          || !value?.contacts?.length
+        )
+          continue;
 
-    if (type === 'document')
-      mediaId = message.document.id;
+        const messagesList = value.messages.filter(m => m && (m.type === 'text' || m.type === 'image' || m.type === 'document'));
+        if (!messagesList.length)
+          continue;
 
-    logger.info(`📩 Mensage received from ${from}: ${text || '[media]'}`);
+        for (const message of messagesList) {
+          fromList[message.from] ??= [];
+          fromList[message.from].push(message);
+          allContacts.push(...(value.contacts || []));
+        }
+      }
+    }
 
     const requesterService = getDependency('requesterService');
-    const requester = await requesterService.getByPhoneOrCreate(from, { displayName: 'Cliente' }, options);
-
     const ticketService = getDependency('ticketService');
-    const ticket = await ticketService.addMessage({
-      requesterId: requester.id,
-      message: text,
-    });
-
-    let mediaBuffer = null;
-    if (mediaId) {
-      mediaBuffer = await this.downloadMedia(mediaId);
-      await saveMedia(ticket.id, mediaBuffer);
-    }
-
-    // Ejecutar motor RAG
-    /* const aiResponse = await ragEngine(text);
-
-    // Decisión automática
-    if (aiResponse.confidence >= 0.75) {
-      await sendWhatsAppMessage(waId, aiResponse.answer);
-      await audit('auto_response', ticket.id, aiResponse);
-
-      return;
-    } */
-
+    const ticketMessageService = getDependency('ticketMessageService');
     const technicianService = getDependency('technicianService');
-    const technician = await technicianService.getOnDuty();
-    if (!technician) {
-      throw new Error('No hay técnico de guardia');
-    }
 
-    technician.sendMessage({
-      message: ticket.message,
-      content: text || '[media]',
-      media: mediaBuffer,
-    });
+    for (const from in fromList) {
+      const requester = await requesterService.getByPhoneOrCreate(
+        from,
+        () => ({ displayName: allContacts.find(c => c.wa_id === from)?.profile?.name || 'Cliente' }),
+        options
+      );
+
+      const ticketMessages = [];
+      const messages = fromList[from];
+      for (const message of messages) {
+        const type = message.type;
+        let text = null;
+        let mediaId = null;
+
+        if (type === 'text')
+          text = message.text.body;
+
+        logger.info(`📩 Mensage received from ${from}: ${text || '[media]'}`);
+
+        if (type === 'image')
+          mediaId = message.image.id;
+
+        if (type === 'document')
+          mediaId = message.document.id;
+
+        let media = null;
+        if (mediaId)
+          media = await this.downloadMedia(mediaId);
+
+        const ticket = await ticketService.getOpenByRequesterIdOrCreate(requester.id, {}, options);
+
+        const ticketMessage = await ticketMessageService.create({
+          ticketId: ticket.id,
+          senderType: 'requester',
+          senderId: requester.id,
+          text,
+          media,
+        });
+
+        ticketMessages.push(ticketMessage);
+      }
+
+      // Ejecutar motor RAG
+      /* const aiResponse = await ragEngine(text);
+
+      // Decisión automática
+      if (aiResponse.confidence >= 0.75) {
+        await sendWhatsAppMessage(waId, aiResponse.answer);
+        await audit('auto_response', ticket.id, aiResponse);
+
+        return;
+      } */
+
+      const technician = await technicianService.getOnDuty();
+      if (!technician) {
+        logger.error('No hay técnico de guardia');
+        continue;
+      }
+
+      for (const ticketMessage of ticketMessages) {
+        await technicianService.sendMessageById(technician.id, {
+          text: ticketMessage.text,
+          media: ticketMessage.media,
+        });
+
+        await ticketMessageService.updateById(ticketMessage.id, {
+          receiverId: technician.id,
+          receiverType: 'technician',
+          sentAt: new Date(),
+        }, options);
+      }
+    }
   }
 
   async downloadMedia(mediaId) {

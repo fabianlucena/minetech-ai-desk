@@ -7,10 +7,10 @@ export default class TicketMessageService extends ModelService {
   }
 
   get validPropertiesForCreation() {
-    return ['ticketId', 'senderType', 'senderId', 'message'];
+    return ['ticketId', 'senderType', 'senderId', 'text', 'media', 'receiverType', 'receiverId', 'sentAt'];
   }
 
   get validPropertiesForUpdate() {
-    return ['ticketId', 'senderType', 'senderId', 'message'];
+    return ['ticketId', 'senderType', 'senderId', 'text', 'media', 'receiverType', 'receiverId', 'sentAt'];
   }
 }

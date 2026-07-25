@@ -654,8 +654,12 @@ create table if not exists ia_desk.ticket_messages(
     ticket_id bigint null,
     sender_type varchar(64) not null,
     sender_id bigint not null,
-    message text not null,
-    
+    "text" text not null,
+    media bytea null,
+    receiver_type varchar(64) null,
+    receiver_id bigint null,
+    sent_at timestamp null,
+
     constraint uk_ia_desk_ticket_messages_uuid unique (uuid),
     
     constraint uk_ia_desk_ticket_messages_ticket_id foreign key (ticket_id)

@@ -21,6 +21,20 @@ export default class TicketService extends ModelService {
     });
   }
 
+  async getOpenByRequesterIdOrCreate(requesterId, data,options = {}) {
+    const ticket = await this.getOpenByRequesterId(requesterId, options);
+
+    if (!ticket) {
+      return await this.create({
+        ...data,
+        requesterId,
+        status: 'open'
+      }, options);
+    }
+
+    return ticket;
+  }
+
   get validPropertiesForCreation() {
     return ['code', 'clientId', 'requesterId', 'technicianId', 'shiftId', 'status', 'resolvedAt'];
   }
@@ -47,21 +61,5 @@ export default class TicketService extends ModelService {
       throw new Error('El estado del ticket es obligatorio');
 
     return await super.validateForCreation(data, options);
-  }
-
-  async addMessage({ requesterId, message }) {
-    const ticket = (await this.getOpenByRequesterId(requesterId))
-      || (await this.create({
-        requesterId,
-        status: 'open'
-      }));
-      
-    const ticketMessageService = getDependency('ticketMessageService');
-    ticket.lastMessage = await ticketMessageService.create({
-      ticketId: ticket.id,
-      senderType: 'requester',
-      senderId: requesterId,
-      message,
-    });
   }
 }

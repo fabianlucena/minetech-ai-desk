@@ -40,6 +40,10 @@ export default class RequesterService extends ModelService {
 
     let requester = await this.getByPhone(phone, options);
     if (!requester) {
+      if (typeof data === 'function') {
+        data = data();
+      }
+      
       requester = await this.create(
         {
           type: 'customer',
