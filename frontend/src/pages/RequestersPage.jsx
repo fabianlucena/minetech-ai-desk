@@ -15,7 +15,7 @@ export default function RequestersPage() {
   const columns = useMemo(() => {
     const baseColumns = [
       {
-        field: 'fullName',
+        field: 'displayName',
         headerName: 'Nombre',
         flex: 1,
       },

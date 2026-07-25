@@ -3,14 +3,14 @@ import { ClientMinDTO } from './client.dto.js';
 export class RequesterMinDTO {
   constructor(requester) {
     this.uuid = requester.uuid;
-    this.fullName = requester.fullName;
+    this.displayName = requester.displayName;
   }
 }
 
 export class RequesterDTO {
   constructor(requester) {
     this.uuid = requester.uuid;
-    this.fullName = requester.fullName;
+    this.displayName = requester.displayName;
     this.phone = requester.phone;
     this.email = requester.email;
     this.isActive = requester.isActive;

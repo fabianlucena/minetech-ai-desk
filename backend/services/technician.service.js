@@ -85,13 +85,6 @@ export default class TechnicianService extends ModelService {
     return await super.validateForUpdate(data, options);
   }
 
-  async getByFullName(fullName) {
-    if (!fullName)
-      throw new Error('El nombre completo es obligatorio');
-
-    return await this.getFirstOrDefault({ where: { fullName } });
-  }
-
   async getUsers(options) {
     if (options.skipTechnicians) {
       const technicianModel = getDependency('technicianModel');

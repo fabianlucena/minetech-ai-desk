@@ -1,0 +1,82 @@
+@url=http://localhost:3000/api
+@verfy_token={WHATSAPP_VERIFY_TOKEN}
+
+### Verificación del webhook de WhatsApp
+GET {{url}}/whatsapp/webhook?hub.mode=subscribe&hub.verify_token={{verfy_token}}&hub.challenge=12345
+
+### Recibir mensaje de texto de WhatsApp
+POST https://api.minetech.com/webhooks/whatsapp
+Content-Type: application/json
+
+{
+  "object": "whatsapp_business_account",
+  "entry": [
+    {
+      "id": "123456789012345",
+      "changes": [
+        {
+          "field": "messages",
+          "value": {
+            "messaging_product": "whatsapp",
+            "metadata": {
+              "display_phone_number": "5492641234567",
+              "phone_number_id": "987654321098765"
+            },
+            "contacts": [
+              {
+                "profile": {
+                  "name": "Fabian Lucena"
+                },
+                "wa_id": "5492641234567"
+              }
+            ],
+            "messages": [
+              {
+                "from": "5492641234567",
+                "id": "wamid.TEST_MESSAGE_ID_001",
+                "timestamp": "1753390000",
+                "text": {
+                  "body": "Hola, este es un mensaje de prueba"
+                },
+                "type": "text"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
+
+### Mensaje enviado / entregado / leído
+POST https://api.minetech.com/webhooks/whatsapp
+Content-Type: application/json
+
+{
+  "object": "whatsapp_business_account",
+  "entry": [
+    {
+      "id": "123456789012345",
+      "changes": [
+        {
+          "field": "messages",
+          "value": {
+            "messaging_product": "whatsapp",
+            "metadata": {
+              "display_phone_number": "5492641234567",
+              "phone_number_id": "987654321098765"
+            },
+            "statuses": [
+              {
+                "id": "wamid.TEST_MESSAGE_ID_001",
+                "status": "delivered",
+                "timestamp": "1753390100",
+                "recipient_id": "5492647654321"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
