@@ -1,4 +1,4 @@
-import sequelize, { DataTypes } from 'sequelize';
+import { DataTypes } from 'sequelize';
 import { senderTypeValues } from '../categories/sender_types.js';
 
 export default (sequelize) => {
