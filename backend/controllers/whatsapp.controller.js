@@ -1,4 +1,7 @@
 import { getDependency } from '../dependency.js';
+import crypto from 'crypto';
+
+const config = getDependency('config');
 const logger = getDependency('logger');
 
 export async function startWhatsappWebhookServer(req, res) {
@@ -15,8 +18,25 @@ export async function startWhatsappWebhookServer(req, res) {
 }
 
 export async function processIncomingWhatsApp(req, res) {
+  const receivedSignature = req.headers['x-hub-signature-256'];
+  if (!receivedSignature) {
+    logger.error('❌ Missing signature in WhatsApp webhook request');
+    return res.sendStatus(400);
+  }
+
+  const body = JSON.stringify(req.body);
+  const signature = crypto
+    .createHmac('sha256', config.whatsapp.appSecret)
+    .update(body)
+    .digest('hex');
+
+  if (receivedSignature !== `sha256=${signature}`) {
+    logger.error('❌ Invalid signature in WhatsApp webhook request');
+    return res.sendStatus(403);
+  }
+
   // Meta demands respond quickly
-  res.sendStatus(200);
+  // res.sendStatus(200);
 
   try {
     const entry = req.body.entry?.[0];

@@ -2,11 +2,12 @@
 @verfy_token={WHATSAPP_VERIFY_TOKEN}
 
 ### Verificación del webhook de WhatsApp
-GET {{url}}/whatsapp/webhook?hub.mode=subscribe&hub.verify_token={{verfy_token}}&hub.challenge=12345
+GET {{url}}/webhooks/whatsapp?hub.mode=subscribe&hub.verify_token={{verfy_token}}&hub.challenge=12345
 
 ### Recibir mensaje de texto de WhatsApp
-POST https://api.minetech.com/webhooks/whatsapp
+POST {{url}}/webhooks/whatsapp
 Content-Type: application/json
+X-Hub-Signature-256: sha256=e4435695954c5db6afafef2102c595182e5bdd5fe6fe13ae50552785b1ecbb3d
 
 {
   "object": "whatsapp_business_account",
@@ -49,8 +50,9 @@ Content-Type: application/json
 }
 
 ### Mensaje enviado / entregado / leído
-POST https://api.minetech.com/webhooks/whatsapp
+POST {{url}}/webhooks/whatsapp
 Content-Type: application/json
+X-Hub-Signature-256: sha256=1768d9b7a853279ddc3d9d08b5c7b288f8cbafdbc9a539507aa9a0943021293d
 
 {
   "object": "whatsapp_business_account",

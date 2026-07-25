@@ -50,6 +50,7 @@ export default {
 
   whatsapp: {
     baseUrl: 'https://graph.facebook.com/v18.0',
+    appSecret: '{WHATSAPP_APP_SECRET}',
     verifyToken: '{WHATSAPP_VERIFY_TOKEN}',
     token: '{WHATSAPP_TOKEN}',
     phoneId: '{WHATSAPP_PHONE_ID}',
