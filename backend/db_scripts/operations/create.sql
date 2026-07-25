@@ -528,15 +528,13 @@ create table if not exists ia_desk.requesters(
     
     client_id bigint not null,
 
-    full_name varchar(128) not null,
+    display_name varchar(128) not null,
     phone varchar(64) not null,
     email varchar(64) null,
     is_active boolean not null,
     
     constraint uk_ia_desk_requesters_uuid unique (uuid),
-    constraint uk_ia_desk_requesters_full_name unique (full_name),
-    constraint uk_ia_desk_requesters_phone unique (full_name),
-    constraint uk_ia_desk_requesters_email unique (full_name),
+    constraint uk_ia_desk_requesters_phone unique (phone),
     
     constraint uk_ia_desk_requesters_client_id foreign key (client_id)
       references ia_desk.clients(id) on delete restrict,
