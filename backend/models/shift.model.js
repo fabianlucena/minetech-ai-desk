@@ -1,4 +1,4 @@
-import sequelize, { DataTypes } from 'sequelize';
+import { DataTypes } from 'sequelize';
 import { shiftTypeValues } from '../categories/shift_types.js';
 
 export default (sequelize) => {

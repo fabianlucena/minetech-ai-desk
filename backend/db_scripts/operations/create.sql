@@ -528,10 +528,11 @@ create table if not exists ia_desk.requesters(
     
     client_id bigint not null,
 
-    display_name varchar(128) not null,
+    display_name varchar(128) null,
     phone varchar(64) not null,
     email varchar(64) null,
     is_active boolean not null,
+    type varchar(64) not null,
     
     constraint uk_ia_desk_requesters_uuid unique (uuid),
     constraint uk_ia_desk_requesters_phone unique (phone),

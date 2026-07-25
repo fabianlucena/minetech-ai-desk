@@ -12,6 +12,14 @@ export default class RequesterService extends ModelService {
     return options;
   }
 
+  get validPropertiesForCreation() {
+    return ['clientId', 'displayName', 'phone', 'email', 'isActive', 'type'];
+  }
+
+  get validPropertiesForUpdate() {
+    return ['clientId', 'displayName', 'phone', 'email', 'isActive', 'type'];
+  }
+
   async getByDisplayName(displayName) {
     if (!displayName)
       throw new Error('El nombre de visualización es obligatorio');
@@ -19,25 +27,27 @@ export default class RequesterService extends ModelService {
     return await this.getFirstOrDefault({ where: { displayName } });
   }
 
-  async getByPhone(phone) {
+  async getByPhone(phone, options) {
     if (!phone)
       throw new Error('El teléfono es obligatorio');
 
-    return await this.getFirstOrDefault({ where: { phone } });
+    return await this.getFirstOrDefault({ ...options, where: { ...options?.where, phone } });
   }
 
-  async getByPhoneOrCreate(phone, data) {
+  async getByPhoneOrCreate(phone, data, options) {
     if (!phone)
       throw new Error('El teléfono es obligatorio');
 
-    let requester = await this.getByPhone(phone);
+    let requester = await this.getByPhone(phone, options);
     if (!requester) {
-      requester = await this.create({
-        requesterToken: null,
-        requesterType: 'customer',
-        ...data,
-        phone,
-      });
+      requester = await this.create(
+        {
+          type: 'customer',
+          ...data,
+          phone,
+        },
+        options
+      );
     }
 
     return requester;

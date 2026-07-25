@@ -48,7 +48,7 @@ export async function processIncomingWhatsApp(req, res) {
       return;
 
     const whatsappService = getDependency('whatsappService');
-    whatsappService.incomingMessage({ entry, change, value, message });
+    whatsappService.incomingMessage({ entry, change, value, message }, { session: req.session });
   } catch (err) {
     logger.error('❌ Error procesando mensaje entrante:', err);
   }

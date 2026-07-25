@@ -21,7 +21,7 @@ export default class WhatsappService {
     return challenge;
   }
 
-  async incomingMessage({ /* entry, change, value, */ message }) {
+  async incomingMessage({ /* entry, change, value, */ message }, options) {
     if (!message)
       return;
 
@@ -42,7 +42,7 @@ export default class WhatsappService {
     logger.info(`📩 Mensage received from ${from}: ${text || '[media]'}`);
 
     const requesterService = getDependency('requesterService');
-    const requester = await requesterService.getByPhoneOrCreate(from, { displayName: 'Cliente' });
+    const requester = await requesterService.getByPhoneOrCreate(from, { displayName: 'Cliente' }, options);
 
     const ticketService = getDependency('ticketService');
     const ticket = await ticketService.addMessage({
