@@ -21,6 +21,14 @@ export default class TicketService extends ModelService {
     });
   }
 
+  get validPropertiesForCreation() {
+    return ['clientId', 'requesterId', 'technicianId', 'shiftId', 'status', 'resolvedAt'];
+  }
+
+  get validPropertiesForUpdate() {
+    return ['clientId', 'requesterId', 'technicianId', 'shiftId', 'status', 'resolvedAt'];
+  }
+
   async addMessage({ requesterId, message }) {
     const ticket = (await this.getOpenByRequesterId(requesterId))
       || (await this.create({
