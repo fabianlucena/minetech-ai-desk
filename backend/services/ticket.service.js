@@ -22,11 +22,31 @@ export default class TicketService extends ModelService {
   }
 
   get validPropertiesForCreation() {
-    return ['clientId', 'requesterId', 'technicianId', 'shiftId', 'status', 'resolvedAt'];
+    return ['code', 'clientId', 'requesterId', 'technicianId', 'shiftId', 'status', 'resolvedAt'];
   }
 
   get validPropertiesForUpdate() {
-    return ['clientId', 'requesterId', 'technicianId', 'shiftId', 'status', 'resolvedAt'];
+    return ['code', 'clientId', 'requesterId', 'technicianId', 'shiftId', 'status', 'resolvedAt'];
+  }
+
+  async validateForCreation(data, options) {
+    if (!data.code) {
+      const lastTicket = await this.getFirstOrDefault({
+        ...options,
+        where: {
+          ...options?.where,
+          clientId: data.clientId || null,
+        },
+        order: [['createdAt', 'DESC']]
+      });
+
+      data.code = lastTicket ? `${lastTicket.code + 1}` : '1';
+    }
+
+    if (!data.status)
+      throw new Error('El estado del ticket es obligatorio');
+
+    return await super.validateForCreation(data, options);
   }
 
   async addMessage({ requesterId, message }) {

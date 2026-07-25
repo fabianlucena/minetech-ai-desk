@@ -11,6 +11,7 @@ export default (sequelize) => {
     updatedById: { field: 'updated_by_id', type: DataTypes.BIGINT, allowNull: false },
     deletedAt: { field: 'deleted_at', type: DataTypes.DATE, allowNull: true },
     deletedById: { field: 'deleted_by_id', type: DataTypes.BIGINT, allowNull: true },
+    code: { field: 'code', type: DataTypes.STRING, allowNull: false },
     clientId: { field: 'client_id', type: DataTypes.BIGINT, allowNull: true },
     requesterId: { field: 'requester_id', type: DataTypes.BIGINT, allowNull: false },
     technicianId: { field: 'technician_id', type: DataTypes.BIGINT, allowNull: true },

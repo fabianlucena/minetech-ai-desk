@@ -599,6 +599,7 @@ create table if not exists ia_desk.tickets(
     deleted_at timestamp null,
     deleted_by_id bigint null,
     
+    code varchar(16) not null,
     client_id bigint null,
     requester_id bigint not null,
     technician_id bigint null,
@@ -607,6 +608,7 @@ create table if not exists ia_desk.tickets(
     parent_ticket_id bigint null,
     resolved_at timestamp null,
     
+    constraint uk_ia_desk_tickets_code unique (code),
     constraint uk_ia_desk_tickets_uuid unique (uuid),
     
     constraint uk_ia_desk_tickets_client_id foreign key (client_id)
