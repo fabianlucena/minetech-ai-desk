@@ -59,9 +59,9 @@ export default class TicketService extends ModelService {
     const ticketMessageService = getDependency('ticketMessageService');
     ticket.lastMessage = await ticketMessageService.create({
       ticketId: ticket.id,
-      requesterId,
-      content: message,
-      direction: 'incoming',
+      senderType: 'requester',
+      senderId: requesterId,
+      message,
     });
   }
 }
