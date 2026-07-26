@@ -20,8 +20,8 @@ export default class RequesterService extends ModelService {
   }
 
   async create(data, options) {
-    if (!data.fullName)
-      throw new Error('El nombre completo es obligatorio');
+    if (!data.displayName)
+      throw new Error('El nombre es obligatorio');
 
     if (!data.phone)
       throw new Error('El teléfono es obligatorio');
