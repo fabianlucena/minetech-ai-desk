@@ -120,7 +120,6 @@ export default function SettingPage() {
     <TextField
       label="Descripción"
       disabled={disabled}
-      required
       value={data.description}
       onChange={(e) => setData({...data, description: e.target.value})}
     />
