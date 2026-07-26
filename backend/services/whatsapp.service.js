@@ -64,7 +64,7 @@ export default class WhatsappService {
       );
 
       const conversation = await conversationService.getOpenByRequesterIdOrCreate(requester.id, {}, options);
-      await conversationService.closeById(conversation.id, options);
+      await conversationService.updateLastMessageById(conversation.id, options);
 
       const conversationMessages = [];
       const messages = fromList[from];

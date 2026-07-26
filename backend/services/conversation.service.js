@@ -41,7 +41,7 @@ export default class ConversationService extends ModelService {
 
     let conversation = await this.getFirstOrDefault({
       ...options,
-      includeDeleted,
+      includeDeleted: true,
       where: {
         ...options?.where,
         requesterId,
@@ -90,9 +90,6 @@ export default class ConversationService extends ModelService {
       data.code = lastConversation ? `${lastConversation.code + 1}` : '1';
     }
 
-    /*if (!data.status)
-      throw new Error('El estado del conversation es obligatorio');*/
-
     return await super.validateForCreation(data, options);
   }
 
@@ -114,5 +111,13 @@ export default class ConversationService extends ModelService {
       throw new Error('Conversación a cerrar no encontrado');
 
     return await this.closeById(conversation.id, options);
+  }
+
+  async updateLastMessageById(id, options) {
+    const data = {
+      lastMessageAt: new Date(),
+    };
+
+    return await this.updateById(id, data, options);
   }
 }
