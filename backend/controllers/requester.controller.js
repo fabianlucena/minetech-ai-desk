@@ -5,6 +5,7 @@ export async function getList(req, res) {
   const requesterService = getDependency('requesterService');
   const requesters = await requesterService.getList({
     includeDeleted: !!req.query.includeDeleted,
+    includeClient: true,
     session: req.session,
   });
   res.json(requesters.map(u => new RequesterDTO(u)));

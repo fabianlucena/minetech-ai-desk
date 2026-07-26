@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import Grid from '../components/Grid.jsx';
 import useToast from '../states/useToast.jsx';
 import usePermissions from '../states/usePermissions.jsx';
-import { formatDate } from '../utils/date.js';
+import { formatDate } from '../utils/datetime.js';
 import { getRequesters } from '../services/requester.service.js';
 import SwitchField from '../components/fields/SwitchField.jsx';
 
@@ -23,6 +23,12 @@ export default function RequestersPage() {
         field: 'phone',
         headerName: 'Teléfono',
         flex: 1,
+      },
+      {
+        field: 'client.name',
+        headerName: 'Cliente',
+        flex: 1,
+        renderCell: ({row}) => row.client?.name || 'N/A',
       },
       {
         field: 'isActive',

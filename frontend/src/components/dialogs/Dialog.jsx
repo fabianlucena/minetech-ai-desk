@@ -124,9 +124,11 @@ export default function Dialog({
           tabIndex={0}
           direction="row"
           spacing={1}
-          justifyContent="flex-end"
           onKeyDown={handleKeyDown}
-          style={{ outline: 'none' }}
+          style={{
+            outline: 'none',
+            justifyContent: 'flex-end',
+          }}
         >
           {onCancel && <Button secondary onClick={handleCancel} >
             {cancelText || 'Cancelar'}

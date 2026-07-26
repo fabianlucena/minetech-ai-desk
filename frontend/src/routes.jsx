@@ -1,6 +1,7 @@
 import useGlobal from './states/useGlobal.jsx';
-import { AboutIcon, ClientIcon, DashboardIcon, HomeIcon, LoginIcon, LogoutIcon,
-  RequesterIcon, SettingsIcon, ShiftIcon, TechnicianIcon, UsersIcon
+import { AboutIcon, ClientIcon, ConversationIcon, DashboardIcon, HomeIcon, 
+  LoginIcon, LogoutIcon, RequesterIcon, SettingsIcon, ShiftIcon, TechnicianIcon, 
+  UsersIcon
 } from './components/icons/index.jsx';
 import Layout from './components/Layout.jsx';
 import HomePage from './pages/HomePage.jsx';
@@ -18,6 +19,8 @@ import TechnicianPage from './pages/TechnicianPage.jsx';
 import ClientsPage from './pages/ClientsPage.jsx';
 import ClientPage from './pages/ClientPage.jsx';
 import RequestersPage from './pages/RequestersPage.jsx';
+import ConversationsPage from './pages/ConversationsPage.jsx';
+import ConversationMessagesPage from './pages/ConversationMessagesPage.jsx';
 import ShiftsPage from './pages/ShiftsPage.jsx';
 import SettingsPage from './pages/SettingsPage.jsx';
 import SettingPage from './pages/SettingPage.jsx';
@@ -120,6 +123,19 @@ export const allRoutes = [
         menuItemOrder: 3,
         element: <RequestersPage />,
         condition: ({ permissions }) => permissions.includes('requesters.list'),
+      },
+      {
+        path: '/conversations',
+        label: 'Conversaciones',
+        icon: <ConversationIcon />,
+        menuItemOrder: 3,
+        element: <ConversationsPage />,
+        condition: ({ permissions }) => permissions.includes('conversations.list'),
+      },
+      {
+        path: '/conversations/:uuid/messages',
+        element: <ConversationMessagesPage />,
+        condition: ({ permissions }) => permissions.includes('conversationMessages.read'),
       },
       {
         path: '/settings',

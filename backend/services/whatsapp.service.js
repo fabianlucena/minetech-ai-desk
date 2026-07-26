@@ -64,6 +64,8 @@ export default class WhatsappService {
       );
 
       const conversation = await conversationService.getOpenByRequesterIdOrCreate(requester.id, {}, options);
+      await conversationService.updateLastMessageById(conversation.id, options);
+
       const conversationMessages = [];
       const messages = fromList[from];
       for (const message of messages) {
@@ -86,7 +88,7 @@ export default class WhatsappService {
         if (mediaId)
           media = await this.downloadMedia(mediaId);
 
-        conversationMessage = await conversationMessageService.create({
+        const conversationMessage = await conversationMessageService.create({
           conversationId: conversation.id,
           senderType: 'requester',
           senderId: requester.id,
@@ -95,6 +97,11 @@ export default class WhatsappService {
         });
 
         conversationMessages.push(conversationMessage);
+      }
+
+      if (requester.bannedAt) {
+        logger.warn(`❌ Ignoring message from banned requester ${from}`);
+        continue;
       }
 
       // Ejecutar motor RAG

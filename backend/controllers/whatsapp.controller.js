@@ -35,7 +35,8 @@ export async function processIncomingWhatsApp(req, res) {
   const expectedBuf = Buffer.from(expectedSignature);
 
   if (receivedBuf.length !== expectedBuf.length || !crypto.timingSafeEqual(receivedBuf, expectedBuf)) {
-    logger.error('❌ Invalid signature in WhatsApp webhook request');
+    logger.error(`❌ Invalid signature in WhatsApp webhook request`);
+    //console.log(`❌ Invalid signature in WhatsApp webhook request, expected: ${expectedSignature} vs received: ${receivedSignature}`);
     return res.sendStatus(403);
   }
 

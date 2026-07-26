@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Box, Chip } from '@mui/material';
 
 export default function Chips({

@@ -68,7 +68,6 @@ export default function Grid({
       }
 
       actionsField.getActions = (params) => [
-        ...rowsActions?.(params) || [],
         onDelete && !params.row.deletedAt && <GridActionsCellItem
           key="delete"
           icon={<DeleteIcon />}
@@ -93,6 +92,7 @@ export default function Grid({
           label="Restaurar"
           onClick={() => onRestore(params.row)}
         />,
+        ...rowsActions?.(params) || [],
       ];
     }
 
