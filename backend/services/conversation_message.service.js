@@ -39,21 +39,35 @@ export default class ConversationMessageService extends ModelService {
       const requesterService = getDependency('requesterService');
       const technicianService = getDependency('technicianService');
 
+      const requesters = {};
+      const technicians = {};
       if (options.includeSender && options.includeReceiver) {
         for (const message of messages) {
           if (message.senderId) {
             if (message.senderType === 'requester') {
-              message.sender = await requesterService.getById(message.senderId);
+              if (!requesters[message.senderId])
+                requesters[message.senderId] = await requesterService.getById(message.senderId);
+
+              message.sender = requesters[message.senderId];
             } else if (message.senderType === 'technician') {
-              message.sender = await technicianService.getById(message.senderId, { includeUser: true });
+              if (!technicians[message.senderId])
+                technicians[message.senderId] = await technicianService.getById(message.senderId, { includeUser: true });
+
+              message.sender = technicians[message.senderId];
             }
           }
 
           if (message.receiverId) {
             if (message.receiverType === 'requester') {
-              message.receiver = await requesterService.getById(message.receiverId);
+              if (!requesters[message.receiverId])
+                requesters[message.receiverId] = await requesterService.getById(message.receiverId);
+
+              message.receiver = requesters[message.receiverId];
             } else if (message.receiverType === 'technician') {
-              message.receiver = await technicianService.getById(message.receiverId, { includeUser: true });
+              if (!technicians[message.receiverId])
+                technicians[message.receiverId] = await technicianService.getById(message.receiverId, { includeUser: true });
+
+              message.receiver = technicians[message.receiverId];
             }
           }
         }
@@ -61,9 +75,15 @@ export default class ConversationMessageService extends ModelService {
         for (const message of messages) {
           if (message.senderId) {
             if (message.senderType === 'requester') {
-              message.sender = await requesterService.getById(message.senderId);
+              if (!requesters[message.senderId])
+                requesters[message.senderId] = await requesterService.getById(message.senderId);
+
+              message.sender = requesters[message.senderId];
             } else if (message.senderType === 'technician') {
-              message.sender = await technicianService.getById(message.senderId, { includeUser: true });
+              if (!technicians[message.senderId])
+                technicians[message.senderId] = await technicianService.getById(message.senderId, { includeUser: true });
+
+              message.sender = technicians[message.senderId];
             }
           }
         }
@@ -71,9 +91,15 @@ export default class ConversationMessageService extends ModelService {
         for (const message of messages) {
           if (message.receiverId) {
             if (message.receiverType === 'requester') {
-              message.receiver = await requesterService.getById(message.receiverId);
+              if (!requesters[message.receiverId])
+                requesters[message.receiverId] = await requesterService.getById(message.receiverId);
+              
+              message.receiver = requesters[message.receiverId];
             } else if (message.receiverType === 'technician') {
-              message.receiver = await technicianService.getById(message.receiverId, { includeUser: true });
+              if (!technicians[message.receiverId])
+                technicians[message.receiverId] = await technicianService.getById(message.receiverId, { includeUser: true });
+
+              message.receiver = technicians[message.receiverId];
             }
           }
         }

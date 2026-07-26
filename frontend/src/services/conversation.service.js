@@ -4,7 +4,7 @@ export async function getConversations(params) {
   const conversations = await Api.getJson('v1/conversations', params);
   return conversations.map(c => ({
     ...c,
-    createdAt: new Date(c.createdAt),
+    createdAt: c.createdAt ? new Date(c.createdAt) : null,
     lastMessageAt: c.lastMessageAt ? new Date(c.lastMessageAt) : null,
     closedAt: c.closedAt ? new Date(c.closedAt) : null,
     deletedAt: c.deletedAt ? new Date(c.deletedAt) : null,

@@ -69,11 +69,11 @@ export default class ConversationService extends ModelService {
   }
 
   get validPropertiesForCreation() {
-    return ['code', 'clientId', 'requesterId', 'clientId', 'lastMessageAt', 'closedAt', 'closedById'];
+    return ['requesterId', 'clientId', 'lastMessageAt', 'closedAt', 'closedById'];
   }
 
   get validPropertiesForUpdate() {
-    return ['code', 'clientId', 'requesterId', 'clientId', 'lastMessageAt', 'closedAt', 'closedById'];
+    return ['requesterId', 'clientId', 'lastMessageAt', 'closedAt', 'closedById'];
   }
 
   async validateForCreation(data, options) {
@@ -123,11 +123,11 @@ export default class ConversationService extends ModelService {
 
   async getMessagesByUuid(uuid, options) {
     if (!uuid)
-      throw new Error('El UUID de la conversacion es obligatorio');
+      throw new Error('El UUID de la conversación es obligatorio');
 
     const conversationId = await this.getIdByUuid(uuid, options);
     if (!conversationId)
-      throw new Error('Conversación a cerrar no encontrado');
+      throw new Error('Conversación a cerrar no encontrada');
 
     const conversationMessageService = getDependency('conversationMessageService');
     return await conversationMessageService.getByConversationId(

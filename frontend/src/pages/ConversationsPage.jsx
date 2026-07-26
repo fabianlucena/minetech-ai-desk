@@ -69,8 +69,8 @@ export default function ConversationsPage() {
       const res = await getConversations({ query });
       setData(res);
     } catch (error) {
-      addError('Error al obtener las convesaciones');
-      console.error('Error al obtener las convesaciones:', error);
+      addError('Error al obtener las conversaciones');
+      console.error('Error al obtener las conversaciones:', error);
     }
   }, [includeDeleted, addError]);
 
@@ -98,39 +98,17 @@ export default function ConversationsPage() {
 
   useEffect(() => { load(); }, [load]);
 
-  async function deleteConversationHandler({ uuid }) {
-    try {
-      await deleteConversation(uuid);
-      addMessage('Conversación eliminada correctamente');
-      load();
-    } catch (error) {
-      addError('Error al eliminar la conversación');
-      console.error('Error al eliminar la conversación:', error);
-    }
-  }
-
-  async function restoreConversationHandler({ uuid }) {
-    try {
-      await restoreConversation(uuid);
-      addMessage('Conversación restaurada correctamente');
-      load();
-    } catch (error) {
-      addError('Error al restaurar la conversación');
-      console.error('Error al restaurar la conversación:', error);
-    }
-  }
-
   async function closeConversationHandler({ uuid }) {
     setConfirmDialog({
       title: 'Cerrar conversación',
       message: '¿Estás seguro de que quieres cerrar esta conversación?',
-      onConfirm: () => closeConversationCoinfirmedHandler({ uuid }),
+      onConfirm: () => closeConversationConfirmedHandler({ uuid }),
       open: true,
       onClose: () => setConfirmDialog(prev => ({ ...prev, open: false })),
     });
   }
 
-  async function closeConversationCoinfirmedHandler({ uuid }) {
+  async function closeConversationConfirmedHandler({ uuid }) {
     try {
       await closeConversation(uuid);
       addMessage('Conversación cerrada correctamente');
@@ -161,15 +139,15 @@ export default function ConversationsPage() {
       </>}
       rowsActions={({row}) => [
         hasPermission('conversations.close') && !row.deletedAt && !row.closedAt && <GridActionsCellItem
-          key="conversationsMessages"
+          key="close-conversation"
           icon={<CloseIcon />}
           label="Cerrar conversación"
           onClick={() => closeConversationHandler({ uuid: row.uuid })}
         />,
-        hasPermission('conversationMessages.list') && !row.deletedAt && <GridActionsCellItem
-          key="conversationsMessages"
+        hasPermission('conversationMessages.read') && !row.deletedAt && <GridActionsCellItem
+          key="conversation-messages"
           icon={<ConversationsMessageIcon />}
-          label="Mensages"
+          label="Mensajes"
           onClick={() => navigate(`/conversations/${row.uuid}/messages`)}
         />
       ]}
