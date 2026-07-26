@@ -15,5 +15,6 @@ export { default as RequesterIcon } from './requester.icon.jsx';
 export { default as RestoreIcon } from './restore.icon.jsx';
 export { default as UsersIcon } from './users.icon.jsx';
 export { default as TechnicianIcon } from './technicians.icon.jsx';
+export { default as SettingsIcon } from './settings.icon.jsx';
 export { default as ShiftIcon } from './shift.icon.jsx';
 export { default as WeekIcon } from './week.icon.jsx';

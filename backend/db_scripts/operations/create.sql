@@ -423,6 +423,7 @@ insert into auth.permissions (
     ('clients.create'),('clients.delete'),('clients.update'),('clients.list'),('clients.read'),('clients.restore'),
     ('requesters.create'),('requesters.delete'),('requesters.update'),('requesters.list'),('requesters.read'),('requesters.restore'),
     ('shifts.create'),('shifts.delete'),('shifts.update'),('shifts.list'),('shifts.read'),('shifts.restore'),
+    ('settings.create'),('settings.delete'),('settings.update'),('settings.list'),('settings.read'),('settings.restore'),
     ('conversations.list'),('conversations.read'),('conversations.delete'),('conversations.restore')
   ) as p(name)
   join auth.users system on system.username = 'system'
@@ -443,6 +444,37 @@ on conflict (permission_id, role_id) do nothing;
 
 -- Schema  ia_desk
 create schema if not exists ia_desk;
+
+-- Table settings
+create table if not exists ia_desk.settings(
+    id bigint generated always as identity primary key,
+    uuid uuid not null default gen_random_uuid(),
+
+    created_at timestamp not null default now(),
+    created_by_id bigint not null,
+
+    updated_at timestamp not null default now(),
+    updated_by_id bigint not null,
+
+    deleted_at timestamp null,
+    deleted_by_id bigint null,
+
+    key text not null,
+    value jsonb null,
+    description text null,
+    
+    constraint uk_ia_desk_settings_uuid unique (uuid),
+    constraint uk_ia_desk_settings_key unique (key),
+    
+    constraint uk_ia_desk_settings_created_by_id foreign key (created_by_id)
+      references auth.users(id) on delete restrict,
+    
+    constraint uk_ia_desk_settings_updated_by_id foreign key (updated_by_id)
+      references auth.users(id) on delete restrict,
+    
+    constraint uk_ia_desk_settings_deleted_by_id foreign key (deleted_by_id)
+      references auth.users(id) on delete restrict
+);
 
 -- Table technicians
 create table if not exists ia_desk.technicians(
