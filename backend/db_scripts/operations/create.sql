@@ -459,7 +459,7 @@ create table if not exists ia_desk.settings(
     deleted_by_id bigint null,
 
     key text not null,
-    value jsonb not null,
+    value jsonb null,
     description text null,
     
     constraint uk_ia_desk_settings_uuid unique (uuid),

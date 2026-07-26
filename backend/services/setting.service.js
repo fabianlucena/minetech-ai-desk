@@ -31,9 +31,6 @@ export default class SettingService extends ModelService {
     if (!data.key)
       throw new Error('La clave es obligatoria');
 
-    if (data.value === undefined || data.value === null)
-      throw new Error('El valor es obligatorio');
-
     const existing = await this.getByKey(data.key, { includeDeleted: true });
     if (existing)
       throw new Error('La clave ya está en uso');
@@ -58,9 +55,6 @@ export default class SettingService extends ModelService {
       if (existing && existing.id !== ids[0])
         throw new Error('La clave ya está en uso');
     }
-
-    if ('value' in data && (data.value === undefined || data.value === null))
-      throw new Error('El valor es obligatorio');
 
     return await super.validateForUpdate(data, options);
   }

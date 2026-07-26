@@ -11,7 +11,7 @@ export default (sequelize) => {
     deletedAt: { field: 'deleted_at', type: DataTypes.DATE, allowNull: true },
     deletedById: { field: 'deleted_by_id', type: DataTypes.BIGINT, allowNull: true },
     key: { field: 'key', type: DataTypes.STRING, allowNull: false, unique: true },
-    value: { field: 'value', type: DataTypes.JSONB, allowNull: false },
+    value: { field: 'value', type: DataTypes.JSONB, allowNull: true },
     description: { field: 'description', type: DataTypes.STRING, allowNull: true },
   }, {
     tableName: 'settings',
