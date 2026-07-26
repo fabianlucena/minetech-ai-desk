@@ -25,19 +25,19 @@ export default class TechnicianService extends ModelService {
     return options;
   }
 
-  getByPhone(phone, options) {
-    if (!phone)
-      throw new Error('El teléfono es obligatorio');
-
-    return this.getFirstOrDefault({ ...options, where: { ...options?.where, phone } });
-  }
-
   get validPropertiesForCreation() {
     return ['id', 'userId', 'phone', 'isActive', 'color'];
   }
 
   get validPropertiesForUpdate() {
     return ['phone', 'isActive', 'color'];
+  }
+
+  getByPhone(phone, options) {
+    if (!phone)
+      throw new Error('El teléfono es obligatorio');
+
+    return this.getFirstOrDefault({ ...options, where: { ...options?.where, phone } });
   }
 
   async validateForCreation(data, options) {
@@ -85,13 +85,6 @@ export default class TechnicianService extends ModelService {
     return await super.validateForUpdate(data, options);
   }
 
-  async getByFullName(fullName) {
-    if (!fullName)
-      throw new Error('El nombre completo es obligatorio');
-
-    return await this.getFirstOrDefault({ where: { fullName } });
-  }
-
   async getUsers(options) {
     if (options.skipTechnicians) {
       const technicianModel = getDependency('technicianModel');
@@ -105,5 +98,14 @@ export default class TechnicianService extends ModelService {
     const userService = getDependency('userService');
     const users = await userService.getList({...options, where: { ...options.where, role: 'technician' }});
     return users;
+  }
+
+  async getOnDuty() {
+    const onDuty = await this.getFirstOrDefault({ where: { isActive: true } });
+    return onDuty;
+  }
+
+  async sendMessageById(/* id { text, media } */) {
+    // throw new Error('TBC - Envío de mensaje a técnico no implementado');
   }
 }

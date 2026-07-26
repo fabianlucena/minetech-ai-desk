@@ -526,17 +526,16 @@ create table if not exists ia_desk.requesters(
     deleted_at timestamp null,
     deleted_by_id bigint null,
     
-    client_id bigint not null,
+    client_id bigint null,
 
-    full_name varchar(128) not null,
+    display_name varchar(128) null,
     phone varchar(64) not null,
     email varchar(64) null,
-    is_active boolean not null,
+    is_active boolean not null default true,
+    type varchar(64) not null,
     
     constraint uk_ia_desk_requesters_uuid unique (uuid),
-    constraint uk_ia_desk_requesters_full_name unique (full_name),
-    constraint uk_ia_desk_requesters_phone unique (full_name),
-    constraint uk_ia_desk_requesters_email unique (full_name),
+    constraint uk_ia_desk_requesters_phone unique (phone),
     
     constraint uk_ia_desk_requesters_client_id foreign key (client_id)
       references ia_desk.clients(id) on delete restrict,
@@ -583,5 +582,134 @@ create table if not exists ia_desk.shifts(
       references auth.users(id) on delete restrict,
     
     constraint uk_ia_desk_shifts_deleted_by_id foreign key (deleted_by_id)
+      references auth.users(id) on delete restrict
+);
+
+-- Table conversations
+create table if not exists ia_desk.conversations(
+    id bigint generated always as identity primary key,
+    uuid uuid not null default gen_random_uuid(),
+
+    created_at timestamp not null default now(),
+    created_by_id bigint not null,
+
+    updated_at timestamp not null default now(),
+    updated_by_id bigint not null,
+
+    deleted_at timestamp null,
+    deleted_by_id bigint null,
+    
+    requester_id bigint not null,
+    client_id bigint null,
+    last_message_at timestamp null,
+    
+    constraint uk_ia_desk_conversations_uuid unique (uuid),
+    
+    constraint uk_ia_desk_conversations_requester_id foreign key (requester_id)
+      references ia_desk.requesters(id) on delete restrict,
+    
+    constraint uk_ia_desk_conversations_client_id foreign key (client_id)
+      references ia_desk.clients(id) on delete restrict,
+    
+    constraint uk_ia_desk_conversations_created_by_id foreign key (created_by_id)
+      references auth.users(id) on delete restrict,
+    
+    constraint uk_ia_desk_conversations_updated_by_id foreign key (updated_by_id)
+      references auth.users(id) on delete restrict,
+    
+    constraint uk_ia_desk_conversations_deleted_by_id foreign key (deleted_by_id)
+      references auth.users(id) on delete restrict
+);
+
+-- Table conversation_messages
+create table if not exists ia_desk.conversation_messages(
+    id bigint generated always as identity primary key,
+    uuid uuid not null default gen_random_uuid(),
+
+    created_at timestamp not null default now(),
+    created_by_id bigint not null,
+
+    updated_at timestamp not null default now(),
+    updated_by_id bigint not null,
+
+    deleted_at timestamp null,
+    deleted_by_id bigint null,
+    
+    conversation_id bigint null,
+    sender_type varchar(64) not null,
+    sender_id bigint not null,
+    "text" text null,
+    media bytea null,
+    receiver_type varchar(64) null,
+    receiver_id bigint null,
+    sent_at timestamp null,
+
+    constraint uk_ia_desk_conversation_messages_uuid unique (uuid),
+    
+    constraint uk_ia_desk_conversation_messages_conversation_id foreign key (conversation_id)
+      references ia_desk.conversations(id) on delete restrict,
+    
+    constraint uk_ia_desk_conversation_messages_created_by_id foreign key (created_by_id)
+      references auth.users(id) on delete restrict,
+    
+    constraint uk_ia_desk_conversation_messages_updated_by_id foreign key (updated_by_id)
+      references auth.users(id) on delete restrict,
+    
+    constraint uk_ia_desk_conversation_messages_deleted_by_id foreign key (deleted_by_id)
+      references auth.users(id) on delete restrict
+);
+
+-- Table tickets
+create table if not exists ia_desk.tickets(
+    id bigint generated always as identity primary key,
+    uuid uuid not null default gen_random_uuid(),
+
+    created_at timestamp not null default now(),
+    created_by_id bigint not null,
+
+    updated_at timestamp not null default now(),
+    updated_by_id bigint not null,
+
+    deleted_at timestamp null,
+    deleted_by_id bigint null,
+    
+    code varchar(16) not null,
+    conversation_id bigint null,
+    client_id bigint null,
+    requester_id bigint not null,
+    technician_id bigint null,
+    shift_id bigint null,
+    status varchar(64) not null,
+    parent_ticket_id bigint null,
+    resolved_at timestamp null,
+    
+    constraint uk_ia_desk_tickets_code unique (code),
+    constraint uk_ia_desk_tickets_uuid unique (uuid),
+    
+    constraint uk_ia_desk_tickets_conversation_id foreign key (conversation_id)
+      references ia_desk.conversations(id) on delete restrict,
+    
+    constraint uk_ia_desk_tickets_client_id foreign key (client_id)
+      references ia_desk.clients(id) on delete restrict,
+    
+    constraint uk_ia_desk_tickets_requester_id foreign key (requester_id)
+      references ia_desk.requesters(id) on delete restrict,
+    
+    constraint uk_ia_desk_tickets_technician_id foreign key (technician_id)
+      references ia_desk.technicians(id) on delete restrict,
+    
+    constraint uk_ia_desk_tickets_shift_id foreign key (shift_id)
+      references ia_desk.shifts(id) on delete restrict,
+    
+    constraint uk_ia_desk_tickets_parent_ticket_id foreign key (parent_ticket_id)
+      references ia_desk.tickets(id) on delete restrict,
+    
+    constraint uk_ia_desk_tickets_created_by_id foreign key (created_by_id)
+      references auth.users(id) on delete restrict,
+    
+    constraint uk_ia_desk_tickets_updated_by_id foreign key (updated_by_id)
+      references auth.users(id) on delete restrict,
+    
+    constraint uk_ia_desk_tickets_deleted_by_id foreign key (deleted_by_id)
       references auth.users(id) on delete restrict
 );

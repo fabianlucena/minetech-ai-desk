@@ -12,11 +12,50 @@ export default class RequesterService extends ModelService {
     return options;
   }
 
-  async getByName(fullName) {
-    if (!fullName)
-      throw new Error('El nombre completo es obligatorio');
+  get validPropertiesForCreation() {
+    return ['clientId', 'displayName', 'phone', 'email', 'isActive', 'type'];
+  }
 
-    return await this.getFirstOrDefault({ where: { fullName } });
+  get validPropertiesForUpdate() {
+    return ['clientId', 'displayName', 'phone', 'email', 'isActive', 'type'];
+  }
+
+  async getByDisplayName(displayName) {
+    if (!displayName)
+      throw new Error('El nombre es obligatorio');
+
+    return await this.getFirstOrDefault({ where: { displayName } });
+  }
+
+  async getByPhone(phone, options) {
+    if (!phone)
+      throw new Error('El teléfono es obligatorio');
+
+    return await this.getFirstOrDefault({ ...options, where: { ...options?.where, phone } });
+  }
+
+  async getByPhoneOrCreate(phone, data, options) {
+    if (!phone)
+      throw new Error('El teléfono es obligatorio');
+
+    let requester = await this.getByPhone(phone, options);
+    if (!requester) {
+      if (typeof data === 'function') {
+        data = data();
+      }
+      
+      requester = await this.create(
+        {
+          type: 'customer',
+          isActive: true,
+          ...data,
+          phone,
+        },
+        options
+      );
+    }
+
+    return requester;
   }
 
   async create(data, options) {
