@@ -61,15 +61,24 @@ export default function SettingPage() {
   async function onSubmit() {
     setDisabled(true);
     try {
+      let value = data.value;
+      if (typeof value === 'string') {
+        try {
+          value = JSON.parse(value);
+        } catch {
+          // Mantener como string si no es JSON válido
+        }
+      }
+
       if (uuid) {
         await updateSetting(uuid, {
           key: data.key,
-          value: data.value,
+          value,
           description: data.description,
         });
         addInfo('Configuración actualizada correctamente');
       } else {
-        await createSetting(data);
+        await createSetting({ ...data, value });
         addInfo('Configuración creada correctamente');
       }
 
