@@ -1,5 +1,6 @@
 import useGlobal from './states/useGlobal.jsx';
 import { HomeIcon, DashboardIcon, UsersIcon, AboutIcon, LoginIcon, LogoutIcon, TechnicianIcon, ClientIcon, RequesterIcon, ShiftIcon } from './components/icons/index.jsx';
+import { ConversationIcon } from './components/icons/index.jsx';
 import Layout from './components/Layout.jsx';
 import HomePage from './pages/HomePage.jsx';
 import OAuth2CallbackPage from './pages/OAuth2CallbackPage.jsx';
@@ -16,6 +17,7 @@ import TechnicianPage from './pages/TechnicianPage.jsx';
 import ClientsPage from './pages/ClientsPage.jsx';
 import ClientPage from './pages/ClientPage.jsx';
 import RequestersPage from './pages/RequestersPage.jsx';
+import ConversationsPage from './pages/ConversationsPage.jsx';
 import ShiftsPage from './pages/ShiftsPage.jsx';
 
 export const allRoutes = [
@@ -116,6 +118,14 @@ export const allRoutes = [
         menuItemOrder: 3,
         element: <RequestersPage />,
         condition: ({ permissions }) => permissions.includes('requesters.list'),
+      },
+      {
+        path: '/conversations',
+        label: 'Conversaciones',
+        icon: <ConversationIcon />,
+        menuItemOrder: 3,
+        element: <ConversationsPage />,
+        condition: ({ permissions }) => permissions.includes('conversations.list'),
       },
       {
         path: '/about',
