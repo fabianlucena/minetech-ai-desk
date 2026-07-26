@@ -22,11 +22,11 @@ export default class RequesterService extends ModelService {
   }
 
   get validPropertiesForCreation() {
-    return ['clientId', 'displayName', 'phone', 'email', 'type'];
+    return ['clientId', 'displayName', 'phone', 'email', 'type', 'bannedAt', 'bannedById', 'banReason'];
   }
 
   get validPropertiesForUpdate() {
-    return ['clientId', 'displayName', 'phone', 'email', 'type'];
+    return ['clientId', 'displayName', 'phone', 'email', 'type', 'bannedAt', 'bannedById', 'banReason'];
   }
 
   async getByDisplayName(displayName) {
@@ -56,7 +56,6 @@ export default class RequesterService extends ModelService {
       requester = await this.create(
         {
           type: 'customer',
-          isActive: true,
           ...data,
           phone,
         },
@@ -74,9 +73,6 @@ export default class RequesterService extends ModelService {
     if (!data.phone)
       throw new Error('El teléfono es obligatorio');
 
-    if (!data.isActive)
-      data.isActive = false;
-
     return await super.create(data, options);
   }
 
@@ -90,5 +86,25 @@ export default class RequesterService extends ModelService {
 
     const globalOptions = { session: options?.session };
     return await this.updateById(requester.id, data, globalOptions);
+  }
+
+  async banByUuid(uuid, data, options) {
+    const banReason = data?.banReason?.trim();
+    if (!banReason)
+      throw new Error('El motivo del baneo es obligatorio');
+
+    return await this.updateByUuid(uuid, {
+      banReason,
+      bannedAt: new Date(),
+      bannedById: await this.getCurrentUserId(options),
+    }, options);
+  }
+
+  async unbanByUuid(uuid, options) {
+    return await this.updateByUuid(uuid, {
+      banReason: null,
+      bannedAt: null,
+      bannedById: null,
+    }, options);
   }
 }

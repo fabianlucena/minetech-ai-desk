@@ -10,5 +10,7 @@ router.post('/', checkPermissionMiddleware('requesters.create'), (...args) => ge
 router.put('/:uuid', checkPermissionMiddleware('requesters.update'), (...args) => getDependency('requesterController').updateByUuid(...args));
 router.delete('/:uuid', checkPermissionMiddleware('requesters.delete'), (...args) => getDependency('requesterController').deleteByUuid(...args));
 router.patch('/:uuid/restore', checkPermissionMiddleware('requesters.restore'), (...args) => getDependency('requesterController').restoreByUuid(...args));
+router.patch('/:uuid/ban', checkPermissionMiddleware('requesters.ban', 'requesters.update'), (...args) => getDependency('requesterController').banByUuid(...args));
+router.patch('/:uuid/unban', checkPermissionMiddleware('requesters.unban', 'requesters.update'), (...args) => getDependency('requesterController').unbanByUuid(...args));
 
 export default router;
