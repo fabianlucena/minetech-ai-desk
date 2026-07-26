@@ -565,7 +565,6 @@ create table if not exists ia_desk.requesters(
     display_name varchar(128) null,
     phone varchar(64) not null,
     email varchar(64) null,
-    is_active boolean not null default true,
     type varchar(64) not null,
 
     banned_at timestamp null,

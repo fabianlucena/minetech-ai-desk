@@ -15,7 +15,6 @@ export class RequesterDTO {
     this.displayName = requester.displayName;
     this.phone = requester.phone;
     this.email = requester.email;
-    this.isActive = requester.isActive;
     this.createdAt = requester.createdAt;
     this.updatedAt = requester.updatedAt;
     this.deletedAt = requester.deletedAt;

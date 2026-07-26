@@ -15,7 +15,6 @@ export default (sequelize) => {
     displayName: { field: 'display_name', type: DataTypes.STRING, allowNull: true },
     phone: { field: 'phone', type: DataTypes.STRING, allowNull: false, unique: true },
     email: { field: 'email', type: DataTypes.STRING, allowNull: true },
-    isActive: { field: 'is_active', type: DataTypes.BOOLEAN, allowNull: true, defaultValue: true },
     type: { field: 'type', type: DataTypes.ENUM(...requesterTypeValues), allowNull: false },
     bannedAt: { field: 'banned_at', type: DataTypes.DATE, allowNull: true },
     bannedById: { field: 'banned_by_id', type: DataTypes.BIGINT, allowNull: true },

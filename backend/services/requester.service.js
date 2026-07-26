@@ -22,11 +22,11 @@ export default class RequesterService extends ModelService {
   }
 
   get validPropertiesForCreation() {
-    return ['clientId', 'displayName', 'phone', 'email', 'isActive', 'type'];
+    return ['clientId', 'displayName', 'phone', 'email', 'type'];
   }
 
   get validPropertiesForUpdate() {
-    return ['clientId', 'displayName', 'phone', 'email', 'isActive', 'type'];
+    return ['clientId', 'displayName', 'phone', 'email', 'type'];
   }
 
   async getByDisplayName(displayName) {
