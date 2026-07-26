@@ -40,13 +40,13 @@ export async function processIncomingWhatsApp(req, res) {
   }
 
   // Meta demands respond quickly
-  // res.sendStatus(200);
+  res.sendStatus(200);
 
-  try {
-    const whatsappService = getDependency('whatsappService');
-    await whatsappService.incomingMessage(req.body.entry, { session: req.session });
-  } catch (err) {
-    logger.error('❌ Error procesando mensaje entrante:', err);
-    console.log(err);
-  }
-}
+  void (async () => {
+    try {
+      const whatsappService = getDependency('whatsappService');
+      await whatsappService.incomingMessage(req.body.entry, { session: req.session });
+    } catch (err) {
+      logger.error('❌ Error procesando mensaje entrante:', err);
+    }
+  })();
