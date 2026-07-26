@@ -8,5 +8,6 @@ router.get('/', checkPermissionMiddleware('conversations.list'), (...args) => ge
 router.get('/:uuid', checkPermissionMiddleware('conversations.read'), (...args) => getDependency('conversationController').getByUuid(...args));
 router.delete('/:uuid', checkPermissionMiddleware('conversations.delete'), (...args) => getDependency('conversationController').deleteByUuid(...args));
 router.patch('/:uuid/restore', checkPermissionMiddleware('conversations.restore'), (...args) => getDependency('conversationController').restoreByUuid(...args));
+router.patch('/:uuid/close', checkPermissionMiddleware('conversations.update', 'conversations.close'), (...args) => getDependency('conversationController').closeByUuid(...args));
 
 export default router;

@@ -15,3 +15,7 @@ export async function deleteConversation(uuid) {
 export async function restoreConversation(uuid) {
   return await Api.patchJson(`v1/conversations/${uuid}/restore`);
 }
+
+export async function closeConversation(uuid) {
+  return await Api.patchJson(`v1/conversations/${uuid}/close`);
+}

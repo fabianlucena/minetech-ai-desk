@@ -37,3 +37,12 @@ export async function restoreByUuid(req, res) {
   );
   res.status(204).end();
 }
+
+export async function closeByUuid(req, res) {
+  const conversationService = getDependency('conversationService');
+  await conversationService.closeByUuid(
+    req.params.uuid,
+    { session: req.session }
+  );
+  res.status(204).end();
+}

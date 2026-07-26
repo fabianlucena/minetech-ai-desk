@@ -3,7 +3,12 @@ import ModelService from './model.service.js';
 
 export default class ConversationMessageService extends ModelService {
   constructor() {
-    super({ model: getDependency('conversationMessageModel') });
+    super({
+      model: getDependency('conversationMessageModel'),
+      traceable: false,
+      auditable: false,
+      useCreatedAt: true,
+    });
   }
 
   get validPropertiesForCreation() {

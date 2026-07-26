@@ -3,7 +3,12 @@ import ModelService from './model.service.js';
 
 export default class ConversationService extends ModelService {
   constructor() {
-    super({ model: getDependency('conversationModel') });
+    super({
+      model: getDependency('conversationModel'),
+      traceable: false,
+      auditable: false,
+      useCreatedAt: true,
+    });
   }
 
   getModelOptions(options) {
@@ -34,14 +39,20 @@ export default class ConversationService extends ModelService {
     if (!requesterId)
       throw new Error('El ID del solicitante es obligatorio');
 
-    return this.getFirstOrDefault({
+    let conversation = await this.getFirstOrDefault({
       ...options,
+      includeDeleted,
       where: {
         ...options?.where,
         requesterId,
       },
       order: [['createdAt', 'DESC']]
     });
+
+    if (conversation && (conversation.closedAt || conversation.deletedAt))
+      conversation = null;
+
+    return conversation;
   }
 
   async getOpenByRequesterIdOrCreate(requesterId, data,options = {}) {
@@ -58,11 +69,11 @@ export default class ConversationService extends ModelService {
   }
 
   get validPropertiesForCreation() {
-    return ['code', 'clientId', 'requesterId', 'technicianId', 'shiftId', 'resolvedAt'];
+    return ['code', 'clientId', 'requesterId', 'clientId', 'lastMessageAt', 'closedAt', 'closedById'];
   }
 
   get validPropertiesForUpdate() {
-    return ['code', 'clientId', 'requesterId', 'technicianId', 'shiftId', 'resolvedAt'];
+    return ['code', 'clientId', 'requesterId', 'clientId', 'lastMessageAt', 'closedAt', 'closedById'];
   }
 
   async validateForCreation(data, options) {
@@ -83,5 +94,25 @@ export default class ConversationService extends ModelService {
       throw new Error('El estado del conversation es obligatorio');*/
 
     return await super.validateForCreation(data, options);
+  }
+
+  async closeById(id, options) {
+    const data = {
+      closedAt: new Date(),
+      closedById: await this.getCurrentUserId(options),
+    };
+
+    return await this.updateById(id, data, options);
+  }
+
+  async closeByUuid(uuid, options) {
+    if (!uuid)
+      throw new Error('El UUID de la conversación a cerrar es obligatorio');
+
+    const conversation = await this.getByUuid(uuid, { ...options, includeDeleted: true });
+    if (!conversation)
+      throw new Error('Conversación a cerrar no encontrado');
+
+    return await this.closeById(conversation.id, options);
   }
 }

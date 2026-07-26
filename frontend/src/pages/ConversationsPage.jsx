@@ -1,13 +1,14 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import Grid from '../components/Grid.jsx';
 import { GridActionsCellItem } from '@mui/x-data-grid';
-import { ConversationsMessageIcon } from '../components/icons';
+import { CloseIcon, ConversationsMessageIcon } from '../components/icons';
 import { useNavigate } from 'react-router-dom';
 import useToast from '../states/useToast.jsx';
 import usePermissions from '../states/usePermissions.jsx';
 import { formatDate } from '../utils/date.js';
-import { getConversations, deleteConversation, restoreConversation } from '../services/conversation.service.js';
+import { getConversations, deleteConversation, restoreConversation, closeConversation } from '../services/conversation.service.js';
 import SwitchField from '../components/fields/SwitchField.jsx';
+import ConfirmDialog from '../components/dialogs/ConfirmDialog.jsx';
 
 export default function ConversationsPage() {
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ export default function ConversationsPage() {
   const { addMessage, addError } = useToast();
   const [data, setData] = useState([]);
   const [includeDeleted, setIncludeDeleted] = useState(false);
+  const [confirmDialog, setConfirmDialog] = useState({});
 
   const columns = useMemo(() => {
     const baseColumns = [
@@ -22,18 +24,28 @@ export default function ConversationsPage() {
         field: 'requester.displayName',
         headerName: 'Solicitante',
         flex: 1,
-        renderCell: ({ row }) => row.requester?.displayName || '',
+        renderCell: ({row}) => row.requester?.displayName || '',
+      },
+      {
+        field: 'requester.bannedAt',
+        headerName: 'Baneado',
+        renderCell: ({row}) => row.requester?.bannedAt ? '🚫' : '🟢',
       },
       {
         field: 'client.name',
         headerName: 'Cliente',
         flex: 1,
-        renderCell: ({ row }) => row.client?.name || '',
+        renderCell: ({row}) => row.client?.name || '',
       },
       {
         field: 'lastMessageAt',
         headerName: 'Último mensaje',
         renderCell: ({value}) => formatDate(value) || '',
+      },
+      {
+        field: 'closedAt',
+        headerName: 'Abierta',
+        renderCell: ({value}) => value ? '❌' : '🟢',
       },
       {
         field: 'deletedAt',
@@ -108,29 +120,59 @@ export default function ConversationsPage() {
     }
   }
 
-  return <Grid
-    title="Conversaciones"
-    columns={columns}
-    rows={data}
-    onReload={() => load()}
-    onDelete={hasPermission('conversations.delete') && deleteConversationHandler}
-    onRestore={hasPermission('conversations.restore') && restoreConversationHandler}
-    tools={<>
-      {hasPermission('conversations.restore') && 
-        <SwitchField
-          label="Incluir eliminadas"
-          checked={includeDeleted}
-          onChange={(e) => setIncludeDeleted(e.target.checked)}
+  async function closeConversationHandler({ uuid }) {
+    setConfirmDialog({
+      title: 'Cerrar conversación',
+      message: '¿Estás seguro de que quieres cerrar esta conversación?',
+      onConfirm: () => closeConversationCoinfirmedHandler({ uuid }),
+      open: true,
+      onClose: () => setConfirmDialog(prev => ({ ...prev, open: false })),
+    });
+  }
+
+  async function closeConversationCoinfirmedHandler({ uuid }) {
+    try {
+      await closeConversation(uuid);
+      addMessage('Conversación cerrada correctamente');
+      load();
+    } catch (error) {
+      addError('Error al cerrar la conversación');
+      console.error('Error al cerrar la conversación:', error);
+    }
+  }
+
+  return <>
+    <ConfirmDialog {...confirmDialog} />
+    <Grid
+      title="Conversaciones"
+      columns={columns}
+      rows={data}
+      onReload={() => load()}
+      onDelete={hasPermission('conversations.delete') && deleteConversationHandler}
+      onRestore={hasPermission('conversations.restore') && restoreConversationHandler}
+      tools={<>
+        {hasPermission('conversations.restore') && 
+          <SwitchField
+            label="Incluir eliminadas"
+            checked={includeDeleted}
+            onChange={(e) => setIncludeDeleted(e.target.checked)}
+          />
+        }
+      </>}
+      rowsActions={({row}) => [
+        hasPermission('conversationMessages.list') && !row.deletedAt && <GridActionsCellItem
+          key="conversationsMessages"
+          icon={<ConversationsMessageIcon />}
+          label="Mensages"
+          onClick={() => navigate(`/conversations/${row.uuid}/messages`)}
+        />,
+        hasPermission('conversations.close') && !row.deletedAt && !row.closedAt && <GridActionsCellItem
+          key="conversationsMessages"
+          icon={<CloseIcon />}
+          label="Cerrar conversación"
+          onClick={() => closeConversationHandler({ uuid: row.uuid })}
         />
-      }
-    </>}
-    rowsActions={({row}) => [
-      hasPermission('conversationMessages.list') && !row.deletedAt && <GridActionsCellItem
-        key="conversationsMessages"
-        icon={<ConversationsMessageIcon />}
-        label="Mensages"
-        onClick={() => navigate(`/conversations/${row.uuid}/messages`)}
-      />
-    ]}
-  />;
+      ]}
+    />
+  </>;
 }

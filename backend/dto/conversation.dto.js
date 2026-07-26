@@ -16,7 +16,7 @@ export class ConversationDTO {
     this.client = conversation.client ? new ClientMinDTO(conversation.client) : null;
     this.lastMessageAt = conversation.lastMessageAt;
     this.createdAt = conversation.createdAt;
-    this.updatedAt = conversation.updatedAt;
     this.deletedAt = conversation.deletedAt;
+    this.closedAt = conversation.closedAt;
   }
 }
