@@ -4,8 +4,8 @@ import { ClientMinDTO } from './client.dto.js';
 export class ConversationMinDTO {
   constructor(conversation) {
     this.uuid = conversation.uuid;
-    this.requester = conversation.requester.displayName;
-    this.client = conversation.client.name;
+    this.requester = conversation.requester?.displayName;
+    this.client = conversation.client?.name;
   }
 }
 
