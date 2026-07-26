@@ -667,7 +667,7 @@ create table if not exists ia_desk.conversation_messages(
     deleted_by_id bigint null,
 
     received_at timestamp not null default now(),
-    conversation_id bigint null,
+    conversation_id bigint not null,
     sender_type varchar(64) not null,
     sender_id bigint not null,
     "text" text null,
