@@ -8,14 +8,6 @@ export async function getConversation(uuid, params) {
   return await Api.getJson(`v1/conversations/${uuid}`, params);
 }
 
-export async function createConversation(data) {
-  return await Api.postJson('v1/conversations', { body: data });
-}
-
-export async function updateConversation(uuid, data) {
-  return await Api.putJson(`v1/conversations/${uuid}`, { body: data });
-}
-
 export async function deleteConversation(uuid) {
   return await Api.deleteJson(`v1/conversations/${uuid}`);
 }

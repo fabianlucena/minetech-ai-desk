@@ -3,7 +3,7 @@ import Grid from '../components/Grid.jsx';
 import useToast from '../states/useToast.jsx';
 import usePermissions from '../states/usePermissions.jsx';
 import { formatDate } from '../utils/date.js';
-import { getConversations, deleteConversation, restoreConversation } from '../services/conversation.service.js';
+import { getConversations } from '../services/conversation.service.js';
 import SwitchField from '../components/fields/SwitchField.jsx';
 
 export default function ConversationsPage() {
@@ -15,31 +15,21 @@ export default function ConversationsPage() {
   const columns = useMemo(() => {
     const baseColumns = [
       {
-        field: 'name',
-        headerName: 'Nombre',
+        field: 'requester.displayName',
+        headerName: 'Solicitante',
         flex: 1,
+        renderCell: ({ row }) => row.requester?.displayName || '',
       },
       {
-        field: 'code',
-        headerName: 'Código',
+        field: 'client.name',
+        headerName: 'Cliente',
         flex: 1,
+        renderCell: ({ row }) => row.client?.name || '',
       },
       {
-        field: 'accessCode',
-        headerName: 'Código de acceso',
-        flex: 1,
-        renderCell: ({value}) => showAccessCode ? value : '****',
-      },
-      {
-        field: 'isActive',
-        headerName: 'Activo',
-        renderCell: ({value}) => value ? '✔️' : '❌',
-      },
-      {
-        field: 'status',
-        headerName: 'Estado',
-        renderCell: ({value}) => getStatusNameByValue(value),
-        flex: 1,
+        field: 'lastMessageAt',
+        headerName: 'Último mensaje',
+        renderCell: ({value}) => formatDate(value) || '',
       },
       {
         field: 'deletedAt',
@@ -97,9 +87,7 @@ export default function ConversationsPage() {
     columns={columns}
     rows={data}
     onReload={() => load()}
-    createPath={hasPermission('conversations.create') && "/conversations/new"}
     onDelete={hasPermission('conversations.delete') && deleteConversationHandler}
-    editPath={hasPermission('conversations.update') && "/conversations/:uuid/edit"}
     onRestore={hasPermission('conversations.restore') && restoreConversationHandler}
     tools={<>
       {hasPermission('conversations.restore') && 

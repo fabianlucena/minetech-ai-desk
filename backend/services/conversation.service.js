@@ -6,6 +6,30 @@ export default class ConversationService extends ModelService {
     super({ model: getDependency('conversationModel') });
   }
 
+  getModelOptions(options) {
+      options = super.getModelOptions(options);
+      
+      if (options.includeRequester) {
+        options.include = options.include || [];
+        options.include.push({
+          model: getDependency('requesterModel'),
+          as: 'requester',
+        });
+        delete options.includeRequester;
+      }
+
+      if (options.includeClient) {
+        options.include = options.include || [];
+        options.include.push({
+          model: getDependency('clientModel'),
+          as: 'client',
+        });
+        delete options.includeClient;
+      }
+  
+      return options;
+    }
+
   async getOpenByRequesterId(requesterId, options = {}) {
     if (!requesterId)
       throw new Error('El ID del solicitante es obligatorio');
