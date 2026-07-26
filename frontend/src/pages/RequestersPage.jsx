@@ -157,7 +157,7 @@ export default function RequestersPage() {
           (hasPermission('requesters.unban') || hasPermission('requesters.update')) && !row.deletedAt && !!row.bannedAt && <GridActionsCellItem
             key="unban"
             icon={<UnbanIcon />}
-            label="Desbanear  "
+            label="Desbanear"
             onClick={() => handleUnban({ uuid: row.uuid })}
           />
         ]}
