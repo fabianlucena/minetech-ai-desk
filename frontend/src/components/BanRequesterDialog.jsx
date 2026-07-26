@@ -3,6 +3,17 @@ import FormDialog from './FormDialog.jsx';
 import TextField from './fields/TextField.jsx';
 import { banRequester } from '../services/requester.service.js';
 import useToast from '../states/useToast.jsx';
+import Button from './buttons/Button.jsx';
+import { Box } from '@mui/material';
+
+const banReasons = [
+  'Span',
+  'Fraude',
+  'Desconocido',
+  'Desvinculado',
+  'Inapropiado',
+  'Motivos legales',
+];
 
 export default function BanRequesterDialog({
   requester,
@@ -53,5 +64,12 @@ export default function BanRequesterDialog({
       value={data.banReason || ''}
       onChange={(e) => setData({ ...data, banReason: e.target.value })}
     />
+    <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
+      {banReasons.map((reason) => (
+        <Button key={reason} onClick={() => setData({ ...data, banReason: reason })}>
+          {reason}
+        </Button>
+      ))}
+    </Box>
   </FormDialog>;
 }

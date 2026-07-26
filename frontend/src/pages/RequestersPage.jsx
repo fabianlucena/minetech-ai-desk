@@ -3,7 +3,7 @@ import Grid from '../components/Grid.jsx';
 import useToast from '../states/useToast.jsx';
 import usePermissions from '../states/usePermissions.jsx';
 import { formatDate } from '../utils/datetime.js';
-import { getRequesters, unbanRequester } from '../services/requester.service.js';
+import { getRequesters, unbanRequester, deleteRequester, restoreRequester } from '../services/requester.service.js';
 import SwitchField from '../components/fields/SwitchField.jsx';
 import { BanIcon, UnbanIcon } from '../components/icons';
 import { GridActionsCellItem } from '@mui/x-data-grid';
@@ -12,7 +12,7 @@ import BanRequesterDialog from '../components/BanRequesterDialog.jsx';
 
 export default function RequestersPage() {
   const { hasPermission } = usePermissions();
-  const { addError } = useToast();
+  const { addMessage, addError } = useToast();
   const [data, setData] = useState([]);
   const [includeDeleted, setIncludeDeleted] = useState(false);
   const [banDialog, setBanDialog] = useState({});
@@ -102,6 +102,28 @@ export default function RequestersPage() {
     }
   }
 
+  async function handleDeleteRequester({ uuid }) {
+    try {
+      await deleteRequester(uuid);
+      addMessage('Solicitante eliminado correctamente');
+      load();
+    } catch (error) {
+      addError('Error al eliminar el solicitante');
+      console.error('Error al eliminar el solicitante:', error);
+    }
+  }
+
+  async function handleRestoreRequester({ uuid }) {
+    try {
+      await restoreRequester(uuid);
+      addMessage('Solicitante restaurado correctamente');
+      load();
+    } catch (error) {
+      addError('Error al restaurar el solicitante');
+      console.error('Error al restaurar el solicitante:', error);
+    }
+  }
+
   return <>
     <ConfirmDialog {...confirmDialog} />
     <BanRequesterDialog
@@ -114,6 +136,8 @@ export default function RequestersPage() {
       columns={columns}
       rows={data}
       onReload={() => load()}
+      onDelete={hasPermission('requesters.delete') && handleDeleteRequester}
+      onRestore={hasPermission('requesters.restore') && handleRestoreRequester}
       tools={<>
         {hasPermission('requesters.restore') && 
           <SwitchField
