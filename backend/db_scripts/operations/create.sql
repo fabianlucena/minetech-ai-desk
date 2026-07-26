@@ -461,11 +461,9 @@ create table if not exists ia_desk.settings(
     key text not null,
     value jsonb not null,
     description text null,
-  
-    constraint uk_ia_desk_settings_id unique (id),
     
     constraint uk_ia_desk_settings_uuid unique (uuid),
-    constraint uk_ia_desk_settings_key unique (key),
+    constraint uk_ia_desk_settings_key unique (key),
     
     constraint uk_ia_desk_settings_created_by_id foreign key (created_by_id)
       references auth.users(id) on delete restrict,
