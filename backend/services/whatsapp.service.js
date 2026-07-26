@@ -64,7 +64,6 @@ export default class WhatsappService {
       );
 
       const conversation = await conversationService.getOpenByRequesterIdOrCreate(requester.id, {}, options);
-
       const conversationMessages = [];
       const messages = fromList[from];
       for (const message of messages) {
@@ -86,6 +85,8 @@ export default class WhatsappService {
         let media = null;
         if (mediaId)
           media = await this.downloadMedia(mediaId);
+
+        conversationMessage = await conversationMessageService.create({
           conversationId: conversation.id,
           senderType: 'requester',
           senderId: requester.id,
