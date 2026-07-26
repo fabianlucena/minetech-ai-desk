@@ -55,3 +55,22 @@ export async function restoreByUuid(req, res) {
   );
   res.status(204).end();
 }
+
+export async function banByUuid(req, res) {
+  const requesterService = getDependency('requesterService');
+  await requesterService.banByUuid(
+    req.params.uuid,
+    req.body,
+    { session: req.session }
+  );
+  res.status(204).end();
+}
+
+export async function unbanByUuid(req, res) {
+  const requesterService = getDependency('requesterService');
+  await requesterService.unbanByUuid(
+    req.params.uuid,
+    { session: req.session }
+  );
+  res.status(204).end();
+}
