@@ -5,7 +5,7 @@ import { CloseIcon, ConversationsMessageIcon } from '../components/icons';
 import { useNavigate } from 'react-router-dom';
 import useToast from '../states/useToast.jsx';
 import usePermissions from '../states/usePermissions.jsx';
-import { formatDate } from '../utils/date.js';
+import { formatDate } from '../utils/datetime.js';
 import { getConversations, deleteConversation, restoreConversation, closeConversation } from '../services/conversation.service.js';
 import SwitchField from '../components/fields/SwitchField.jsx';
 import ConfirmDialog from '../components/dialogs/ConfirmDialog.jsx';

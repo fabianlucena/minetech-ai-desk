@@ -16,6 +16,9 @@ export async function getList(req, res) {
 export async function getByUuid(req, res) {
   const conversationService = getDependency('conversationService');
   const conversation = await conversationService.getByUuid(req.params.uuid, {
+    includeDeleted: !!req.query.includeDeleted,
+    includeRequester: true,
+    includeClient: true,
     session: req.session,
   });
   res.json(new ConversationDTO(conversation));

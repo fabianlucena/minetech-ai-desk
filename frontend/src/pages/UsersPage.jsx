@@ -4,7 +4,7 @@ import { GridActionsCellItem } from '@mui/x-data-grid';
 import { useNavigate } from 'react-router-dom';
 import useToast from '../states/useToast.jsx';
 import usePermissions from '../states/usePermissions.jsx';
-import { formatDate } from '../utils/date.js';
+import { formatDate } from '../utils/datetime.js';
 import Chips from '../components/Chips.jsx';
 import { getUsers, deleteUser, restoreUser } from '../services/user.service.js';
 import { PasswordIcon } from '../components/icons';

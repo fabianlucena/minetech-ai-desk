@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import Grid from '../components/Grid.jsx';
 import useToast from '../states/useToast.jsx';
 import usePermissions from '../states/usePermissions.jsx';
-import { formatDate } from '../utils/date.js';
+import { formatDate } from '../utils/datetime.js';
 import { getRequesters } from '../services/requester.service.js';
 import SwitchField from '../components/fields/SwitchField.jsx';
 
