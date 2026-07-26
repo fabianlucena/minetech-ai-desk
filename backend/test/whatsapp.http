@@ -1,8 +1,8 @@
 @url=http://localhost:3000/api
-@verfy_token={WHATSAPP_VERIFY_TOKEN}
+@verify_token={WHATSAPP_VERIFY_TOKEN}
 
 ### Verificación del webhook de WhatsApp
-GET {{url}}/webhooks/whatsapp?hub.mode=subscribe&hub.verify_token={{verfy_token}}&hub.challenge=12345
+GET {{url}}/webhooks/whatsapp?hub.mode=subscribe&hub.verify_token={{verify_token}}&hub.challenge=12345
 
 ### Recibir mensaje de texto de WhatsApp
 POST {{url}}/webhooks/whatsapp
