@@ -135,7 +135,7 @@ export const allRoutes = [
       {
         path: '/conversations/:uuid/messages',
         element: <ConversationMessagesPage />,
-        condition: ({ permissions }) => permissions.includes('conversationMessages.list'),
+        condition: ({ permissions }) => permissions.includes('conversationMessages.read'),
       },
       {
         path: '/settings',
