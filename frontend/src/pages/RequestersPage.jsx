@@ -3,16 +3,23 @@ import Grid from '../components/Grid.jsx';
 import useToast from '../states/useToast.jsx';
 import usePermissions from '../states/usePermissions.jsx';
 import { formatDate } from '../utils/datetime.js';
-import { getRequesters } from '../services/requester.service.js';
+import { getRequesters, unbanRequester } from '../services/requester.service.js';
 import SwitchField from '../components/fields/SwitchField.jsx';
 import { BanIcon, UnbanIcon } from '../components/icons';
 import { GridActionsCellItem } from '@mui/x-data-grid';
+import ConfirmDialog from '../components/dialogs/ConfirmDialog.jsx';
+import BanRequesterDialog from '../components/BanRequesterDialog.jsx';
 
 export default function RequestersPage() {
   const { hasPermission } = usePermissions();
   const { addError } = useToast();
   const [data, setData] = useState([]);
   const [includeDeleted, setIncludeDeleted] = useState(false);
+  const [banDialog, setBanDialog] = useState({});
+  const [confirmDialog, setConfirmDialog] = useState({
+    open: false,
+    onClose: () => setConfirmDialog(prev => ({ ...prev, open: false })),
+  });
 
   const columns = useMemo(() => {
     const baseColumns = [
@@ -68,41 +75,68 @@ export default function RequestersPage() {
     load();
   }, [load]);
 
-  function handleBan({ uuid }) {
-    console.log(uuid);
+  function handleBan(requester) {
+    setBanDialog({ open: true, requester });
   }
 
   function handleUnban({ uuid }) {
-    console.log(uuid);
+    setConfirmDialog(prev => ({
+      ...prev,
+      open: true,
+      title: 'Confirmar desbaneo',
+      message: '¿Está seguro de que desea desbanear a este solicitante? Sus mensajes entrantes volverán a procesarse.',
+      confirmText: 'Desbanear',
+      cancelText: 'Cancelar',
+      onConfirm: () => handleUnbanConfirmed(uuid),
+    }));
   }
 
-  return <Grid
-    title="Solicitantes"
-    columns={columns}
-    rows={data}
-    onReload={() => load()}
-    tools={<>
-      {hasPermission('requesters.restore') && 
-        <SwitchField
-          label="Incluir eliminados"
-          checked={includeDeleted}
-          onChange={(e) => setIncludeDeleted(e.target.checked)}
-        />
-      }
-    </>}
-    rowsActions={({row}) => [
-        (hasPermission('requesters.ban') || hasPermission('requesters.update')) && !row.deletedAt && !row.bannedAt && <GridActionsCellItem
-          key="ban"
-          icon={<BanIcon />}
-          label="Banear"
-          onClick={() => handleBan({ uuid: row.uuid })}
-        />,
-        (hasPermission('requesters.unban') || hasPermission('requesters.update')) && !row.deletedAt && !!row.bannedAt && <GridActionsCellItem
-          key="unban"
-          icon={<UnbanIcon />}
-          label="Desbanear  "
-          onClick={() => handleUnban({ uuid: row.uuid })}
-        />
-      ]}
-  />;
+  async function handleUnbanConfirmed(uuid) {
+    try {
+      await unbanRequester(uuid);
+      addMessage('Solicitante desbaneado correctamente');
+      load();
+    } catch (error) {
+      addError('Error al desbanear al solicitante');
+      console.error('Error al desbanear al solicitante:', error);
+    }
+  }
+
+  return <>
+    <ConfirmDialog {...confirmDialog} />
+    <BanRequesterDialog
+      {...banDialog}
+      onClose={() => setBanDialog({})}
+      onSubmit={() => load()}
+    />
+    <Grid
+      title="Solicitantes"
+      columns={columns}
+      rows={data}
+      onReload={() => load()}
+      tools={<>
+        {hasPermission('requesters.restore') && 
+          <SwitchField
+            label="Incluir eliminados"
+            checked={includeDeleted}
+            onChange={(e) => setIncludeDeleted(e.target.checked)}
+          />
+        }
+      </>}
+      rowsActions={({row}) => [
+          (hasPermission('requesters.ban') || hasPermission('requesters.update')) && !row.deletedAt && !row.bannedAt && <GridActionsCellItem
+            key="ban"
+            icon={<BanIcon />}
+            label="Banear"
+            onClick={() => handleBan(row)}
+          />,
+          (hasPermission('requesters.unban') || hasPermission('requesters.update')) && !row.deletedAt && !!row.bannedAt && <GridActionsCellItem
+            key="unban"
+            icon={<UnbanIcon />}
+            label="Desbanear  "
+            onClick={() => handleUnban({ uuid: row.uuid })}
+          />
+        ]}
+    />
+  </>;
 }

@@ -23,3 +23,11 @@ export async function deleteRequester(uuid) {
 export async function restoreRequester(uuid) {
   return await Api.patchJson(`v1/requesters/${uuid}/restore`);
 }
+
+export async function banRequester(uuid) {
+  return await Api.patchJson(`v1/requesters/${uuid}/ban`);
+}
+
+export async function unbanRequester(uuid) {
+  return await Api.patchJson(`v1/requesters/${uuid}/unban`);
+}
