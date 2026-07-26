@@ -10,9 +10,13 @@ export function mergeFromEnv(config, prefix = '') {
       if (process.env[envKey] !== undefined) {
         const raw = process.env[envKey];
         const current = config[key];
-        if (typeof current === 'number') envConfig[key] = Number(raw);
-        else if (typeof current === 'boolean') envConfig[key] = raw === 'true' || raw === '1';
-        else envConfig[key] = raw;
+
+        if (typeof current === 'number')
+          envConfig[key] = Number(raw);
+        else if (typeof current === 'boolean')
+          envConfig[key] = raw === 'true' || raw === '1';
+        else
+          envConfig[key] = raw;
       } else {
         envConfig[key] = config[key];
       }
