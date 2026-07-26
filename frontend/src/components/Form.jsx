@@ -22,10 +22,12 @@ export default function Form({
   cancelOnEscape = true,
   disabled,
   disabledMessage = 'Procesando...',
+  cancelConfirmEnabled = true,
   cancelConfirmTitle = 'Hay cambios sin guardar',
   cancelConfirmMessage = '¿Está seguro de que desea cancelar? Se perderán los cambios realizados.',
   cancelConfirmText = 'Cancelar edición',
   cancelCancelText = 'Continuar editando',
+  submitConfirmEnabled = true,
   submitConfirmTitle = '¿Está seguro de que desea enviar?',
   submitConfirmMessage = 'Una vez enviado, no podrá deshacer los cambios.',
   submitConfirmText = 'Enviar',
@@ -40,7 +42,7 @@ export default function Form({
 
   function handleSubmit(event) {
     event.preventDefault();
-    if (!submitConfirmMessage) {
+    if (!submitConfirmEnabled || !submitConfirmMessage) {
       onSubmit?.(event);
       return;
     }
@@ -57,7 +59,7 @@ export default function Form({
   }
 
   function handleCancel(event, callback) {
-    if (unchangedData) {
+    if (unchangedData || !cancelConfirmEnabled || !cancelConfirmMessage) {
       callback(event);
       return;
     }
