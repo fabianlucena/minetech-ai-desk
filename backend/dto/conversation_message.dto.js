@@ -1,10 +1,12 @@
 import { RequesterMinDTO } from './requester.dto.js';
+import { TechnicianMinDTO } from './technician.dto.js';
 
 export class ConversationMessageDTO {
   constructor(message) {
     this.uuid = message.uuid;
 
     this.conversation = message.conversation;
+    this.receivedAt = message.receivedAt;
     this.senderType = message.senderType;
 
     this.text = message.text;
@@ -13,8 +15,6 @@ export class ConversationMessageDTO {
     this.receiverType = message.receiverType;
     this.sentAt = message.sentAt;
     
-    this.lastMessageAt = message.lastMessageAt;
-    this.createdAt = message.createdAt;
     this.deletedAt = message.deletedAt;
 
     if (message.sender) {

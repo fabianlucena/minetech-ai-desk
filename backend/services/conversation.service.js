@@ -132,7 +132,11 @@ export default class ConversationService extends ModelService {
     const conversationMessageService = getDependency('conversationMessageService');
     return await conversationMessageService.getByConversationId(
       conversationId,
-      options,
+      {
+        includeSender: true,
+        includeReceiver: true,
+        ...options,
+      }
     );
   }
 }
