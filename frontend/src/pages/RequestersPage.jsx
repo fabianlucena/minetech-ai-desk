@@ -5,6 +5,8 @@ import usePermissions from '../states/usePermissions.jsx';
 import { formatDate } from '../utils/datetime.js';
 import { getRequesters } from '../services/requester.service.js';
 import SwitchField from '../components/fields/SwitchField.jsx';
+import { BanIcon, UnbanIcon } from '../components/icons';
+import { GridActionsCellItem } from '@mui/x-data-grid';
 
 export default function RequestersPage() {
   const { hasPermission } = usePermissions();
@@ -31,9 +33,9 @@ export default function RequestersPage() {
         renderCell: ({row}) => row.client?.name || 'N/A',
       },
       {
-        field: 'isActive',
-        headerName: 'Activo',
-        renderCell: ({value}) => value ? '✔️' : '❌',
+        field: 'bannedAt',
+        headerName: 'Baneado',
+        renderCell: ({value}) => !value ? '🟢' : '🚫',
       },
       {
         field: 'deletedAt',
@@ -66,6 +68,14 @@ export default function RequestersPage() {
     load();
   }, [load]);
 
+  function handleBan({ uuid }) {
+    console.log(uuid);
+  }
+
+  function handleUnban({ uuid }) {
+    console.log(uuid);
+  }
+
   return <Grid
     title="Solicitantes"
     columns={columns}
@@ -80,5 +90,19 @@ export default function RequestersPage() {
         />
       }
     </>}
+    rowsActions={({row}) => [
+        (hasPermission('requesters.ban') || hasPermission('requesters.update')) && !row.deletedAt && !row.bannedAt && <GridActionsCellItem
+          key="ban"
+          icon={<BanIcon />}
+          label="Banear"
+          onClick={() => handleBan({ uuid: row.uuid })}
+        />,
+        (hasPermission('requesters.unban') || hasPermission('requesters.update')) && !row.deletedAt && !!row.bannedAt && <GridActionsCellItem
+          key="unban"
+          icon={<UnbanIcon />}
+          label="Desbanear  "
+          onClick={() => handleUnban({ uuid: row.uuid })}
+        />
+      ]}
   />;
 }

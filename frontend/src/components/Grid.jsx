@@ -56,7 +56,7 @@ export default function Grid({
 
   const effectiveColumns = useMemo(() => {
     const effectiveColumns = [...columns];
-    if (onDelete || onEdit || editPath || onRestore) {
+    if (onDelete || onEdit || editPath || onRestore || rowsActions) {
       let actionsField = effectiveColumns.find(col => col.field === 'actions');
       if (!actionsField) {
         actionsField = {

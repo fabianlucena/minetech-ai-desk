@@ -421,7 +421,7 @@ insert into auth.permissions (
     ('users.create'),('users.delete'),('users.update'),('users.list'),('users.read'),('users.restore'),
     ('technicians.create'),('technicians.delete'),('technicians.update'),('technicians.list'),('technicians.read'),('technicians.restore'),
     ('clients.create'),('clients.delete'),('clients.update'),('clients.list'),('clients.read'),('clients.restore'),
-    ('requesters.create'),('requesters.delete'),('requesters.update'),('requesters.list'),('requesters.read'),('requesters.restore'),
+    ('requesters.create'),('requesters.delete'),('requesters.update'),('requesters.list'),('requesters.read'),('requesters.restore'),('requesters.ban'),('requesters.unban'),
     ('shifts.create'),('shifts.delete'),('shifts.update'),('shifts.list'),('shifts.read'),('shifts.restore'),
     ('settings.create'),('settings.delete'),('settings.update'),('settings.list'),('settings.read'),('settings.restore'),
     ('conversations.list'),('conversations.read'),('conversations.delete'),('conversations.restore'),('conversations.close'),
