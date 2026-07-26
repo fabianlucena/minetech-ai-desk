@@ -12,11 +12,11 @@ export default class SettingService extends ModelService {
     return options;
   }
 
-  async getByKey(key) {
+  async getByKey(key, options) {
     if (!key)
       throw new Error('La clave es obligatoria');
 
-    return await this.getFirstOrDefault({ where: { key } });
+    return await this.getFirstOrDefault({ ...options, where: { ...options.where, key } });
   }
 
   get validPropertiesForCreation() {
