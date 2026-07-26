@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { Box } from '@mui/material';
 import React from 'react';
 import MessageBubble from './MessageBubble.jsx';
-import DateSeparator from './ChatDateSepartor.jsx';
+import DateSeparator from './ChatDateSeparator.jsx';
 import { formatTime } from '../utils/datetime.js';
 
 export default function ConversationChat({
