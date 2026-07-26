@@ -32,6 +32,12 @@ export default function SettingPage() {
         ...defaultData,
         ...res,
       };
+
+      if (data.value == null)
+        data.value = '';
+      else if (typeof data.value !== 'string')
+        data.value = JSON.stringify(data.value);
+
       setData(data);
       setUnchangedData(data);
     } catch (error) {
