@@ -8,6 +8,7 @@ router.get('/', checkPermissionMiddleware('settings.list'), (...args) => getDepe
 router.get('/:uuid', checkPermissionMiddleware('settings.read'), (...args) => getDependency('settingController').getByUuid(...args));
 router.post('/', checkPermissionMiddleware('settings.create'), (...args) => getDependency('settingController').create(...args));
 router.put('/:uuid', checkPermissionMiddleware('settings.update'), (...args) => getDependency('settingController').updateByUuid(...args));
+router.patch('/:uuid/restore', checkPermissionMiddleware('settings.restore'), (...args) => getDependency('settingController').restoreByUuid(...args));
 router.delete('/:uuid', checkPermissionMiddleware('settings.delete'), (...args) => getDependency('settingController').deleteByUuid(...args));
 
 export default router;

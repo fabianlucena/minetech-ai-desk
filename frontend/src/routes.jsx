@@ -1,5 +1,7 @@
 import useGlobal from './states/useGlobal.jsx';
-import { HomeIcon, DashboardIcon, UsersIcon, AboutIcon, LoginIcon, LogoutIcon, TechnicianIcon, ClientIcon, RequesterIcon, ShiftIcon } from './components/icons/index.jsx';
+import { AboutIcon, ClientIcon, DashboardIcon, HomeIcon, LoginIcon, LogoutIcon,
+  RequesterIcon, SettingsIcon, ShiftIcon, TechnicianIcon, UsersIcon
+} from './components/icons/index.jsx';
 import Layout from './components/Layout.jsx';
 import HomePage from './pages/HomePage.jsx';
 import OAuth2CallbackPage from './pages/OAuth2CallbackPage.jsx';
@@ -17,6 +19,8 @@ import ClientsPage from './pages/ClientsPage.jsx';
 import ClientPage from './pages/ClientPage.jsx';
 import RequestersPage from './pages/RequestersPage.jsx';
 import ShiftsPage from './pages/ShiftsPage.jsx';
+import SettingsPage from './pages/SettingsPage.jsx';
+import SettingPage from './pages/SettingPage.jsx';
 
 export const allRoutes = [
   {
@@ -116,6 +120,24 @@ export const allRoutes = [
         menuItemOrder: 3,
         element: <RequestersPage />,
         condition: ({ permissions }) => permissions.includes('requesters.list'),
+      },
+      {
+        path: '/settings',
+        label: 'Configuración',
+        icon: <SettingsIcon />,
+        menuItemOrder: 3,
+        element: <SettingsPage />,
+        condition: ({ permissions }) => permissions.includes('settings.list'),
+      },
+      {
+        path: '/settings/new',
+        element: <SettingPage />,
+        condition: ({ permissions }) => permissions.includes('settings.create'),
+      },
+      {
+        path: '/settings/:uuid/edit',
+        element: <SettingPage />,
+        condition: ({ permissions }) => permissions.includes('settings.update'),
       },
       {
         path: '/about',
