@@ -13,8 +13,6 @@ export async function getList(req, res) {
 export async function getByUuid(req, res) {
   const settingService = getDependency('settingService');
   const setting = await settingService.getByUuid(req.params.uuid, {
-    includeRoles: true,
-    includePassword: true,
     session: req.session,
   });
   res.json(new SettingDTO(setting));
