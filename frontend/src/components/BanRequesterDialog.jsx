@@ -54,7 +54,7 @@ export default function BanRequesterDialog({
     unchangedData={data.banReason.trim() === ''}
     onSubmit={onSubmitHandler}
     submitConfirmTitle={`¿Está seguro de que desea banear al solicitante ${requester?.displayName}?`}
-    submitConfirmMessage="Una vez baneado, no se proccesarán sus mensajes entrantes."
+    submitConfirmMessage="Una vez baneado, no se procesarán sus mensajes entrantes."
     submitConfirmText="Banear"
     submitCancelText="Cancelar"
     {...rest}
