@@ -52,8 +52,8 @@ export default class WhatsappService {
     }
 
     const requesterService = getDependency('requesterService');
-    const ticketService = getDependency('ticketService');
-    const ticketMessageService = getDependency('ticketMessageService');
+    const conversationService = getDependency('conversationService');
+    const conversationMessageService = getDependency('conversationMessageService');
     const technicianService = getDependency('technicianService');
 
     for (const from in fromList) {
@@ -63,7 +63,7 @@ export default class WhatsappService {
         options
       );
 
-      const ticketMessages = [];
+      const conversationMessages = [];
       const messages = fromList[from];
       for (const message of messages) {
         const type = message.type;
@@ -85,17 +85,17 @@ export default class WhatsappService {
         if (mediaId)
           media = await this.downloadMedia(mediaId);
 
-        const ticket = await ticketService.getOpenByRequesterIdOrCreate(requester.id, {}, options);
+        const conversation = await conversationService.getOpenByRequesterIdOrCreate(requester.id, {}, options);
 
-        const ticketMessage = await ticketMessageService.create({
-          ticketId: ticket.id,
+        const conversationMessage = await conversationMessageService.create({
+          conversationId: conversation.id,
           senderType: 'requester',
           senderId: requester.id,
           text,
           media,
         });
 
-        ticketMessages.push(ticketMessage);
+        conversationMessages.push(conversationMessage);
       }
 
       // Ejecutar motor RAG
@@ -104,7 +104,7 @@ export default class WhatsappService {
       // Decisión automática
       if (aiResponse.confidence >= 0.75) {
         await sendWhatsAppMessage(waId, aiResponse.answer);
-        await audit('auto_response', ticket.id, aiResponse);
+        await audit('auto_response', conversation.id, aiResponse);
 
         return;
       } */
@@ -115,13 +115,13 @@ export default class WhatsappService {
         continue;
       }
 
-      for (const ticketMessage of ticketMessages) {
+      for (const conversationMessage of conversationMessages) {
         await technicianService.sendMessageById(technician.id, {
-          text: ticketMessage.text,
-          media: ticketMessage.media,
+          text: conversationMessage.text,
+          media: conversationMessage.media,
         });
 
-        await ticketMessageService.updateById(ticketMessage.id, {
+        await conversationMessageService.updateById(conversationMessage.id, {
           receiverId: technician.id,
           receiverType: 'technician',
           sentAt: new Date(),

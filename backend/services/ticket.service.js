@@ -6,35 +6,6 @@ export default class TicketService extends ModelService {
     super({ model: getDependency('ticketModel') });
   }
 
-  async getOpenByRequesterId(requesterId, options = {}) {
-    if (!requesterId)
-      throw new Error('El ID del solicitante es obligatorio');
-
-    return this.getFirstOrDefault({
-      ...options,
-      where: {
-        ...options?.where,
-        requesterId,
-        status: 'open',
-      },
-      order: [['createdAt', 'DESC']]
-    });
-  }
-
-  async getOpenByRequesterIdOrCreate(requesterId, data,options = {}) {
-    const ticket = await this.getOpenByRequesterId(requesterId, options);
-
-    if (!ticket) {
-      return await this.create({
-        ...data,
-        requesterId,
-        status: 'open'
-      }, options);
-    }
-
-    return ticket;
-  }
-
   get validPropertiesForCreation() {
     return ['code', 'clientId', 'requesterId', 'technicianId', 'shiftId', 'status', 'resolvedAt'];
   }
@@ -57,8 +28,8 @@ export default class TicketService extends ModelService {
       data.code = lastTicket ? `${lastTicket.code + 1}` : '1';
     }
 
-    if (!data.status)
-      throw new Error('El estado del ticket es obligatorio');
+    /*if (!data.status)
+      throw new Error('El estado del ticket es obligatorio');*/
 
     return await super.validateForCreation(data, options);
   }
