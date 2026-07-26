@@ -31,7 +31,7 @@ export default class RequesterService extends ModelService {
 
   async getByDisplayName(displayName) {
     if (!displayName)
-      throw new Error('El nombre de visualización es obligatorio');
+      throw new Error('El nombre es obligatorio');
 
     return await this.getFirstOrDefault({ where: { displayName } });
   }
@@ -56,6 +56,7 @@ export default class RequesterService extends ModelService {
       requester = await this.create(
         {
           type: 'customer',
+          isActive: true,
           ...data,
           phone,
         },
@@ -68,7 +69,7 @@ export default class RequesterService extends ModelService {
 
   async create(data, options) {
     if (!data.displayName)
-      throw new Error('El nombre completo es obligatorio');
+      throw new Error('El nombre es obligatorio');
 
     if (!data.phone)
       throw new Error('El teléfono es obligatorio');

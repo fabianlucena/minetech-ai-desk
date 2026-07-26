@@ -24,25 +24,30 @@ export async function processIncomingWhatsApp(req, res) {
     return res.sendStatus(400);
   }
 
-  const body = JSON.stringify(req.body);
-  const signature = crypto
+  const body = req.rawBody ?? Buffer.from(JSON.stringify(req.body));
+  const digest = crypto
     .createHmac('sha256', config.whatsapp.appSecret)
     .update(body)
     .digest('hex');
 
-  if (receivedSignature !== `sha256=${signature}`) {
+  const expectedSignature = `sha256=${digest}`;
+  const receivedBuf = Buffer.from(receivedSignature);
+  const expectedBuf = Buffer.from(expectedSignature);
+
+  if (receivedBuf.length !== expectedBuf.length || !crypto.timingSafeEqual(receivedBuf, expectedBuf)) {
     logger.error('❌ Invalid signature in WhatsApp webhook request');
     return res.sendStatus(403);
   }
 
   // Meta demands respond quickly
-  // res.sendStatus(200);
+  res.sendStatus(200);
 
-  try {
-    const whatsappService = getDependency('whatsappService');
-    await whatsappService.incomingMessage(req.body.entry, { session: req.session });
-  } catch (err) {
-    logger.error('❌ Error procesando mensaje entrante:', err);
-    console.log(err);
-  }
+  void (async () => {
+    try {
+      const whatsappService = getDependency('whatsappService');
+      await whatsappService.incomingMessage(req.body.entry, { session: req.session });
+    } catch (err) {
+      logger.error('❌ Error procesando mensaje entrante:', err);
+    }
+  })();
 }

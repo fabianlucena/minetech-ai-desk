@@ -25,11 +25,11 @@ export default class TicketService extends ModelService {
         order: [['createdAt', 'DESC']]
       });
 
-      data.code = lastTicket ? `${lastTicket.code + 1}` : '1';
+      data.code = lastTicket ? String((Number.parseInt(lastTicket.code, 10) || 0) + 1) : '1';
     }
 
-    /*if (!data.status)
-      throw new Error('El estado del ticket es obligatorio');*/
+    if (!data.status)
+      throw new Error('El estado del ticket es obligatorio');
 
     return await super.validateForCreation(data, options);
   }

@@ -12,9 +12,9 @@ export default (sequelize) => {
     deletedAt: { field: 'deleted_at', type: DataTypes.DATE, allowNull: true },
     deletedById: { field: 'deleted_by_id', type: DataTypes.BIGINT, allowNull: true },
     clientId: { field: 'client_id', type: DataTypes.BIGINT, allowNull: true },
-    displayName: { field: 'display_name', type: DataTypes.STRING, allowNull: true, unique: true },
+    displayName: { field: 'display_name', type: DataTypes.STRING, allowNull: true },
     phone: { field: 'phone', type: DataTypes.STRING, allowNull: false, unique: true },
-    email: { field: 'email', type: DataTypes.STRING, allowNull: true, unique: true },
+    email: { field: 'email', type: DataTypes.STRING, allowNull: true },
     isActive: { field: 'is_active', type: DataTypes.BOOLEAN, allowNull: true, defaultValue: true },
     type: { field: 'type', type: DataTypes.ENUM(...requesterTypeValues), allowNull: false },
   }, {

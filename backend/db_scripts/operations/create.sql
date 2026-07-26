@@ -526,12 +526,12 @@ create table if not exists ia_desk.requesters(
     deleted_at timestamp null,
     deleted_by_id bigint null,
     
-    client_id bigint not null,
+    client_id bigint null,
 
     display_name varchar(128) null,
     phone varchar(64) not null,
     email varchar(64) null,
-    is_active boolean not null,
+    is_active boolean not null default true,
     type varchar(64) not null,
     
     constraint uk_ia_desk_requesters_uuid unique (uuid),
@@ -638,7 +638,7 @@ create table if not exists ia_desk.conversation_messages(
     conversation_id bigint null,
     sender_type varchar(64) not null,
     sender_id bigint not null,
-    "text" text not null,
+    "text" text null,
     media bytea null,
     receiver_type varchar(64) null,
     receiver_id bigint null,

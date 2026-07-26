@@ -63,6 +63,7 @@ export default class WhatsappService {
         options
       );
 
+      const conversation = await conversationService.getOpenByRequesterIdOrCreate(requester.id, {}, options);
       const conversationMessages = [];
       const messages = fromList[from];
       for (const message of messages) {
@@ -73,7 +74,7 @@ export default class WhatsappService {
         if (type === 'text')
           text = message.text.body;
 
-        logger.info(`📩 Mensage received from ${from}: ${text || '[media]'}`);
+        logger.info(`📩 Mensaje received from ${from}: ${text || '[media]'}`);
 
         if (type === 'image')
           mediaId = message.image.id;
@@ -85,9 +86,7 @@ export default class WhatsappService {
         if (mediaId)
           media = await this.downloadMedia(mediaId);
 
-        const conversation = await conversationService.getOpenByRequesterIdOrCreate(requester.id, {}, options);
-
-        const conversationMessage = await conversationMessageService.create({
+        conversationMessage = await conversationMessageService.create({
           conversationId: conversation.id,
           senderType: 'requester',
           senderId: requester.id,
@@ -133,26 +132,29 @@ export default class WhatsappService {
   async downloadMedia(mediaId) {
     const url = `${config.whatsapp.baseUrl}/${mediaId}`;
 
-    const { data } = await fetch(
-      url,
-      {
-        method: 'GET',
-        headers: { Authorization: `Bearer ${config.whatsapp.token}` }
-      }
-    );
+    const res = await fetch(url, {
+      method: 'GET',
+      headers: { Authorization: `Bearer ${config.whatsapp.token}` },
+    });
 
-    const fileUrl = data.url;
+    if (!res.ok)
+      throw new Error(`Error al obtener metadata de media (${mediaId}): HTTP ${res.status}`);
 
-    const file = await fetch(
-      fileUrl,
-      {
-        method: 'GET',
-        responseType: 'arraybuffer',
-        headers: { Authorization: `Bearer ${config.whatsapp.token}` }
-      }
-    );
+    const data = await res.json();
+    const fileUrl = data?.url;
+    if (!fileUrl)
+      throw new Error(`Respuesta inválida al obtener metadata de media (${mediaId})`);
 
-    return file.data;
+    const fileRes = await fetch(fileUrl, {
+      method: 'GET',
+      headers: { Authorization: `Bearer ${config.whatsapp.token}` },
+    });
+
+    if (!fileRes.ok)
+      throw new Error(`Error al descargar media (${mediaId}): HTTP ${fileRes.status}`);
+
+    const arrayBuffer = await fileRes.arrayBuffer();
+    return Buffer.from(arrayBuffer);
   }
 
   async sendMessage({ to, body }) {
