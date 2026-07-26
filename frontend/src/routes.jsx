@@ -20,6 +20,7 @@ import ClientsPage from './pages/ClientsPage.jsx';
 import ClientPage from './pages/ClientPage.jsx';
 import RequestersPage from './pages/RequestersPage.jsx';
 import ConversationsPage from './pages/ConversationsPage.jsx';
+import ConversationMessagesPage from './pages/ConversationMessagesPage.jsx';
 import ShiftsPage from './pages/ShiftsPage.jsx';
 import SettingsPage from './pages/SettingsPage.jsx';
 import SettingPage from './pages/SettingPage.jsx';
@@ -130,6 +131,11 @@ export const allRoutes = [
         menuItemOrder: 3,
         element: <ConversationsPage />,
         condition: ({ permissions }) => permissions.includes('conversations.list'),
+      },
+      {
+        path: '/conversations/:uuid/messages',
+        element: <ConversationMessagesPage />,
+        condition: ({ permissions }) => permissions.includes('conversationMessages.list'),
       },
       {
         path: '/settings',

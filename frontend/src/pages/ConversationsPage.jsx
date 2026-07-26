@@ -125,7 +125,7 @@ export default function ConversationsPage() {
       }
     </>}
     rowsActions={({row}) => [
-      hasPermission('conversationsMessages.read') && !row.deletedAt && <GridActionsCellItem
+      hasPermission('conversationMessages.list') && !row.deletedAt && <GridActionsCellItem
         key="conversationsMessages"
         icon={<ConversationsMessageIcon />}
         label="Mensages"
