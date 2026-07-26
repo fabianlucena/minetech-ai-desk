@@ -1,8 +1,8 @@
 import useGlobal from './states/useGlobal.jsx';
-import { AboutIcon, ClientIcon, DashboardIcon, HomeIcon, LoginIcon, LogoutIcon,
-  RequesterIcon, SettingsIcon, ShiftIcon, TechnicianIcon, UsersIcon
+import { AboutIcon, ClientIcon, ConversationIcon, DashboardIcon, HomeIcon, 
+  LoginIcon, LogoutIcon, RequesterIcon, SettingsIcon, ShiftIcon, TechnicianIcon, 
+  UsersIcon
 } from './components/icons/index.jsx';
-import { ConversationIcon } from './components/icons/index.jsx';
 import Layout from './components/Layout.jsx';
 import HomePage from './pages/HomePage.jsx';
 import OAuth2CallbackPage from './pages/OAuth2CallbackPage.jsx';

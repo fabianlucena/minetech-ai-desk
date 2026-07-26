@@ -3,7 +3,7 @@ import Grid from '../components/Grid.jsx';
 import useToast from '../states/useToast.jsx';
 import usePermissions from '../states/usePermissions.jsx';
 import { formatDate } from '../utils/date.js';
-import { getConversations } from '../services/conversation.service.js';
+import { getConversations, deleteConversation, restoreConversation } from '../services/conversation.service.js';
 import SwitchField from '../components/fields/SwitchField.jsx';
 
 export default function ConversationsPage() {
@@ -81,6 +81,28 @@ export default function ConversationsPage() {
   }
 
   useEffect(() => { load(); }, [load]);
+
+  async function deleteConversationHandler({ uuid }) {
+    try {
+      await deleteConversation(uuid);
+      addMessage('Conversación eliminada correctamente');
+      load();
+    } catch (error) {
+      addError('Error al eliminar la conversación');
+      console.error('Error al eliminar la conversación:', error);
+    }
+  }
+
+  async function restoreConversationHandler({ uuid }) {
+    try {
+      await restoreConversation(uuid);
+      addMessage('Conversación restaurada correctamente');
+      load();
+    } catch (error) {
+      addError('Error al restaurar la conversación');
+      console.error('Error al restaurar la conversación:', error);
+    }
+  }
 
   return <Grid
     title="Conversaciones"

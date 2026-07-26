@@ -19,3 +19,21 @@ export async function getByUuid(req, res) {
   });
   res.json(new ConversationDTO(conversation));
 }
+
+export async function deleteByUuid(req, res) {
+  const conversationService = getDependency('conversationService');
+  await conversationService.deleteByUuid(
+    req.params.uuid,
+    { session: req.session }
+  );
+  res.status(204).end();
+}
+
+export async function restoreByUuid(req, res) {
+  const conversationService = getDependency('conversationService');
+  await conversationService.restoreByUuid(
+    req.params.uuid,
+    { session: req.session }
+  );
+  res.status(204).end();
+}
