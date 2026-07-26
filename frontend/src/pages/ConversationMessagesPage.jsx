@@ -13,8 +13,13 @@ export default function ConversationMessagesPage() {
   const [messages, setMessages] = useState([]);
 
   const fetchConversation = useCallback(async () => {
-    const conversationData = await getConversation(uuid);
-    setConversation(conversationData);
+    try {
+      const conversationData = await getConversation(uuid);
+      setConversation(conversationData);
+    } catch (error) {
+      console.error('Error al obtener la conversación:', error);
+      setConversation(null);
+    }
   }, [uuid]);
 
   useEffect(() => {
