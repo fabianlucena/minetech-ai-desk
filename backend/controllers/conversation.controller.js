@@ -50,9 +50,9 @@ export async function closeByUuid(req, res) {
 
 export async function getMessagesByUuid(req, res) {
   const conversationService = getDependency('conversationService');
-  await conversationService.getMessagesByUuid(
+  const messages = await conversationService.getMessagesByUuid(
     req.params.uuid,
     { session: req.session }
   );
-  res.json(conversations.map(u => new ConversationMessageDTO(u)));
+  res.json(messages.map(u => new ConversationMessageDTO(u)));
 }

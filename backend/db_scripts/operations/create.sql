@@ -663,11 +663,10 @@ create table if not exists ia_desk.conversation_messages(
     id bigint generated always as identity primary key,
     uuid uuid not null default gen_random_uuid(),
 
-    created_at timestamp not null default now(),
-
     deleted_at timestamp null,
     deleted_by_id bigint null,
 
+    received_at timestamp not null default now(),
     conversation_id bigint null,
     sender_type varchar(64) not null,
     sender_id bigint not null,

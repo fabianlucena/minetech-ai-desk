@@ -7,16 +7,30 @@ export default class ConversationMessageService extends ModelService {
       model: getDependency('conversationMessageModel'),
       traceable: false,
       auditable: false,
-      useCreatedAt: true,
     });
   }
 
   get validPropertiesForCreation() {
-    return ['conversationId', 'senderType', 'senderId', 'text', 'media', 'receiverType', 'receiverId', 'sentAt'];
+    return ['conversationId', 'receivedAt', 'senderType', 'senderId', 'text', 'media', 'receiverType', 'receiverId', 'sentAt'];
   }
 
   get validPropertiesForUpdate() {
-    return ['conversationId', 'senderType', 'senderId', 'text', 'media', 'receiverType', 'receiverId', 'sentAt'];
+    return ['conversationId', 'receiverType', 'receiverId', 'sentAt'];
+  }
+
+  async validateForCreation(data, options) {
+    if (!data.senderType)
+      throw new Error('El tipo de remitente es obligatorio');
+
+    if (!data.senderId)
+      throw new Error('El ID del remitente es obligatorio');
+
+    if (!data.text && !data.media)
+      throw new Error('El texto o el medio son obligatorios');
+    
+    data.receivedAt = new Date();
+
+    return await super.validateForCreation(data, options);
   }
 
   async getByConversationId(conversationId, options) {
