@@ -423,7 +423,7 @@ insert into auth.permissions (
     ('clients.create'),('clients.delete'),('clients.update'),('clients.list'),('clients.read'),('clients.restore'),
     ('requesters.create'),('requesters.delete'),('requesters.update'),('requesters.list'),('requesters.read'),('requesters.restore'),
     ('shifts.create'),('shifts.delete'),('shifts.update'),('shifts.list'),('shifts.read'),('shifts.restore'),
-    ('conversations.create'),('conversations.delete'),('conversations.update'),('conversations.list'),('conversations.read'),('conversations.restore')
+    ('conversations.list'),('conversations.read')
   ) as p(name)
   join auth.users system on system.username = 'system'
 on conflict (name) do nothing;
