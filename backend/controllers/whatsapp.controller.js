@@ -50,3 +50,4 @@ export async function processIncomingWhatsApp(req, res) {
       logger.error('❌ Error procesando mensaje entrante:', err);
     }
   })();
+}
