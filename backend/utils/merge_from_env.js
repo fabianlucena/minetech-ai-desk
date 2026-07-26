@@ -3,11 +3,10 @@ import { toSnakeCase } from './string.js';
 export function mergeFromEnv(config, prefix = '') {
   const envConfig = {};
   for (const key in config) {
+    const envKey = `${prefix}${toSnakeCase(key).toUpperCase()}`;
     if (typeof config[key] === 'object' && config[key] !== null) {
-      const nextPrefix = `${prefix}${toSnakeCase(key).toUpperCase()}_`;
-      envConfig[key] = mergeFromEnv(config[key], nextPrefix);
+      envConfig[key] = mergeFromEnv(config[key], envKey + '_');
     } else {
-      const envKey = `${prefix}${toSnakeCase(key).toUpperCase()}`;
       if (process.env[envKey] !== undefined) {
         const raw = process.env[envKey];
         const current = config[key];
