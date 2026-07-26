@@ -47,6 +47,7 @@ export default class RequesterService extends ModelService {
       requester = await this.create(
         {
           type: 'customer',
+          isActive: true,
           ...data,
           phone,
         },
