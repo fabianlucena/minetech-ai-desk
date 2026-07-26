@@ -63,6 +63,8 @@ export default class WhatsappService {
         options
       );
 
+      const conversation = await conversationService.getOpenByRequesterIdOrCreate(requester.id, {}, options);
+
       const conversationMessages = [];
       const messages = fromList[from];
       for (const message of messages) {
@@ -73,7 +75,7 @@ export default class WhatsappService {
         if (type === 'text')
           text = message.text.body;
 
-        logger.info(`📩 Mensage received from ${from}: ${text || '[media]'}`);
+        logger.info(`📩 Mensaje received from ${from}: ${text || '[media]'}`);
 
         if (type === 'image')
           mediaId = message.image.id;
@@ -84,10 +86,6 @@ export default class WhatsappService {
         let media = null;
         if (mediaId)
           media = await this.downloadMedia(mediaId);
-
-        const conversation = await conversationService.getOpenByRequesterIdOrCreate(requester.id, {}, options);
-
-        const conversationMessage = await conversationMessageService.create({
           conversationId: conversation.id,
           senderType: 'requester',
           senderId: requester.id,
