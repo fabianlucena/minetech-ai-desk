@@ -6,7 +6,7 @@ import { formatDate } from '../utils/date.js';
 import { getSettings, deleteSetting, restoreSetting } from '../services/setting.service.js';
 import SwitchField from '../components/fields/SwitchField.jsx';
 
-export default function UsuariosPage() {
+export default function SettingsPage() {
   const { hasPermission } = usePermissions();
   const { addMessage, addError } = useToast();
   const [data, setData] = useState([]);
