@@ -31,7 +31,7 @@ export default class SettingService extends ModelService {
     if (!data.key)
       throw new Error('La clave es obligatoria');
 
-    if (!data.value)
+    if (data.value === undefined || data.value === null)
       throw new Error('El valor es obligatorio');
 
     const existing = await this.getByKey(data.key, { includeDeleted: true });
@@ -39,5 +39,29 @@ export default class SettingService extends ModelService {
       throw new Error('La clave ya está en uso');
 
     return await super.validateForCreation(data, options);
+  }
+
+  async validateForUpdate(data, options) {
+    const ids = await this.getIdList(options);
+
+    if (!ids.length)
+      throw new Error('Elemento no encontrado');
+
+    if ('key' in data) {
+      if (!data.key)
+        throw new Error('La clave es obligatoria');
+
+      if (ids.length > 1)
+        throw new Error('No se puede colocar la misma clave a varias configuraciones');
+
+      const existing = await this.getByKey(data.key, { includeDeleted: true });
+      if (existing && existing.id !== ids[0])
+        throw new Error('La clave ya está en uso');
+    }
+
+    if ('value' in data && (data.value === undefined || data.value === null))
+      throw new Error('El valor es obligatorio');
+
+    return await super.validateForUpdate(data, options);
   }
 }
