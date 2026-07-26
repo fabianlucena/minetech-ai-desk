@@ -103,13 +103,13 @@ export default function ConversationsPage() {
     setConfirmDialog({
       title: 'Cerrar conversación',
       message: '¿Estás seguro de que quieres cerrar esta conversación?',
-      onConfirm: () => closeConversationCoinfirmedHandler({ uuid }),
+      onConfirm: () => closeConversationConfirmedHandler({ uuid }),
       open: true,
       onClose: () => setConfirmDialog(prev => ({ ...prev, open: false })),
     });
   }
 
-  async function closeConversationCoinfirmedHandler({ uuid }) {
+  async function closeConversationConfirmedHandler({ uuid }) {
     try {
       await closeConversation(uuid);
       addMessage('Conversación cerrada correctamente');
