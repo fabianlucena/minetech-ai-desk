@@ -61,7 +61,7 @@ export default function SettingsPage() {
   async function deleteSettingHandler({ uuid }) {
     try {
       await deleteSetting(uuid);
-      addMessage('Configuración eliminado correctamente');
+      addMessage('Configuración eliminada correctamente');
       load();
     } catch (error) {
       addError('Error al eliminar la configuración');
