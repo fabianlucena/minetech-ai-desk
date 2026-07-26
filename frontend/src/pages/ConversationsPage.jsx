@@ -98,27 +98,6 @@ export default function ConversationsPage() {
 
   useEffect(() => { load(); }, [load]);
 
-  async function deleteConversationHandler({ uuid }) {
-    try {
-      await deleteConversation(uuid);
-      addMessage('Conversación eliminada correctamente');
-      load();
-    } catch (error) {
-      addError('Error al eliminar la conversación');
-      console.error('Error al eliminar la conversación:', error);
-    }
-  }
-
-  async function restoreConversationHandler({ uuid }) {
-    try {
-      await restoreConversation(uuid);
-      addMessage('Conversación restaurada correctamente');
-      load();
-    } catch (error) {
-      addError('Error al restaurar la conversación');
-      console.error('Error al restaurar la conversación:', error);
-    }
-  }
 
   async function closeConversationHandler({ uuid }) {
     setConfirmDialog({
