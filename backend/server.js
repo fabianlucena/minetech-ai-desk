@@ -19,7 +19,11 @@ try {
     app.use(cors(corsOptions));
     logger.info('🔓 CORS habilitado ✔️');
   }
-  app.use(express.json());
+  app.use(express.json({
+    verify: (req, _res, buf) => {
+      req.rawBody = buf;
+    },
+  }));
   app.use(checkAuthorizationTokenMiddleware);
   app.use(logMiddleware);
   app.use('/api', routes);
