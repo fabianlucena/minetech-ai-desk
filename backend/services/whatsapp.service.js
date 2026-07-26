@@ -133,26 +133,29 @@ export default class WhatsappService {
   async downloadMedia(mediaId) {
     const url = `${config.whatsapp.baseUrl}/${mediaId}`;
 
-    const { data } = await fetch(
-      url,
-      {
-        method: 'GET',
-        headers: { Authorization: `Bearer ${config.whatsapp.token}` }
-      }
-    );
+    const res = await fetch(url, {
+      method: 'GET',
+      headers: { Authorization: `Bearer ${config.whatsapp.token}` },
+    });
 
-    const fileUrl = data.url;
+    if (!res.ok)
+      throw new Error(`Error al obtener metadata de media (${mediaId}): HTTP ${res.status}`);
 
-    const file = await fetch(
-      fileUrl,
-      {
-        method: 'GET',
-        responseType: 'arraybuffer',
-        headers: { Authorization: `Bearer ${config.whatsapp.token}` }
-      }
-    );
+    const data = await res.json();
+    const fileUrl = data?.url;
+    if (!fileUrl)
+      throw new Error(`Respuesta inválida al obtener metadata de media (${mediaId})`);
 
-    return file.data;
+    const fileRes = await fetch(fileUrl, {
+      method: 'GET',
+      headers: { Authorization: `Bearer ${config.whatsapp.token}` },
+    });
+
+    if (!fileRes.ok)
+      throw new Error(`Error al descargar media (${mediaId}): HTTP ${fileRes.status}`);
+
+    const arrayBuffer = await fileRes.arrayBuffer();
+    return Buffer.from(arrayBuffer);
   }
 
   async sendMessage({ to, body }) {
