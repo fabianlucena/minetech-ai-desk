@@ -7,7 +7,7 @@ import Button from './buttons/Button.jsx';
 import { Box } from '@mui/material';
 
 const banReasons = [
-  'Span',
+  'Spam',
   'Fraude',
   'Desconocido',
   'Desvinculado',
