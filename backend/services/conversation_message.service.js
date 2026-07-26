@@ -18,4 +18,17 @@ export default class ConversationMessageService extends ModelService {
   get validPropertiesForUpdate() {
     return ['conversationId', 'senderType', 'senderId', 'text', 'media', 'receiverType', 'receiverId', 'sentAt'];
   }
+
+  async getByConversationId(conversationId, options) {
+    if (!conversationId)
+      throw new Error('El ID de la conversación es obligatorio');
+
+    return await this.getList({
+      ...options,
+      where: {
+        ...options?.where,
+        conversationId,
+      },
+    });
+  }
 }

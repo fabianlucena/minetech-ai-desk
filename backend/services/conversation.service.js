@@ -120,4 +120,19 @@ export default class ConversationService extends ModelService {
 
     return await this.updateById(id, data, options);
   }
+
+  async getMessagesByUuid(uuid, options) {
+    if (!uuid)
+      throw new Error('El UUID de la conversacion es obligatorio');
+
+    const conversationId = await this.getIdByUuid(uuid, options);
+    if (!conversationId)
+      throw new Error('Conversación a cerrar no encontrado');
+
+    const conversationMessageService = getDependency('conversationMessageService');
+    return await conversationMessageService.getByConversationId(
+      conversationId,
+      options,
+    );
+  }
 }

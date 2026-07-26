@@ -1,5 +1,6 @@
 import getDependency from '../dependency.js';
 import { ConversationDTO } from '../dto/conversation.dto.js';
+import { ConversationMessageDTO } from '../dto/conversation_message.dto.js';
 
 export async function getList(req, res) {
   const conversationService = getDependency('conversationService');
@@ -45,4 +46,13 @@ export async function closeByUuid(req, res) {
     { session: req.session }
   );
   res.status(204).end();
+}
+
+export async function getMessagesByUuid(req, res) {
+  const conversationService = getDependency('conversationService');
+  await conversationService.getMessagesByUuid(
+    req.params.uuid,
+    { session: req.session }
+  );
+  res.json(conversations.map(u => new ConversationMessageDTO(u)));
 }
