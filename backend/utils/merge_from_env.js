@@ -4,9 +4,10 @@ export function mergeFromEnv(config, prefix = '') {
   const envConfig = {};
   for (const key in config) {
     if (typeof config[key] === 'object' && config[key] !== null) {
-      envConfig[key] = mergeFromEnv(config[key], `${prefix}${key}_`);
+      const nextPrefix = `${prefix}${toSnakeCase(key).toUpperCase()}_`;
+      envConfig[key] = mergeFromEnv(config[key], nextPrefix);
     } else {
-      const envKey = prefix + toSnakeCase(key).toUpperCase();
+      const envKey = `${prefix}${toSnakeCase(key).toUpperCase()}`;
       if (process.env[envKey] !== undefined) {
         const raw = process.env[envKey];
         const current = config[key];
