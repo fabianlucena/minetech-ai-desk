@@ -424,7 +424,8 @@ insert into auth.permissions (
     ('requesters.create'),('requesters.delete'),('requesters.update'),('requesters.list'),('requesters.read'),('requesters.restore'),
     ('shifts.create'),('shifts.delete'),('shifts.update'),('shifts.list'),('shifts.read'),('shifts.restore'),
     ('settings.create'),('settings.delete'),('settings.update'),('settings.list'),('settings.read'),('settings.restore'),
-    ('conversations.list'),('conversations.read'),('conversations.delete'),('conversations.restore')
+    ('conversations.list'),('conversations.read'),('conversations.delete'),('conversations.restore'),
+    ('conversationsMessages.read')
   ) as p(name)
   join auth.users system on system.username = 'system'
 on conflict (name) do nothing;

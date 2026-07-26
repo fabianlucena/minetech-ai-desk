@@ -1,8 +1,9 @@
 export { default as AboutIcon } from './about.icon.jsx';
 export { default as ArrowBackIcon } from './arrowBack.icon.jsx';
-export { default as ArrowForwardIcon } from './arrowBack.icon copy.jsx';
+export { default as ArrowForwardIcon } from './arrowForward.icon.jsx';
 export { default as ClientIcon } from './client.icon.jsx';
 export { default as ConversationIcon } from './conversation.icon.jsx';
+export { default as ConversationsMessageIcon } from './conversationsMessage.icon.jsx';
 export { default as DashboardIcon } from './dashboard.icon.jsx';
 export { default as DeleteIcon } from './delete.icon.jsx';
 export { default as EditIcon } from './edit.icon.jsx';

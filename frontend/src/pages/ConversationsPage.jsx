@@ -1,5 +1,8 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import Grid from '../components/Grid.jsx';
+import { GridActionsCellItem } from '@mui/x-data-grid';
+import { ConversationsMessageIcon } from '../components/icons';
+import { useNavigate } from 'react-router-dom';
 import useToast from '../states/useToast.jsx';
 import usePermissions from '../states/usePermissions.jsx';
 import { formatDate } from '../utils/date.js';
@@ -7,6 +10,7 @@ import { getConversations, deleteConversation, restoreConversation } from '../se
 import SwitchField from '../components/fields/SwitchField.jsx';
 
 export default function ConversationsPage() {
+  const navigate = useNavigate();
   const { hasPermission } = usePermissions();
   const { addMessage, addError } = useToast();
   const [data, setData] = useState([]);
@@ -120,5 +124,13 @@ export default function ConversationsPage() {
         />
       }
     </>}
+    rowsActions={({row}) => [
+      hasPermission('conversationsMessages.read') && !row.deletedAt && <GridActionsCellItem
+        key="conversationsMessages"
+        icon={<ConversationsMessageIcon />}
+        label="Mensages"
+        onClick={() => navigate(`/conversations/${row.uuid}/messages`)}
+      />
+    ]}
   />;
 }
