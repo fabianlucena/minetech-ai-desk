@@ -18,7 +18,6 @@ export async function getByUuid(req, res) {
   res.json(new SettingDTO(setting));
 }
 
-
 export async function create(req, res) {
   const settingService = getDependency('settingService');
   const setting = await settingService.create(
