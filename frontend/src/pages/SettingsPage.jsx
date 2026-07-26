@@ -23,7 +23,8 @@ export default function SettingsPage() {
         field: 'value',
         headerName: 'Valor',
         flex: 1,
-      },
+        renderCell: ({value}) => value == null ? '' : (typeof value === 'object' ? JSON.stringify(value) : String(value)),
+      }
       {
         field: 'description',
         headerName: 'Descripción',
