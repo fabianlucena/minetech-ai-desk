@@ -98,7 +98,6 @@ export default function ConversationsPage() {
 
   useEffect(() => { load(); }, [load]);
 
-
   async function closeConversationHandler({ uuid }) {
     setConfirmDialog({
       title: 'Cerrar conversación',
