@@ -25,6 +25,12 @@ export default function RequestersPage() {
         flex: 1,
       },
       {
+        field: 'client.name',
+        headerName: 'Cliente',
+        flex: 1,
+        renderCell: ({row}) => row.client?.name || 'N/A',
+      },
+      {
         field: 'isActive',
         headerName: 'Activo',
         renderCell: ({value}) => value ? '✔️' : '❌',

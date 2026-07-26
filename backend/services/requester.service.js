@@ -8,6 +8,15 @@ export default class RequesterService extends ModelService {
 
   getModelOptions(options) {
     options = super.getModelOptions(options);
+
+    if (options.includeClient) {
+      options.include = options.include || [];
+      options.include.push({
+        model: getDependency('clientModel'),
+        as: 'client'
+      });
+      delete options.includeClient;
+    }
     
     return options;
   }
