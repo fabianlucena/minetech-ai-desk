@@ -18,14 +18,6 @@ export async function getByUuid(req, res) {
   res.json(new SettingDTO(setting));
 }
 
-export async function getAsignableRoles(req, res) {
-  const roleService = getDependency('roleService');
-  const roles = await roleService.getList({
-    where: { isAsignable: true },
-    session: req.session,
-  });
-  res.json(roles.map(r => new RoleMinDTO(r)));
-}
 
 export async function create(req, res) {
   const settingService = getDependency('settingService');
