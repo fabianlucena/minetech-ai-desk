@@ -69,8 +69,8 @@ export default function ConversationsPage() {
       const res = await getConversations({ query });
       setData(res);
     } catch (error) {
-      addError('Error al obtener las convesaciones');
-      console.error('Error al obtener las convesaciones:', error);
+      addError('Error al obtener las conversaciones');
+      console.error('Error al obtener las conversaciones:', error);
     }
   }, [includeDeleted, addError]);
 
