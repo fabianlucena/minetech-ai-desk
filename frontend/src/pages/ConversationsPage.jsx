@@ -139,15 +139,15 @@ export default function ConversationsPage() {
       </>}
       rowsActions={({row}) => [
         hasPermission('conversations.close') && !row.deletedAt && !row.closedAt && <GridActionsCellItem
-          key="conversationsMessages"
+          key="close-conversation"
           icon={<CloseIcon />}
           label="Cerrar conversación"
           onClick={() => closeConversationHandler({ uuid: row.uuid })}
         />,
-        hasPermission('conversationMessages.list') && !row.deletedAt && <GridActionsCellItem
-          key="conversationsMessages"
+        hasPermission('conversationMessages.read') && !row.deletedAt && <GridActionsCellItem
+          key="conversation-messages"
           icon={<ConversationsMessageIcon />}
-          label="Mensages"
+          label="Mensajes"
           onClick={() => navigate(`/conversations/${row.uuid}/messages`)}
         />
       ]}
