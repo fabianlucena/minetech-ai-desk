@@ -12,6 +12,14 @@ let config = {
   
   tokenSize: 64,
   sessionExpiration: 60 * 60 * 24 * 1, // 1 day
+
+  whatsapp: {
+    baseUrl: '',
+    appSecret: '',
+    verifyToken: '',
+    token: '',
+    phoneId: '',
+  },
 };
 
 try {
