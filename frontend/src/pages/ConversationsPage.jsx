@@ -138,8 +138,9 @@ export default function ConversationsPage() {
         }
       </>}
       rowsActions={({row}) => [
-        hasPermission('conversations.close') && !row.deletedAt && !row.closedAt && <GridActionsCellItem
+        hasPermission('conversations.close') && !row.deletedAt && <GridActionsCellItem
           key="close-conversation"
+          disabled={!!row.closedAt}
           icon={<CloseIcon />}
           label="Cerrar conversación"
           onClick={() => closeConversationHandler({ uuid: row.uuid })}
