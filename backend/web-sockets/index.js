@@ -41,9 +41,9 @@ export default async function configureWebSocketServer(server) {
     try {
       const { url } = req;
 
-      console.log(`Incoming WebSocket connection request for URL: ${url}`);
+      logger.debug(`Incoming WebSocket connection request for URL: ${url}`);
       for (const { path, handler } of handlers) {
-        console.log(`Checking WebSocket handler for path: ${path}`);
+        logger.debug(`Checking WebSocket handler for path: ${path}`);
         if (url.startsWith(path)) {
           logger.info(`🔌  WebSocket connection request for ${url} matched handler for ${path}`);
           wss.handleUpgrade(req, socket, head, handler);

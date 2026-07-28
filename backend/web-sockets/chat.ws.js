@@ -72,7 +72,8 @@ export function sendToTechnicianId(technicianId, message) {
   if (typeof message !== 'string')
     message = JSON.stringify(message);
 
-  const filteredClients = clients.entries().filter(e => e[1] && e[1].technicianId === technicianId);
+  const filteredClients = [...clients.entries()]
+    .filter(([, info]) => info && info.technicianId === technicianId);
   for (const [ws] of filteredClients) {
     ws.send(message);
   }

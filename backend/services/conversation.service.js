@@ -252,8 +252,7 @@ export default class ConversationService extends ModelService {
       return;
     } */
 
-    this.sendMessageToTechnician(message, options);
-
+    await this.sendMessageToTechnician(message, options);
     return message;
   }
 
@@ -286,8 +285,7 @@ export default class ConversationService extends ModelService {
     data.senderType = 'technician';
     const message = await this.addMessage(data, options);
 
-    this.sendMessageToRequester(message, options);
-
+    await this.sendMessageToRequester(message, options);
     return message;
   }
 
