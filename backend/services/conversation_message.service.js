@@ -43,8 +43,7 @@ export default class ConversationMessageService extends ModelService {
       if (!data.conversationId)
         throw new Error('El ID de la conversación es obligatorio');
     } else if (data.conversationUuid)
-      delete data.conversationId;
-
+      delete data.conversationUuid;
 
     if (!data.senderType)
       throw new Error('El tipo de remitente es obligatorio');

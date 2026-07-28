@@ -44,7 +44,7 @@ export default function configureConversationMessagesWebSocketHandler(ws) {
     } catch (err) {
       if (err.code) {
         logger.error(`WS fatal error ('${err.code}'): ${err.message}, closing connection`);
-        ws.close(1008, err.message);
+        ws.close(err.code, err.message);
         return;
       } else {
         logger.error(`WS error: ${err.message}`);

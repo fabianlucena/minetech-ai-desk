@@ -237,7 +237,7 @@ export default class ConversationService extends ModelService {
     const message = await this.addMessage(data, options);
 
     if (requester.bannedAt) {
-      logger.warn(`❌ Ignoring message from banned requester ${from}`);
+      logger.warn(`❌ Ignoring message from banned requester ${requester.phone} (${requester.displayName})`);
       return message;
     }
 
