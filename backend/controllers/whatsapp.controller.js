@@ -3,6 +3,9 @@ import crypto from 'crypto';
 
 const config = getDependency('config');
 const logger = getDependency('logger');
+const whatsappPhoneId = config.whatsapp.phoneId;
+const messageUrl = config.whatsapp.messageUrl.replace('{phoneId}', whatsappPhoneId);
+const whatsappAutorization = `Bearer ${config.whatsapp.token}`;
 
 export async function startWhatsappWebhookServer(req, res) {
   const mode = req.query['hub.mode'];
@@ -51,4 +54,39 @@ export async function processIncomingWhatsApp(req, res) {
       logger.error('❌ Error procesando mensaje entrante:', err);
     }
   })();
+}
+
+export async function sendWhatsAppMessage(to, payload) {
+  if (!to) {
+    logger.error('❌ Missing "to" parameter for sending WhatsApp message');
+    return;
+  }
+
+  if (!payload) {
+    logger.error('❌ Missing "payload" parameter for sending WhatsApp message');
+    return;
+  }
+
+  if (typeof payload === 'string') {
+    payload = {
+      text: {
+        body: payload,
+      },
+    };
+  }
+
+  payload.messaging_product = 'whatsapp';
+  payload.to = to;
+
+  await fetch(
+    messageUrl,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': whatsappAutorization,
+      },
+      body: JSON.stringify(payload)
+    }
+  );
 }

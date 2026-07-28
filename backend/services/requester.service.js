@@ -108,7 +108,15 @@ export default class RequesterService extends ModelService {
     }, options);
   }
 
-  async sendMessageById(/* requesterId, message, options */) {
-    console.warn('RequesterService.sendMessageById is not implemented yet: requester.service.js');
+  async sendMessageById(requesterId, message, options) {
+    const requester = await this.getById(requesterId, options);
+    if (!requester)
+      throw new Error('Solicitante no encontrado');
+
+    return await this.sendMessage(requester, message);
+  }
+
+  async sendMessage(requester, message) {
+    sendWhatsAppMessage(requester.phone, message);
   }
 }

@@ -20,6 +20,7 @@ let config = {
     verifyToken: '',
     token: '',
     phoneId: '',
+    messageUrl: 'https://graph.facebook.com/v20.0/{phoneId}/messages',
   },
 };
 
