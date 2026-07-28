@@ -121,7 +121,7 @@ export default class RequesterService extends ModelService {
     return await this.sendMessage(requester, message);
   }
 
-  async sendMessage(requester, message) {
-    return await this.whatsappService.sendMessage({ to: requester.phone, body });
+  async sendMessage(requester, payload) {
+    return await this.whatsappService.sendMessage({ to: requester.phone, payload });
   }
 }
