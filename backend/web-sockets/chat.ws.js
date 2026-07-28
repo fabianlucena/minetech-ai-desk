@@ -75,7 +75,12 @@ export function sendToTechnicianId(technicianId, message) {
   const filteredClients = [...clients.entries()]
     .filter(([, info]) => info && info.technicianId === technicianId);
   for (const [ws] of filteredClients) {
-    ws.send(message);
+    try {
+      ws.send(message);
+    } catch (err) {
+      clients.delete(ws);
+      logger.warn(`Failed to send WS message to technicianId=${technicianId}: ${err.message}`);
+    }
   }
 }
 
