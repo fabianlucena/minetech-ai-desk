@@ -11,15 +11,15 @@ export default async function checkAuthorizationTokenMiddleware(req, res, next) 
       const token = authHeader.split(' ')[1];
 
       if (schema.toLowerCase() !== 'bearer')
-        throw new Error('Invalid authorization schema');
+        throw new Error('Esquema de autorización inválido');
 
       if (!token)
-        throw new Error('Authorization token is missing');
+        throw new Error('Falta el token de autorización');
 
       const sessionService = getDependency('sessionService');
       session = await sessionService.getByAuthorizationToken(token);
       if (!session)
-        throw new Error('Invalid authorization token');
+        throw new Error('Token de autorización inválido');
 
       session = await sessionService.decorateWithCredentials(session);
       session.roleNames = session.roles.map(r => r.name);

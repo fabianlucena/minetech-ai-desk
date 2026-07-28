@@ -30,7 +30,7 @@ try {
   mergeFromEnv(config);
 } catch (err) {
   if (err.code === 'ERR_MODULE_NOT_FOUND') {
-    console.warn('\x1b[33mArchivo config.local.js no encontrado, usando valores por defecto\x1b[0m');
+    console.warn('\x1b[33mconfig.local.js file not found, using default values\x1b[0m');
   } else {
     throw err;
   }

@@ -25,10 +25,10 @@ export default function configureConversationMessagesWebSocketHandler(ws) {
       if (!msg) {
         const clientInfo = clients.get(ws);
         if (!clientInfo || !clientInfo.session || clientInfo.errorCount >= config.maxWSErrorCount)
-          throw new WSFatalError(1007, 'Invalid JSON received');
+          throw new WSFatalError(1007, 'El JSON recibido es inválido');
 
         clientInfo.errorCount = (clientInfo.errorCount || 0) + 1;
-        throw new WSError('Invalid JSON received');
+        throw new WSError('El JSON recibido es inválido');
       } else {
         const clientInfo = clients.get(ws);
         if (clientInfo)
@@ -40,7 +40,7 @@ export default function configureConversationMessagesWebSocketHandler(ws) {
       else if (msg.type === 'send_message')
         res = await handleSendMessage({msg, ws});
       else
-        throw new WSError('Unknown message type');
+        throw new WSError('Tipo de mensaje desconocido');
     } catch (err) {
       if (err.code) {
         logger.error(`WS fatal error ('${err.code}'): ${err.message}, closing connection`);
@@ -86,17 +86,17 @@ export function sendToTechnicianId(technicianId, message) {
 
 async function handleAuth({msg, ws}) {
   if (!msg.token)
-    throw new WSFatalError(1008, 'Authorization token is missing');
+    throw new WSFatalError(1008, 'Falta el token de autorización');
 
   const session = await sessionService.getByAuthorizationToken(msg.token);
   if (!session)
-    throw new WSFatalError(1008, 'Invalid authorization token');
+    throw new WSFatalError(1008, 'Token de autorización inválido');
 
   if (session.closedAt)
-    throw new WSFatalError(1008, 'Session has been closed');
+    throw new WSFatalError(1008, 'La sesión está cerrada');
 
   if (session.expiresAt < new Date())
-    throw new WSFatalError(1008, 'Session has expired');
+    throw new WSFatalError(1008, 'La sesión ha expirado');
 
   const technician = await technicianService.getById(session.userId);
 
@@ -107,17 +107,17 @@ async function handleAuth({msg, ws}) {
 
 async function handleSendMessage({msg, ws}) {
   if (!clients.has(ws))
-    throw new WSError('Client is not authenticated');
+    throw new WSError('Cliente no autenticado');
 
   const clientInfo = clients.get(ws);
   if (!clientInfo.session)
-    throw new WSError('Client is not authenticated');
+    throw new WSError('Cliente no autenticado');
 
   if (!clientInfo.technicianId)
-    throw new WSError('Client is not a technician');
+    throw new WSError('El cliente no es un técnico');
 
   if (!msg.conversationUuid)
-    throw new WSError('Conversation is not specified');
+    throw new WSError('Conversación no especificada');
 
   await conversationService.addTechnicianMessage({
     conversationUuid: msg.conversationUuid,
