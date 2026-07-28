@@ -1,4 +1,5 @@
 import winston from 'winston';
+import { addDependency } from './dependency.js';
 
 const logger = winston.createLogger({
   format: winston.format.combine(
@@ -16,5 +17,7 @@ const logger = winston.createLogger({
     new winston.transports.Console(),
   ],
 });
+
+addDependency('logger', logger);
 
 export default logger;

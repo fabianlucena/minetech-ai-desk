@@ -56,7 +56,7 @@ export default function Grid({
 
   const effectiveColumns = useMemo(() => {
     const effectiveColumns = [...columns];
-    if (onDelete || onEdit || editPath || onRestore) {
+    if (onDelete || onEdit || editPath || onRestore || rowsActions) {
       let actionsField = effectiveColumns.find(col => col.field === 'actions');
       if (!actionsField) {
         actionsField = {
@@ -68,32 +68,34 @@ export default function Grid({
       }
 
       actionsField.getActions = (params) => [
-        ...rowsActions?.(params) || [],
-        onDelete && !params.row.deletedAt && <GridActionsCellItem
+        onDelete && !params?.row?.deletedAt && <GridActionsCellItem
           key="delete"
           icon={<DeleteIcon />}
           label="Eliminar"
-          onClick={() => handleDelete(params.row)}
+          onClick={() => handleDelete(params?.row)}
         />,
-        onEdit && !params.row.deletedAt && <GridActionsCellItem
+        onEdit && !params?.row?.deletedAt && <GridActionsCellItem
           key="edit"
           icon={<EditIcon />}
           label="Editar"
-          onClick={() => onEdit(params.row)}
+          onClick={() => onEdit(params?.row)}
         />,
-        editPath && !params.row.deletedAt && <GridActionsCellItem
+        editPath && !params?.row?.deletedAt && <GridActionsCellItem
           key="edit"
           icon={<EditIcon />}
           label="Editar"
-          onClick={() => navigate(editPath.replace(':uuid', params.row[columnIdName]))}
+          onClick={() => navigate(editPath.replace(':uuid', params?.row?.[columnIdName]))}
         />,
-        onRestore && params.row.deletedAt && <GridActionsCellItem
+        onRestore && params?.row?.deletedAt && <GridActionsCellItem
           key="restore"
           icon={<RestoreIcon />}
           label="Restaurar"
-          onClick={() => onRestore(params.row)}
+          onClick={() => onRestore(params?.row)}
         />,
+        ...rowsActions?.(params) || [],
       ];
+
+      actionsField.width = 40 * actionsField.getActions({ row: { deletedAt: false }}).filter(a => a).length;
     }
 
     return effectiveColumns;
@@ -155,6 +157,10 @@ export default function Grid({
         overflow: 'hidden',
       }}
       sx={{
+        '& .MuiDataGrid-actionsCell': {
+          justifyContent: 'flex-start',
+          flex: 1,
+        },
         '& .row-even': {
           backgroundColor: '#f7f7f7',
         },

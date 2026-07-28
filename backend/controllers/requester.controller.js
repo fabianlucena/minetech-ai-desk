@@ -5,6 +5,7 @@ export async function getList(req, res) {
   const requesterService = getDependency('requesterService');
   const requesters = await requesterService.getList({
     includeDeleted: !!req.query.includeDeleted,
+    includeClient: true,
     session: req.session,
   });
   res.json(requesters.map(u => new RequesterDTO(u)));
@@ -49,6 +50,25 @@ export async function deleteByUuid(req, res) {
 export async function restoreByUuid(req, res) {
   const requesterService = getDependency('requesterService');
   await requesterService.restoreByUuid(
+    req.params.uuid,
+    { session: req.session }
+  );
+  res.status(204).end();
+}
+
+export async function banByUuid(req, res) {
+  const requesterService = getDependency('requesterService');
+  await requesterService.banByUuid(
+    req.params.uuid,
+    req.body,
+    { session: req.session }
+  );
+  res.status(204).end();
+}
+
+export async function unbanByUuid(req, res) {
+  const requesterService = getDependency('requesterService');
+  await requesterService.unbanByUuid(
     req.params.uuid,
     { session: req.session }
   );

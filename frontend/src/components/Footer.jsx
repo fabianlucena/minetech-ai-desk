@@ -6,7 +6,6 @@ export default function Footer() {
       fontSize: '12px',
       fontFamily: '"Inter", Sans-serif',
       textAlign: 'center',
-      backgroundColor: '#f5f5f5',
       color: '#d1d1d1',
       backgroundColor: '#1A1A1A',
       display: 'flex',

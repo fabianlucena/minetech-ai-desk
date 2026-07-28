@@ -6,6 +6,16 @@ import { ErrorDialog } from '../components/dialogs';
 import useToast from '../states/useToast.jsx';
 import useGlobal from '../states/useGlobal.jsx';
 
+let oauth2AutorizationRequested = false;
+function setOauth2AutorizationRequested(value) {
+  oauth2AutorizationRequested = value;
+  if (value) {
+    setTimeout(() => {
+      oauth2AutorizationRequested = false;
+    }, 3000); // Reset after 10 seconds to allow new authorization attempts
+  }
+}
+
 export default function OAuth2CallbackPage() {
   const { name, action } = useParams();
   const [errorMessage, setErrorMessage] = useState();
@@ -19,6 +29,12 @@ export default function OAuth2CallbackPage() {
   const goHome = useCallback(() => { navigate('/'); }, []);
 
   useEffect(() => {
+    if (oauth2AutorizationRequested) {
+      console.log('OAuth2 authorization already requested, waiting for response...');
+      setMessage('Ya hay una autorización en curso. Espere un momento y vuelva a intentarlo si no se completa.');
+      return;
+    }
+    setOauth2AutorizationRequested(true);
     console.log(`Handling OAuth2 callback for provider: ${name}, action: ${action}`);
     let search = window.location.search;
     let deviceToken = localStorage.getItem('deviceToken');
@@ -52,6 +68,7 @@ export default function OAuth2CallbackPage() {
         setMessage('Error al autorizar. Por favor, inténtelo de nuevo.');
         addError('Error al autorizar: ' + message);
       });
+  // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [name, action, updateSession, goHome, addMessage, addError]);
 
   return <>

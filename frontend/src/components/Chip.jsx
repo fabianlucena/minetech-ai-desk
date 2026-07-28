@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { Box, Chip as MUIChip } from '@mui/material';
+import { Chip as MUIChip } from '@mui/material';
 import { getDarkerColor } from '../utils/color.js';
 
 export default function Chip({

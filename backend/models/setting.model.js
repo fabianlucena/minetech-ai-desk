@@ -1,8 +1,7 @@
-import sequelize, { DataTypes } from 'sequelize';
-import { senderTypeValues } from '../categories/sender_types.js';
+import { DataTypes } from 'sequelize';
 
 export default (sequelize) => {
-  const TicketMessage = sequelize.define('TicketMessage', {
+  const Setting = sequelize.define('Setting', {
     id: { type: DataTypes.BIGINT, autoIncrement: true, primaryKey: true },
     uuid: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4 },
     createdAt: { field: 'created_at', type: DataTypes.DATE, defaultValue: DataTypes.NOW, allowNull: false },
@@ -11,37 +10,31 @@ export default (sequelize) => {
     updatedById: { field: 'updated_by_id', type: DataTypes.BIGINT, allowNull: false },
     deletedAt: { field: 'deleted_at', type: DataTypes.DATE, allowNull: true },
     deletedById: { field: 'deleted_by_id', type: DataTypes.BIGINT, allowNull: true },
-    ticketId: { field: 'ticket_id', type: DataTypes.BIGINT, allowNull: false },
-    senderType: { field: 'sender_type', type: DataTypes.ENUM(...senderTypeValues), allowNull: false },
-    senderId: { field: 'sender_id', type: DataTypes.BIGINT, allowNull: false },
-    message: { field: 'message', type: DataTypes.TEXT, allowNull: false },
+    key: { field: 'key', type: DataTypes.STRING, allowNull: false, unique: true },
+    value: { field: 'value', type: DataTypes.JSONB, allowNull: true },
+    description: { field: 'description', type: DataTypes.STRING, allowNull: true },
   }, {
-    tableName: 'ticket_messages',
+    tableName: 'settings',
     schema: 'ia_desk',
     timestamps: false,
   });
 
-  TicketMessage.associate = (models) => {
-    TicketMessage.belongsTo(models.User, {
+  Setting.associate = (models) => {
+    Setting.belongsTo(models.User, {
       foreignKey: 'createdById',
       as: 'createdBy',
     });
 
-    TicketMessage.belongsTo(models.User, {
+    Setting.belongsTo(models.User, {
       foreignKey: 'updatedById',
       as: 'updatedBy',
     });
 
-    TicketMessage.belongsTo(models.User, {
+    Setting.belongsTo(models.User, {
       foreignKey: 'deletedById',
       as: 'deletedBy',
     });
-
-    TicketMessage.belongsTo(models.Ticket, {
-      foreignKey: 'ticketId',
-      as: 'ticket',
-    });
   };
 
-  return TicketMessage;
+  return Setting;
 };

@@ -8,26 +8,70 @@ export default class RequesterService extends ModelService {
 
   getModelOptions(options) {
     options = super.getModelOptions(options);
+
+    if (options.includeClient) {
+      options.include = options.include || [];
+      options.include.push({
+        model: getDependency('clientModel'),
+        as: 'client'
+      });
+      delete options.includeClient;
+    }
     
     return options;
   }
 
-  async getByName(fullName) {
-    if (!fullName)
-      throw new Error('El nombre completo es obligatorio');
+  get validPropertiesForCreation() {
+    return ['clientId', 'displayName', 'phone', 'email', 'type', 'bannedAt', 'bannedById', 'banReason'];
+  }
 
-    return await this.getFirstOrDefault({ where: { fullName } });
+  get validPropertiesForUpdate() {
+    return ['clientId', 'displayName', 'phone', 'email', 'type', 'bannedAt', 'bannedById', 'banReason'];
+  }
+
+  async getByDisplayName(displayName) {
+    if (!displayName)
+      throw new Error('El nombre es obligatorio');
+
+    return await this.getFirstOrDefault({ where: { displayName } });
+  }
+
+  async getByPhone(phone, options) {
+    if (!phone)
+      throw new Error('El teléfono es obligatorio');
+
+    return await this.getFirstOrDefault({ ...options, where: { ...options?.where, phone } });
+  }
+
+  async getByPhoneOrCreate(phone, data, options) {
+    if (!phone)
+      throw new Error('El teléfono es obligatorio');
+
+    let requester = await this.getByPhone(phone, options);
+    if (!requester) {
+      if (typeof data === 'function') {
+        data = data();
+      }
+      
+      requester = await this.create(
+        {
+          type: 'customer',
+          ...data,
+          phone,
+        },
+        options
+      );
+    }
+
+    return requester;
   }
 
   async create(data, options) {
-    if (!data.fullName)
-      throw new Error('El nombre completo es obligatorio');
+    if (!data.displayName)
+      throw new Error('El nombre es obligatorio');
 
     if (!data.phone)
       throw new Error('El teléfono es obligatorio');
-
-    if (!data.isActive)
-      data.isActive = false;
 
     return await super.create(data, options);
   }
@@ -42,5 +86,25 @@ export default class RequesterService extends ModelService {
 
     const globalOptions = { session: options?.session };
     return await this.updateById(requester.id, data, globalOptions);
+  }
+
+  async banByUuid(uuid, data, options) {
+    const banReason = data?.banReason?.trim();
+    if (!banReason)
+      throw new Error('El motivo del baneo es obligatorio');
+
+    return await this.updateByUuid(uuid, {
+      banReason,
+      bannedAt: new Date(),
+      bannedById: await this.getCurrentUserId(options),
+    }, options);
+  }
+
+  async unbanByUuid(uuid, options) {
+    return await this.updateByUuid(uuid, {
+      banReason: null,
+      bannedAt: null,
+      bannedById: null,
+    }, options);
   }
 }

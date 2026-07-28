@@ -1,28 +1,29 @@
-import config from './config.js';
 import express from 'express';
-import { addDependency } from './dependency.js';
+import cors from 'cors';
+import config from './config.js';
+import logger from './logger.js';
 import errorMiddleware from './middlewares/error.middleware.js';
 import logMiddleware from './middlewares/log.middleware.js';
 import checkAuthorizationTokenMiddleware from './middlewares/check_authorization_token_middleware.js';
-import logger from './logger.js';
-import cors from 'cors';
 
 await import('./models/index.js');
 await import('./services/index.js');
 await import('./controllers/index.js');
 const routes = (await import('./routes/index.js')).default;
 
-addDependency('config', config);
-
 try {
   const app = express();
 
   if (config.cors) {
     const corsOptions = config.cors === true ? {} : config.cors;
-    app.use(cors(config.cors));
+    app.use(cors(corsOptions));
     logger.info('🔓 CORS habilitado ✔️');
   }
-  app.use(express.json());
+  app.use(express.json({
+    verify: (req, _res, buf) => {
+      req.rawBody = buf;
+    },
+  }));
   app.use(checkAuthorizationTokenMiddleware);
   app.use(logMiddleware);
   app.use('/api', routes);

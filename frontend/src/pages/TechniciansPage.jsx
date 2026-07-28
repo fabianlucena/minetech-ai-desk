@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import Grid from '../components/Grid.jsx';
 import useToast from '../states/useToast.jsx';
 import usePermissions from '../states/usePermissions.jsx';
-import { formatDate } from '../utils/date.js';
+import { formatDate } from '../utils/datetime.js';
 import Chip from '../components/Chip.jsx';
 import { getTechnicians, deleteTechnician, restoreTechnician } from '../services/technician.service.js';
 import SwitchField from '../components/fields/SwitchField.jsx';

@@ -53,6 +53,7 @@ export default function LoginPage() {
     disabledMessage="Iniciando sesión..."
     onSubmit={onSubmit}
     onCancel={() => navigate('/')}
+    submitConfirmEnabled={false}
     sx={{
       maxWidth: 400,
       margin: "auto",

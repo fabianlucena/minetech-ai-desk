@@ -1,4 +1,4 @@
-import sequelize, { DataTypes } from 'sequelize';
+import { DataTypes } from 'sequelize';
 import { clientStatusValues } from '../categories/client_status.js';
 
 export default (sequelize) => {

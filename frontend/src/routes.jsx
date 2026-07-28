@@ -1,5 +1,8 @@
 import useGlobal from './states/useGlobal.jsx';
-import { HomeIcon, DashboardIcon, UsersIcon, AboutIcon, LoginIcon, LogoutIcon, TechnicianIcon, ClientIcon, RequesterIcon, ShiftIcon } from './components/icons/index.jsx';
+import { AboutIcon, ClientIcon, ConversationIcon, DashboardIcon, HomeIcon, 
+  LoginIcon, LogoutIcon, RequesterIcon, SettingsIcon, ShiftIcon, TechnicianIcon, 
+  UsersIcon
+} from './components/icons/index.jsx';
 import Layout from './components/Layout.jsx';
 import HomePage from './pages/HomePage.jsx';
 import OAuth2CallbackPage from './pages/OAuth2CallbackPage.jsx';
@@ -16,7 +19,11 @@ import TechnicianPage from './pages/TechnicianPage.jsx';
 import ClientsPage from './pages/ClientsPage.jsx';
 import ClientPage from './pages/ClientPage.jsx';
 import RequestersPage from './pages/RequestersPage.jsx';
+import ConversationsPage from './pages/ConversationsPage.jsx';
+import ConversationMessagesPage from './pages/ConversationMessagesPage.jsx';
 import ShiftsPage from './pages/ShiftsPage.jsx';
+import SettingsPage from './pages/SettingsPage.jsx';
+import SettingPage from './pages/SettingPage.jsx';
 
 export const allRoutes = [
   {
@@ -116,6 +123,37 @@ export const allRoutes = [
         menuItemOrder: 3,
         element: <RequestersPage />,
         condition: ({ permissions }) => permissions.includes('requesters.list'),
+      },
+      {
+        path: '/conversations',
+        label: 'Conversaciones',
+        icon: <ConversationIcon />,
+        menuItemOrder: 3,
+        element: <ConversationsPage />,
+        condition: ({ permissions }) => permissions.includes('conversations.list'),
+      },
+      {
+        path: '/conversations/:uuid/messages',
+        element: <ConversationMessagesPage />,
+        condition: ({ permissions }) => permissions.includes('conversationMessages.read'),
+      },
+      {
+        path: '/settings',
+        label: 'Configuración',
+        icon: <SettingsIcon />,
+        menuItemOrder: 3,
+        element: <SettingsPage />,
+        condition: ({ permissions }) => permissions.includes('settings.list'),
+      },
+      {
+        path: '/settings/new',
+        element: <SettingPage />,
+        condition: ({ permissions }) => permissions.includes('settings.create'),
+      },
+      {
+        path: '/settings/:uuid/edit',
+        element: <SettingPage />,
+        condition: ({ permissions }) => permissions.includes('settings.update'),
       },
       {
         path: '/about',
