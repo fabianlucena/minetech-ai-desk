@@ -6,6 +6,11 @@ export default class RequesterService extends ModelService {
     super({ model: getDependency('requesterModel') });
   }
 
+  get whatsappService() {
+    this._whatsappService ??= getDependency('whatsappService');
+    return this._whatsappService;
+  }
+
   getModelOptions(options) {
     options = super.getModelOptions(options);
 
@@ -117,6 +122,6 @@ export default class RequesterService extends ModelService {
   }
 
   async sendMessage(requester, message) {
-    sendWhatsAppMessage(requester.phone, message);
+    return await this.whatsappService.sendMessage({ to: requester.phone, body });
   }
 }
