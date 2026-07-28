@@ -1,5 +1,4 @@
 import { getDependency } from '../dependency.js';
-import { SessionResponse } from '../dto/session.dto.js';
 
 const cache = new Map();
 

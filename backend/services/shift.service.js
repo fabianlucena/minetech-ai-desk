@@ -7,17 +7,32 @@ export default class ShiftService extends ModelService {
     super({ model: getDependency('shiftModel') });
   }
 
+  get technicianModel() {
+    this._technicianModel ??= getDependency('technicianModel');
+    return this._technicianModel;
+  }
+
+  get userModel() {
+    this._userModel ??= getDependency('userModel');
+    return this._userModel;
+  }
+
+  get technicianService() {
+    this._technicianService ??= getDependency('technicianService');
+    return this._technicianService;
+  }
+
   getModelOptions(options) {
     options = super.getModelOptions(options);
     
     if (options.includeTechnician) {
       options.include = options.include || [];
       options.include.push({
-        model: getDependency('technicianModel'),
+        model: this.technicianModel,
         as: 'technician',
         include: [
         {
-          model: getDependency('userModel'),
+          model: this.userModel,
           as: 'user'
         }
       ]
@@ -45,8 +60,7 @@ export default class ShiftService extends ModelService {
   async validateForCreation(data, options) {
     if (!data.technicianId) {
       if (data.technicianUuid) {
-        const technicianService = getDependency('technicianService');
-        data.technicianId = await technicianService.getIdByUuid(data.technicianUuid, { session: options?.session });
+        data.technicianId = await this.technicianService.getIdByUuid(data.technicianUuid, { session: options?.session });
         if (!data.technicianId)
           throw new Error('Técnico no encontrado');
 
@@ -70,8 +84,7 @@ export default class ShiftService extends ModelService {
   async validateForUpdate(data, options) {
     if (!data.technicianId) {
       if (data.technicianUuid) {
-        const technicianService = getDependency('technicianService');
-        data.technicianId = await technicianService.getIdByUuid(data.technicianUuid, { session: options?.session });
+        data.technicianId = await this.technicianService.getIdByUuid(data.technicianUuid, { session: options?.session });
         if (!data.technicianId)
           throw new Error('Técnico no encontrado');
 

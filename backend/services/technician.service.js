@@ -1,6 +1,7 @@
 import { getDependency } from '../dependency.js';
 import ModelService from './model.service.js';
 import { Op } from 'sequelize';
+import { sendToTechnicianId } from '../web-sockets/chat.ws.js';
 
 export default class TechnicianService extends ModelService {
   constructor() {
@@ -10,13 +11,23 @@ export default class TechnicianService extends ModelService {
     });
   }
 
+  get userModel() {
+    this._userModel ??= getDependency('userModel');
+    return this._userModel;
+  }
+
+  get userService() {
+    this._userService ??= getDependency('userService');
+    return this._userService;
+  }
+
   getModelOptions(options) {
     options = super.getModelOptions(options);
 
     if (options.includeUser) {
       options.include = options.include || [];
       options.include.push({
-        model: getDependency('userModel'),
+        model: this.userModel,
         as: 'user'
       });
       delete options.includeTechnician;
@@ -45,8 +56,7 @@ export default class TechnicianService extends ModelService {
 
     if (!data.id) {
       if (data.userUuid) {
-        const userService = getDependency('userService');
-        data.id = await userService.getIdByUuid(data.userUuid);
+        data.id = await this.userService.getIdByUuid(data.userUuid);
         delete data.userUuid;
       }
 
@@ -87,16 +97,14 @@ export default class TechnicianService extends ModelService {
 
   async getUsers(options) {
     if (options.skipTechnicians) {
-      const technicianModel = getDependency('technicianModel');
-      const technicians = await technicianModel.findAll({ attributes: ['id'] });
+      const technicians = await this.model.findAll({ attributes: ['id'] });
       const technicianIds = technicians.map(t => t.id);
       options.where = options.where || {};
       options.where.id = { [Op.notIn]: technicianIds };
       delete options.skipTechnicians;
     }
 
-    const userService = getDependency('userService');
-    const users = await userService.getList({...options, where: { ...options.where, role: 'technician' }});
+    const users = await this.userService.getList({...options, where: { ...options.where, role: 'technician' }});
     return users;
   }
 
@@ -105,7 +113,7 @@ export default class TechnicianService extends ModelService {
     return onDuty;
   }
 
-  async sendMessageById(/* id { text, media } */) {
-    // throw new Error('TBC - Envío de mensaje a técnico no implementado');
+  async sendMessageById(technicianId, message) {
+    sendToTechnicianId(technicianId, message);
   }
 }

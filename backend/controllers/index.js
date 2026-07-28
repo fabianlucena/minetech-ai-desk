@@ -1,17 +1,13 @@
-import { Router } from 'express';
 import fs from 'fs';
 import path from 'path';
 import logger from '../logger.js';
 import { dirname } from 'path';
-import { fileURLToPath, pathToFileURL  } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 import { addDependency } from '../dependency.js';
+import { toCamelCase } from '../utils/string.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-
-export function snakeToCamel(str) {
-  return str.replace(/[_-]([a-z])/g, (_, letter) => letter.toUpperCase());
-}
 
 async function run() {
   try {
@@ -21,7 +17,7 @@ async function run() {
       .filter(file => file.endsWith('.controller.js') && file !== 'index.js');
 
     for (const file of files) {
-      const controllerName = snakeToCamel(file.replace('.controller.js', ''))
+      const controllerName = toCamelCase(file.replace('.controller.js', ''))
         + 'Controller';
 
       logger.info(`    ${controllerName} -> ${file}`);

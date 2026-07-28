@@ -53,8 +53,6 @@ export default class WhatsappService {
 
     const requesterService = getDependency('requesterService');
     const conversationService = getDependency('conversationService');
-    const conversationMessageService = getDependency('conversationMessageService');
-    const technicianService = getDependency('technicianService');
 
     for (const from in fromList) {
       const requester = await requesterService.getByPhoneOrCreate(
@@ -64,9 +62,6 @@ export default class WhatsappService {
       );
 
       const conversation = await conversationService.getOpenByRequesterIdOrCreate(requester.id, {}, options);
-      await conversationService.updateLastMessageById(conversation.id, options);
-
-      const conversationMessages = [];
       const messages = fromList[from];
       for (const message of messages) {
         const type = message.type;
@@ -88,49 +83,11 @@ export default class WhatsappService {
         if (mediaId)
           media = await this.downloadMedia(mediaId);
 
-        const conversationMessage = await conversationMessageService.create({
-          conversationId: conversation.id,
-          senderType: 'requester',
-          senderId: requester.id,
+        await conversationService.addRequesterMessage({
+          conversation,
+          requester,
           text,
           media,
-        });
-
-        conversationMessages.push(conversationMessage);
-      }
-
-      if (requester.bannedAt) {
-        logger.warn(`❌ Ignoring message from banned requester ${from}`);
-        continue;
-      }
-
-      // Ejecutar motor RAG
-      /* const aiResponse = await ragEngine(text);
-
-      // Decisión automática
-      if (aiResponse.confidence >= 0.75) {
-        await sendWhatsAppMessage(waId, aiResponse.answer);
-        await audit('auto_response', conversation.id, aiResponse);
-
-        return;
-      } */
-
-      const technician = await technicianService.getOnDuty();
-      if (!technician) {
-        logger.error('No hay técnico de guardia');
-        continue;
-      }
-
-      for (const conversationMessage of conversationMessages) {
-        await technicianService.sendMessageById(technician.id, {
-          text: conversationMessage.text,
-          media: conversationMessage.media,
-        });
-
-        await conversationMessageService.updateById(conversationMessage.id, {
-          receiverId: technician.id,
-          receiverType: 'technician',
-          sentAt: new Date(),
         }, options);
       }
     }
