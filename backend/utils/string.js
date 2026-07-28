@@ -5,3 +5,7 @@ export function toSnakeCase(str) {
     .replace(/__+/g, '_')
     .toLowerCase();
 }
+
+export function toCamelCase(str) {
+  return str.replace(/[ _-]+([a-z])/g, (_, letter) => letter.toUpperCase());
+}

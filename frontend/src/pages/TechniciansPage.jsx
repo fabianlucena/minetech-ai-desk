@@ -35,7 +35,7 @@ export default function TechniciansPage() {
       {
         field: 'isActive',
         headerName: 'Activo',
-        renderCell: ({value}) => value ? '✔️' : '❌',
+        renderCell: ({value}) => value ? '🟢' : '🔴',
       },
     ];
 

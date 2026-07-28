@@ -107,4 +107,8 @@ export default class RequesterService extends ModelService {
       bannedById: null,
     }, options);
   }
+
+  async sendMessageById(/* requesterId, message, options */) {
+    console.warn('RequesterService.sendMessageById is not implemented yet: requester.service.js');
+  }
 }

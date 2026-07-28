@@ -1,4 +1,5 @@
 import express from 'express';
+import http from 'http';
 import cors from 'cors';
 import config from './config.js';
 import logger from './logger.js';
@@ -13,11 +14,12 @@ const routes = (await import('./routes/index.js')).default;
 
 try {
   const app = express();
+  const server = http.createServer(app);
 
   if (config.cors) {
     const corsOptions = config.cors === true ? {} : config.cors;
     app.use(cors(corsOptions));
-    logger.info('🔓 CORS habilitado ✔️');
+    logger.info('🔓 CORS enabled ✔️');
   }
   app.use(express.json({
     verify: (req, _res, buf) => {
@@ -29,8 +31,10 @@ try {
   app.use('/api', routes);
   app.use(errorMiddleware);
 
-  app.listen(config.port, () => logger.info(`📡 Server escuchando en el puerto: ${config.port} ✔️`));
+  await (await import('./web-sockets/index.js')).default(server);
+
+  server.listen(config.port, () => logger.info(`📡 Server listening on port: ${config.port} ✔️`));
 } catch (error) {
-  logger.error('❌ Error al inicializar el servidor:', error);
+  logger.error('❌ Error setting up server:', error);
   process.exit(1);
 }

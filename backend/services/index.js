@@ -1,27 +1,23 @@
-import { Router } from 'express';
 import fs from 'fs';
 import path from 'path';
 import logger from '../logger.js';
 import { dirname } from 'path';
-import { fileURLToPath, pathToFileURL  } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 import { addDependency } from '../dependency.js';
+import { toCamelCase } from '../utils/string.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-export function snakeToCamel(str) {
-  return str.replace(/[_-]([a-z])/g, (_, letter) => letter.toUpperCase());
-}
-
 async function run() {
   try {
-    logger.info('🛠️  Configurando servicios');
+    logger.info('🛠️  Setting up services');
 
     const files = fs.readdirSync(__dirname)
       .filter(file => file.endsWith('.service.js') && file !== 'index.js');
 
     for (const file of files) {
-      const serviceName = snakeToCamel(file.replace('.service.js', ''))
+      const serviceName = toCamelCase(file.replace('.service.js', ''))
         + 'Service';
 
       logger.info(`    ${serviceName} -> ${file}`);
@@ -31,9 +27,9 @@ async function run() {
       addDependency(serviceName, () => new service.default());
     }
 
-    logger.info('🛠️  Servicios configurados OK ✔️');
+    logger.info('🛠️  Services configured OK ✔️');
   } catch (error) {
-    logger.error('❌ Error al configurar servicios:', error);
+    logger.error('❌ Error setting up services:', error);
     process.exit(1);
   }
 }

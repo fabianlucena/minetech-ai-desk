@@ -3,7 +3,7 @@ import path from 'path';
 import sequelize from '../database.js';
 import logger from '../logger.js';
 import { dirname } from 'path';
-import { fileURLToPath, pathToFileURL  } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 import { addDependency } from '../dependency.js';
 
 const __filename = fileURLToPath(import.meta.url);

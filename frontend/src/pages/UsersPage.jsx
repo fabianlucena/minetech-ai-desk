@@ -32,17 +32,17 @@ export default function UsuariosPage() {
       {
         field: 'isActive',
         headerName: 'Activo',
-        renderCell: ({value}) => value ? '✔️' : '❌',
+        renderCell: ({value}) => value ? '🟢' : '🔴',
       },
       {
         field: 'hasPassword',
         headerName: 'Contraseña',
-        renderCell: ({value}) => value ? '✔️' : '❌',
+        renderCell: ({value}) => value ? '🟢' : '⚪',
       },
       {
         field: 'canLogin',
         headerName: 'Conectable',
-        renderCell: ({value}) => value ? '✔️' : '❌',
+        renderCell: ({value}) => value ? '🟢' : '🚫',
       },
       {
         field: 'roles',
