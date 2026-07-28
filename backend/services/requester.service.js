@@ -6,6 +6,11 @@ export default class RequesterService extends ModelService {
     super({ model: getDependency('requesterModel') });
   }
 
+  get whatsappService() {
+    this._whatsappService ??= getDependency('whatsappService');
+    return this._whatsappService;
+  }
+
   getModelOptions(options) {
     options = super.getModelOptions(options);
 
@@ -108,7 +113,15 @@ export default class RequesterService extends ModelService {
     }, options);
   }
 
-  async sendMessageById(/* requesterId, message, options */) {
-    console.warn('RequesterService.sendMessageById is not implemented yet: requester.service.js');
+  async sendMessageById(requesterId, message, options) {
+    const requester = await this.getById(requesterId, options);
+    if (!requester)
+      throw new Error('Solicitante no encontrado');
+
+    return await this.sendMessage(requester, message);
+  }
+
+  async sendMessage(requester, payload) {
+    return await this.whatsappService.sendMessage({ to: requester.phone, payload });
   }
 }

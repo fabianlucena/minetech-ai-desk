@@ -15,7 +15,7 @@ export default getDependency;
 
 export function addDependency(name, dependency) {
   if (dependencies.has(name)) {
-    throw new Error(`Dependency with name ${name} already exists`);
+    throw new Error(`Ya existe la dependencia con el nombre ${name}`);
   }
   
   dependencies.set(name, dependency);

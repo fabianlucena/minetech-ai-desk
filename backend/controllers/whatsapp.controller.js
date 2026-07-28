@@ -3,6 +3,14 @@ import crypto from 'crypto';
 
 const config = getDependency('config');
 const logger = getDependency('logger');
+const whatsappPhoneId = config.whatsapp.phoneId;
+const messageUrl = config.whatsapp.messageUrl.replace('{phoneId}', whatsappPhoneId);
+const whatsappAutorization = `Bearer ${config.whatsapp.token}`;
+
+if (!messageUrl || !whatsappAutorization) {
+  logger.error('❌ WhatsApp configuration is incomplete (missing messageUrl/token)');
+  return;
+}
 
 export async function startWhatsappWebhookServer(req, res) {
   const mode = req.query['hub.mode'];
@@ -51,4 +59,50 @@ export async function processIncomingWhatsApp(req, res) {
       logger.error('❌ Error procesando mensaje entrante:', err);
     }
   })();
+}
+
+export async function sendWhatsAppMessage({ to, payload }) {
+  if (!to) {
+    logger.error('❌ Missing "to" parameter for sending WhatsApp message');
+    return;
+  }
+
+  if (!payload) {
+    logger.error('❌ Missing "payload" parameter for sending WhatsApp message');
+    return;
+  }
+
+  if (typeof payload === 'string') {
+    payload = {
+      text: {
+        body: payload,
+      },
+    };
+  }
+
+  payload.messaging_product = 'whatsapp';
+  payload.to = to;
+
+  let res;
+  try {
+    res = await fetch(
+      messageUrl,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': whatsappAutorization,
+        },
+        body: JSON.stringify(payload)
+      }
+    );
+  } catch (err) {
+    logger.error(`❌ Error sending WhatsApp message to ${to}: ${err.message}`);
+    return;
+  }
+
+  if (!res.ok) {
+    const errBody = await res.text().catch(() => null);
+    logger.error(`❌ WhatsApp API error sending message to ${to}: HTTP ${res.status}${errBody ? ` - ${errBody}` : ''}`);
+  }
 }
