@@ -1,5 +1,6 @@
 import { addDependency } from './dependency.js';
 import { mergeFromEnv } from './utils/merge_from_env.js';
+import { deepMerge } from './utils/object.js';
 
 let config = {
   port: 3000,
@@ -26,7 +27,7 @@ let config = {
 
 try {
   const custom = await import('./config.local.js');
-  config = { ...config, ...custom.default };
+  config = deepMerge(config, custom.default);
 
   mergeFromEnv(config);
 } catch (err) {

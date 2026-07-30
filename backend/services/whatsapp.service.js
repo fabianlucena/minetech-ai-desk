@@ -85,9 +85,10 @@ export default class WhatsappService {
 
         await conversationService.addRequesterMessage({
           conversation,
-          requester,
           text,
           media,
+          externMessageId: message.id,
+          requester,
         }, options);
       }
     }
