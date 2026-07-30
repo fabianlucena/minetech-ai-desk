@@ -17,7 +17,7 @@ export default (sequelize) => {
     externMessageId: { field: 'extern_message_id', type: DataTypes.STRING, allowNull: true },
 
     senderType: { field: 'sender_type', type: DataTypes.ENUM(...senderTypeValues), allowNull: false },
-    senderId: { field: 'sender_id', type: DataTypes.BIGINT, allowNull: false },
+    senderId: { field: 'sender_id', type: DataTypes.BIGINT, allowNull: true },
     receiverType: { field: 'receiver_type', type: DataTypes.ENUM(...senderTypeValues), allowNull: true },
     receiverId: { field: 'receiver_id', type: DataTypes.BIGINT, allowNull: true },
 
