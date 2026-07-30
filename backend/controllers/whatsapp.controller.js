@@ -11,7 +11,10 @@ if (!config.whatsapp) {
 
 if (!config.whatsapp.messageUrl || !config.whatsapp.token) {
   logger.error('❌ WhatsApp configuration is incomplete (missing messageUrl/token)');
-  logger.error(JSON.stringify(config.whatsapp, null, 2));
+  logger.error(JSON.stringify({
+    ...config.whatsapp,
+    token: config.whatsapp.token ? '***' : '',
+  }, null, 2));
   process.exit(1);
 }
 
