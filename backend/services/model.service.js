@@ -7,7 +7,8 @@ export default class ModelService {
     auditable = true,
     softDelete = true,
     allowIdForCreation = false,
-    useCreatedAt = false,
+    useCreatedAt = null,
+    useCreatedById = null,
   }) {
     this.model = model;
     this.traceable = traceable;
@@ -15,6 +16,7 @@ export default class ModelService {
     this.softDelete = softDelete;
     this.allowIdForCreation = allowIdForCreation;
     this.useCreatedAt = useCreatedAt;
+    this.useCreatedById = useCreatedById;
   }
 
   async getSystemUserId() {
@@ -85,12 +87,11 @@ export default class ModelService {
   async create(data, options = {}) {
     data = await this.validateForCreation(data, options);
 
-    if (this.traceable) {
+    if (this.useCreatedAt || (this.traceable && this.useCreatedAt !== false))
       data.createdAt ??= new Date();
+
+    if (this.useCreatedById || (this.traceable && this.useCreatedById !== false))
       data.createdById ??= await this.getCurrentUserId(options);
-    } else if (this.useCreatedAt) {
-      data.createdAt ??= new Date();
-    }
 
     if (this.auditable) {
       data.updatedAt ??= new Date();

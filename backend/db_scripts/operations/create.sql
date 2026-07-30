@@ -662,23 +662,34 @@ create table if not exists ia_desk.conversation_messages(
     id bigint generated always as identity primary key,
     uuid uuid not null default gen_random_uuid(),
 
+    created_at timestamp not null default now(),
+    updated_at timestamp null,
+    updated_by_id bigint null,
     deleted_at timestamp null,
     deleted_by_id bigint null,
 
-    received_at timestamp not null default now(),
     conversation_id bigint not null,
-    sender_type varchar(64) not null,
-    sender_id bigint not null,
     "text" text null,
     media bytea null,
+    external_message_id varchar(255) null,
+
+    sender_type varchar(64) not null,
+    sender_id bigint null,
     receiver_type varchar(64) null,
     receiver_id bigint null,
+
+    received_at timestamp not null default now(),
     sent_at timestamp null,
+    delivered_at timestamp null,
+    read_at timestamp null,
 
     constraint uk_ia_desk_conversation_messages_uuid unique (uuid),
     
     constraint uk_ia_desk_conversation_messages_conversation_id foreign key (conversation_id)
       references ia_desk.conversations(id) on delete restrict,
+
+    constraint uk_ia_desk_conversation_messages_updated_by_id foreign key (updated_by_id)
+      references auth.users(id) on delete restrict,
 
     constraint uk_ia_desk_conversation_messages_deleted_by_id foreign key (deleted_by_id)
       references auth.users(id) on delete restrict

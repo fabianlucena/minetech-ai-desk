@@ -52,7 +52,7 @@ X-Hub-Signature-256: sha256=9b09551e5382925199f5744305f0c816b48e7727285acfa7d386
 ### Mensaje enviado / entregado / leído
 POST {{url}}/webhooks/whatsapp
 Content-Type: application/json
-X-Hub-Signature-256: sha256=1768d9b7a853279ddc3d9d08b5c7b288f8cbafdbc9a539507aa9a0943021293d
+X-Hub-Signature-256: sha256=9e1cd987af3cccd96317e96806a56e63fc99ee8728338fbf35223a4f94ddc463
 
 {
   "object": "whatsapp_business_account",
