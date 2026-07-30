@@ -148,7 +148,7 @@ export default class ConversationMessageService extends ModelService {
 
     data = await this.validateReceiver(data, options);
 
-    data.receivedAt = new Date();
+    data.receivedAt ??= new Date();
 
     return await super.validateForCreation(data, options);
   }
