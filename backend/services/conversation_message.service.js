@@ -25,14 +25,14 @@ export default class ConversationMessageService extends ModelService {
   }
 
   get validPropertiesForCreation() {
-    return ['conversationId', 'text', 'media', 'externMessageId',
+    return ['conversationId', 'text', 'media', 'externalMessageId',
       'senderType', 'senderId', 'receiverType', 'receiverId', 
       'receivedAt', 'sentAt', 'deliveredAt', 'readAt',
     ];
   }
 
   get validPropertiesForUpdate() {
-    return ['conversationId', 'externMessageId',
+    return ['conversationId', 'externalMessageId',
       'receiverType', 'receiverId',
       'receivedAt', 'sentAt', 'deliveredAt', 'readAt',
     ];
@@ -244,5 +244,18 @@ export default class ConversationMessageService extends ModelService {
         conversationId,
       },
     });
+  }
+
+  async getIdByExternalMessageId(externalMessageId, options) {
+    if (!externalMessageId)
+      throw new Error('El ID externo del mensaje es obligatorio');
+
+    if (Array.isArray(externalMessageId)) {
+      const rows = await this.getList({ ...options, attributes: ['id'], where: { ...options?.where, externalMessageId } });
+      return rows.map(r => r.id);
+    } else {
+      const row = await this.getFirstOrDefault({ ...options, attributes: ['id'], where: { ...options?.where, externalMessageId } });
+      return row?.id;
+    }
   }
 }

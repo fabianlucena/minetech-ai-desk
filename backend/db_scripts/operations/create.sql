@@ -671,7 +671,7 @@ create table if not exists ia_desk.conversation_messages(
     conversation_id bigint not null,
     "text" text null,
     media bytea null,
-    extern_message_id varchar(255) null,
+    external_message_id varchar(255) null,
 
     sender_type varchar(64) not null,
     sender_id bigint null,

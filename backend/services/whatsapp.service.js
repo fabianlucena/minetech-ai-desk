@@ -25,6 +25,8 @@ export default class WhatsappService {
     const fromList = {};
     const allContacts = [];
 
+    const conversationMessageService = getDependency('conversationMessageService');
+
     for (const entry of entries) {
       if (!entry?.changes?.length)
         continue;
@@ -34,19 +36,37 @@ export default class WhatsappService {
           continue;
 
         const value = change.value;
-        if (!value?.messages?.length
-          || !value?.contacts?.length
-        )
+        if (!value)
           continue;
 
-        const messagesList = value.messages.filter(m => m && (m.type === 'text' || m.type === 'image' || m.type === 'document'));
-        if (!messagesList.length)
-          continue;
+        if (value.messages?.length
+          || value.contacts?.length
+        ) {
+          const messagesList = value.messages.filter(m => m && (m.type === 'text' || m.type === 'image' || m.type === 'document'));
+          if (!messagesList.length)
+            continue;
 
-        for (const message of messagesList) {
-          fromList[message.from] ??= [];
-          fromList[message.from].push(message);
-          allContacts.push(...(value.contacts || []));
+          for (const message of messagesList) {
+            fromList[message.from] ??= [];
+            fromList[message.from].push(message);
+            allContacts.push(...(value.contacts || []));
+          }
+        }
+
+        if (value.statuses?.length) {
+          for (const status of value.statuses) {
+            logger.info(`📩 Mensaje ${status.status} (externalMessageId=${status.id}, wa_id=${status.recipient_id})`);
+            const messageId = await conversationMessageService.getIdByExternalMessageId(status.id, options);
+            if (!messageId) {
+              logger.warn(`⚠️ No se encontró el mensaje con externalMessageId=${status.id} para actualizar su estado`);
+              continue;
+            }
+
+            await conversationMessageService.updateById(messageId, {
+              deliveredAt: status.status === 'delivered' ? new Date() : undefined,
+              readAt: status.status === 'read' ? new Date() : undefined,
+            }, options);
+          }
         }
       }
     }
@@ -87,7 +107,7 @@ export default class WhatsappService {
           conversation,
           text,
           media,
-          externMessageId: message.id,
+          externalMessageId: message.id,
           requester,
         }, options);
       }

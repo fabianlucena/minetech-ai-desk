@@ -14,7 +14,7 @@ export default (sequelize) => {
     conversationId: { field: 'conversation_id', type: DataTypes.BIGINT, allowNull: false },
     text: { field: 'text', type: DataTypes.TEXT, allowNull: true },
     media: { field: 'media', type: DataTypes.BLOB('long'), allowNull: true },
-    externMessageId: { field: 'extern_message_id', type: DataTypes.STRING, allowNull: true },
+    externalMessageId: { field: 'external_message_id', type: DataTypes.STRING, allowNull: true },
 
     senderType: { field: 'sender_type', type: DataTypes.ENUM(...senderTypeValues), allowNull: false },
     senderId: { field: 'sender_id', type: DataTypes.BIGINT, allowNull: true },
