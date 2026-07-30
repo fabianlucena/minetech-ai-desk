@@ -3,15 +3,21 @@ import crypto from 'crypto';
 
 const config = getDependency('config');
 const logger = getDependency('logger');
-const whatsappPhoneId = config.whatsapp.phoneId;
-const messageUrl = config.whatsapp.messageUrl?.replace('{phoneId}', whatsappPhoneId);
-const whatsappAutorization = `Bearer ${config.whatsapp.token}`;
 
-if (!messageUrl || !whatsappAutorization) {
+if (!config.whatsapp) {
+  logger.error('❌ Missing WhatsApp configuration');
+  process.exit(1);
+}
+
+if (!config.whatsapp.messageUrl || !config.whatsapp.token) {
   logger.error('❌ WhatsApp configuration is incomplete (missing messageUrl/token)');
   logger.error(JSON.stringify(config.whatsapp, null, 2));
   process.exit(1);
 }
+
+const whatsappPhoneId = config.whatsapp.phoneId || '';
+const messageUrl = config.whatsapp.messageUrl.replace('{phoneId}', whatsappPhoneId) || '';
+const whatsappAutorization = `Bearer ${config.whatsapp.token}`;
 
 logger.info('    Whatsapp configuration:');
 logger.info(`      messageUrl=${messageUrl}`);
