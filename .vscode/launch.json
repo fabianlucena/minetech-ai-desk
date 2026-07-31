@@ -1,0 +1,45 @@
+{
+  "version": "0.2.0",
+  "compounds": [
+    {
+      "name": "Debug Full Stack",
+      "configurations": [
+        "Debug Backend",
+        "Start Vite + Debug",
+        "Debug Frontend (Vite)"
+      ]
+    }
+  ],
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Backend",
+      "program": "${workspaceFolder}/backend/server.js",
+      "runtimeExecutable": "nodemon",
+      "runtimeArgs": ["--inspect"],
+      "restart": true,
+      "envFile": "${workspaceFolder}/.env.local",
+      "cwd": "${workspaceFolder}/backend",
+      "skipFiles": ["<node_internals>/**"],
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "firefox",
+      "request": "launch",
+      "name": "Debug Frontend (Vite)",
+      "url": "http://localhost:5173",
+      "webRoot": "${workspaceFolder}/frontend/src"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "restart": true,
+      "name": "Start Vite + Debug",
+      "program": "${workspaceFolder}/frontend/node_modules/vite/bin/vite.js",
+      "args": ["--port", "5173"],
+      "cwd": "${workspaceFolder}/frontend",
+      "console": "integratedTerminal"
+    }
+  ]
+}
