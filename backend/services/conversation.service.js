@@ -1,6 +1,9 @@
 import { getDependency } from '../dependency.js';
 import ModelService from './model.service.js';
 import { sendToConversationId } from '../web-sockets/chat.ws.js';
+import { ConversationMessageDTO } from '../dto/conversation_message.dto.js';
+
+const logger = getDependency('logger');
 
 export default class ConversationService extends ModelService {
   constructor() {
@@ -25,6 +28,11 @@ export default class ConversationService extends ModelService {
   get technicianService() {
     this._technicianService ??= getDependency('technicianService');
     return this._technicianService;
+  }
+
+  get userService() {
+    this._userService ??= getDependency('userService');
+    return this._userService;
   }
 
   getModelOptions(options) {
@@ -233,7 +241,6 @@ export default class ConversationService extends ModelService {
       throw new Error('El solicitante es obligatorio');
 
     data.senderId = requester.id;
-
     data.senderType = 'requester';
     const message = await this.addMessage(data, options);
 
@@ -241,6 +248,8 @@ export default class ConversationService extends ModelService {
       logger.warn(`❌ Ignoring message from banned requester ${requester.phone} (${requester.displayName})`);
       return message;
     }
+
+    message.sender = requester;
 
     // Ejecutar motor RAG
     /* const aiResponse = await ragEngine(text);
@@ -253,7 +262,11 @@ export default class ConversationService extends ModelService {
       return;
     } */
 
-    await this.sendMessageToTechnician(message, options);
+    await this.sendMessageToTechnician(
+      message,
+      options,
+    );
+
     return message;
   }
 
@@ -282,40 +295,96 @@ export default class ConversationService extends ModelService {
       throw new Error('El técnico es obligatorio');
 
     data.senderId = technician.id;
-
     data.senderType = 'technician';
     const message = await this.addMessage(data, options);
 
-    await this.sendMessageToRequester(message, options);
+    technician.user ??= await this.userService.getById(technician.id, options);
+    message.sender = technician;
+
+    await this.sendMessageToRequester(
+      message,
+      options
+    );
+
     return message;
   }
 
   async sendMessageToTechnician(message, options) {
+    let conversation = message.conversation;
+    if (!conversation) {
+      conversation = await this.getById(message.conversationId, { ...options });
+      message.conversation = conversation;
+    }
+
+    if (!conversation) {
+      logger.error('Conversation not found');
+      return;
+    }
+
     const technician = await this.technicianService.getOnDuty();
     if (!technician) {
       logger.error('There is no on-duty technician to handle the incoming message');
       return;
     }
-    
-    await this.technicianService.sendMessageById(technician.id, {
-      text: message.text,
-      media: message.media,
-    });
 
-    await sendToConversationId(message.conversationId, {
-      text: message.text,
-      media: message.media,
-    });
+    message.receiver = technician;
+    if (message.receiverId !== technician.id || !message.receiverType !== 'technician') {
+      message.receiverId = technician.id;
+      message.receiverType = 'technician';
+      await this.conversationMessageService.updateById(
+        message.id,
+        {
+          receiverId: technician.id,
+          receiverType: 'technician',
+        },
+        options
+      );
+    }
 
-    await this.conversationMessageService.updateById(message.id, {
-      receiverId: technician.id,
-      receiverType: 'technician',
-      sentAt: new Date(),
-    }, options);
+    const messageToSend = new ConversationMessageDTO(message);
+
+    await sendToConversationId(
+      message.conversationId,
+      messageToSend,
+    );
+
+    let status;
+    try {
+      await this.technicianService.sendMessageById(
+        technician.id,
+        messageToSend,
+        options,
+      );
+
+      status = { sentAt: new Date() };
+    } catch (error) {
+      status = { failedAt: new Date(), failureReason: error.message };
+      logger.error('Error sending message to technician', error);
+    }
+
+    await this.conversationMessageService.updateById(
+      message.id,
+      status,
+      options
+    );
+
+    await sendToConversationId(
+      message.conversationId,
+      {
+        uuid: message.uuid,
+        ...status,
+      },
+      options
+    );
   }
 
   async sendMessageToRequester(message, options) {
-    const conversation = await this.getById(message.conversationId, { ...options });
+    let conversation = message.conversation;
+    if (!conversation) {
+      conversation = await this.getById(message.conversationId, { ...options });
+      message.conversation = conversation;
+    }
+
     if (!conversation) {
       logger.error('Conversation not found');
       return;
@@ -332,21 +401,57 @@ export default class ConversationService extends ModelService {
     }
 
     const requesterId = conversation.requesterId;
+    if (message.receiverId !== requesterId || !message.receiverType !== 'requester') {
+      message.receiverId = requesterId;
+      message.receiverType = 'requester';
+      await this.conversationMessageService.updateById(
+        message.id,
+        {
+          receiverId: requesterId,
+          receiverType: 'requester',
+        },
+        options
+      );
+    }
 
-    await this.requesterService.sendMessageById(requesterId, {
-      text: message.text,
-      media: message.media,
-    });
+    if (!message.receiver)
+      message.receiver = await this.requesterService.getById(requesterId, options);
 
-    await sendToConversationId(message.conversationId, {
-      text: message.text,
-      media: message.media,
-    });
+    const messageToSend = new ConversationMessageDTO(message);
 
-    await this.conversationMessageService.updateById(message.id, {
-      receiverId: requesterId,
-      receiverType: 'requester',
-      sentAt: new Date(),
-    }, options);
+    await sendToConversationId(
+      message.conversationId,
+      messageToSend,
+      options
+    );
+
+    let status;
+    try {
+      await this.requesterService.sendMessageById(
+        requesterId,
+        messageToSend,
+        options
+      );
+
+      status = { sentAt: new Date() };
+    } catch (error) {
+      status = { failedAt: new Date(), failureReason: error.message };
+      logger.error('Error sending message to requester', error);
+    }
+
+    await this.conversationMessageService.updateById(
+      message.id,
+      status,
+      options
+    );
+
+    await sendToConversationId(
+      message.conversationId,
+      {
+        uuid: message.uuid,
+        ...status,
+      },
+      options
+    );
   }
 }
