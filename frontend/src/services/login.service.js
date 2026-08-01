@@ -35,6 +35,7 @@ export async function _loginService(service, body) {
 
 export async function setCredentials(res) {
   if (res.authorizationToken) {
+    Api.authorizationToken = res.authorizationToken;
     Api.Authorization = 'Bearer ' + res.authorizationToken;
     if (res.expireAt) {
       Api.AuthorizationExpireAt = new Date(res.expireAt);
