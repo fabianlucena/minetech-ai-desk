@@ -6,7 +6,10 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import IconButton from '@mui/material/IconButton';
 import useGlobal from '../states/useGlobal';
 
-export default function Header() {
+export default function Header({
+  hideMenuButton = false,
+  hideUserMenu = false,
+}) {
   const { toggleMenuOpen } = useGlobal();
 
   return <AppBar >
@@ -16,12 +19,12 @@ export default function Header() {
         padding: '0 .5em',
       }}
     >
-      <IconButton
+      {!hideMenuButton && <IconButton
         color="inherit"
         onClick={toggleMenuOpen}
       >
         <MenuIcon />
-      </IconButton>
+      </IconButton>}
 
       <img
         src="/minetech.png"
@@ -43,9 +46,9 @@ export default function Header() {
         AI Desk
       </Typography>
 
-      <IconButton color="inherit">
+      {!hideUserMenu && <IconButton color="inherit">
         <AccountCircle />
-      </IconButton>
+      </IconButton>}
     </Toolbar>
   </AppBar>;
 }

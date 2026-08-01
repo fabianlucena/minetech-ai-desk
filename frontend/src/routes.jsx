@@ -4,6 +4,7 @@ import { AboutIcon, ClientIcon, ConversationIcon, DashboardIcon, HomeIcon,
   UsersIcon
 } from './components/icons/index.jsx';
 import MainLayout from './layouts/MainLayout.jsx';
+import SimpleLayout from './layouts/SimpleLayout.jsx';
 import HomePage from './pages/HomePage.jsx';
 import OAuth2CallbackPage from './pages/OAuth2CallbackPage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
@@ -182,7 +183,9 @@ export const allRoutes = [
     label: 'Ingresar',
     icon: <LoginIcon />,
     menuItemOrder: 2,
-    element: <LoginPage />,
+    element: <SimpleLayout>
+        <LoginPage />
+      </SimpleLayout>,
     condition: ({ user }) => !user,
   },
 ];
