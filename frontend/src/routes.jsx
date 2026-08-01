@@ -3,7 +3,7 @@ import { AboutIcon, ClientIcon, ConversationIcon, DashboardIcon, HomeIcon,
   LoginIcon, LogoutIcon, RequesterIcon, SettingsIcon, ShiftIcon, TechnicianIcon, 
   UsersIcon
 } from './components/icons/index.jsx';
-import Layout from './components/Layout.jsx';
+import MainLayout from './layouts/MainLayout.jsx';
 import HomePage from './pages/HomePage.jsx';
 import OAuth2CallbackPage from './pages/OAuth2CallbackPage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
@@ -28,7 +28,7 @@ import SettingPage from './pages/SettingPage.jsx';
 export const allRoutes = [
   {
     path: '/',
-    element: <Layout />,
+    element: <MainLayout />,
     children: [
       {
         path: '/oauth2callback/:name/:action',

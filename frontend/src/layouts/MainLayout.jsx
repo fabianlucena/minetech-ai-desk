@@ -1,10 +1,10 @@
 import { Outlet } from 'react-router-dom';
 import { Box } from '@mui/material';
-import Header from './Header';
-import Footer from './Footer';
-import Menu from './Menu';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+import Menu from '../components/Menu';
 
-export default function Layout() {
+export default function MainLayout() {
   return <>
     <Header />
 
