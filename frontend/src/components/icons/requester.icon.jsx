@@ -1,6 +1,9 @@
-import MUIContactSupportIcon from '@mui/icons-material/ContactSupportTwoTone';
-//import MUIRecordVoiceOverIcon from '@mui/icons-material/RecordVoiceOverTwoTone';
-  
+import { Tooltip } from '@mui/material';
+import Icon from '@mui/icons-material/ContactSupportTwoTone';
+//import Icon from '@mui/icons-material/RecordVoiceOverTwoTone';
+
 export default function RequesterIcon(props) {
-  return <MUIContactSupportIcon {...{title: 'Solicitante', ...props}} />;
+  return <Tooltip title={props.title || 'Solicitante'}>
+      <Icon {...props} />
+    </Tooltip>;
 }

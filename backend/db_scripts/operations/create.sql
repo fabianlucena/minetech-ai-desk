@@ -682,6 +682,8 @@ create table if not exists ia_desk.conversation_messages(
     sent_at timestamp null,
     delivered_at timestamp null,
     read_at timestamp null,
+    failed_at timestamp null,
+    fail_message text null,
 
     constraint uk_ia_desk_conversation_messages_uuid unique (uuid),
     

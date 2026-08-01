@@ -6,5 +6,8 @@ export async function getConversationMessages(uuid, params) {
     ...msg,
     receivedAt: msg.receivedAt ? new Date(msg.receivedAt) : null,
     sentAt: msg.sentAt ? new Date(msg.sentAt) : null,
+    deliveredAt: msg.deliveredAt ? new Date(msg.deliveredAt) : null,
+    readAt: msg.readAt ? new Date(msg.readAt) : null,
+    failedAt: msg.failedAt ? new Date(msg.failedAt) : null,
   }));
 }
