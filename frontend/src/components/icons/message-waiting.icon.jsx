@@ -1,7 +1,7 @@
 import { Tooltip } from '@mui/material';
 import Icon from '@mui/icons-material/HourglassFullTwoTone';
 import { grey } from '@mui/material/colors';
-  
+
 export default function MessageWaitingIcon({
   title,
   ...props

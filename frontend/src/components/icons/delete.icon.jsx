@@ -1,5 +1,8 @@
-import MUIDeleteIcon from '@mui/icons-material/DeleteTwoTone';
-  
+import { Tooltip } from '@mui/material';
+import Icon from '@mui/icons-material/DeleteTwoTone';
+
 export default function DeleteIcon(props) {
-  return <MUIDeleteIcon {...{title: 'Eliminar', ...props}} />;
+  return <Tooltip title={props.title || 'Eliminar'}>
+      <Icon {...props} />
+    </Tooltip>;
 }

@@ -1,7 +1,7 @@
 import { Tooltip } from '@mui/material';
 import Icon from '@mui/icons-material/DoneAllTwoTone';
 import { blue } from '@mui/material/colors';
-  
+
 export default function MessageReadIcon({
   title,
   ...props

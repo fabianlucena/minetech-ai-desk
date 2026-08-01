@@ -1,7 +1,7 @@
 import { Tooltip } from '@mui/material';
 import Icon from '@mui/icons-material/DoneAllTwoTone';
 import { grey } from '@mui/material/colors';
-  
+
 export default function MessageDeliveredIcon({
   title,
   ...props
