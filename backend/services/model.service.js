@@ -212,6 +212,7 @@ export default class ModelService {
 
     options = this.getModelOptions(options);
     if (this.auditable && !options.skipAudit) {
+      data = { ...data };
       data.updatedAt ??= new Date();
       data.updatedById ??= await this.getCurrentUserId(options);
     }
