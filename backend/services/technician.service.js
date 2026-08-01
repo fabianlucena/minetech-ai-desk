@@ -114,6 +114,6 @@ export default class TechnicianService extends ModelService {
   }
 
   async sendMessageById(technicianId, message) {
-    sendToTechnicianId(technicianId, message);
+    await sendToTechnicianId(technicianId, message);
   }
 }
