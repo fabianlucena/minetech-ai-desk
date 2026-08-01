@@ -12,7 +12,7 @@ export default function MessageStatusIcon({
   deliveredAt,
   readAt,
   failedAt,
-  failMessage,
+  failureReason,
   sx: sxProp,
 }) {
   const sx = {
@@ -35,8 +35,8 @@ export default function MessageStatusIcon({
   
   if (failedAt) {
     message.push(`Fallido ${formatDateIcon(failedAt)}`);
-    if (failMessage)
-      message.push(`Motivo: ${failMessage}`);
+    if (failureReason)
+      message.push(`Motivo: ${failureReason}`);
   } else if (!sentAt) {
     message.push('Preparando envío...');
   }
