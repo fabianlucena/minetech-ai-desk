@@ -151,16 +151,28 @@ export default class WhatsappService {
       text: { body }
     };
 
-    await fetch(
-      url,
-      {
-        method: 'POST',
-        body: JSON.stringify(payload),
-        headers: {
-          Authorization: `Bearer ${config.whatsapp.token}`,
-          'Content-Type': 'application/json'
-        }
-      }
-    );
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), config.whatsapp.timeout);
+
+    try {
+      await fetch(
+        url,
+        {
+          signal: controller.signal,
+          method: 'POST',
+          body: JSON.stringify(payload),
+          headers: {
+            Authorization: `Bearer ${config.whatsapp.token}`,
+            'Content-Type': 'application/json'
+          },
+        },
+      );
+    } catch (err) {
+      const message = err?.cause?.message ?? err.message;
+      logger.error(`Error sending message to ${to}: ${message}`);
+      throw new Error(message);
+    }
+
+    clearTimeout(id);
   }
 }
