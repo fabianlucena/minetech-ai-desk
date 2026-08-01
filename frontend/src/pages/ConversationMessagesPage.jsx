@@ -4,13 +4,55 @@ import { Box, Typography } from '@mui/material';
 import Chat from '../components/ConversationChat.jsx';
 import { ReloadButton } from '../components/buttons';
 import { getConversation } from '../services/conversation.service.js';
-import { getConversationMessages } from '../services/conversationMessage.service.js';
+import { getConversationMessages, connectToChat, normalizeReceivedMessage } from '../services/conversationMessage.service.js';
 import { formatRelativeDateTime } from '../utils/datetime.js';
+
+function normalizeMessageToShow(msg) {
+  msg.id ??= msg.uuid;
+  msg.timestamp ??= msg.receivedAt;
+  msg.message ??= msg.text;
+  msg.isMine ??= msg.senderType !== 'requester';
+
+  return msg;
+}
 
 export default function ConversationMessagesPage() {
   const { uuid } = useParams();
   const [conversation, setConversation] = useState(null);
   const [messages, setMessages] = useState([]);
+
+  useEffect(() => {
+    const ws = connectToChat(uuid, (msg) => {
+      if (msg.type === 'chat_message') {
+        const message = normalizeReceivedMessage(msg.message);
+        setMessages(messages => {
+          const exists = messages.some(m => m.uuid === message.uuid);
+
+          if (exists) {
+            return messages.map(m =>
+              m.uuid === message.uuid
+                ? {
+                    ...m,
+                    ...message,
+                  }
+                : m
+            );
+          }
+
+          return [
+            ...messages,
+            normalizeMessageToShow(message),
+          ].sort((a, b) => a.timestamp - b.timestamp);
+        });
+      }
+    });
+
+    return () => {
+      if (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING) {
+        ws.close(1000, 'Conexión cerrada por el cliente');
+      }
+    }
+  }, [uuid]);
 
   const fetchConversation = useCallback(async () => {
     try {
@@ -28,14 +70,17 @@ export default function ConversationMessagesPage() {
 
   const fetchMessages = useCallback(async () => {
     const messages = await getConversationMessages(uuid);
-    setMessages(messages.map(msg => ({
-      id: msg.uuid,
-      timestamp: msg.receivedAt,
-      message: msg.text,
-      isMine: msg.senderType !== 'requester',
-      ...msg,
-    })));
+    setMessages(messages.map(normalizeMessageToShow));
   }, [uuid]);
+
+  useEffect(() => {
+    fetchMessages();
+  }, [fetchMessages]);
+
+  function handleReload() {
+    fetchConversation();
+    fetchMessages();
+  }
 
   useEffect(() => {
     fetchMessages();
