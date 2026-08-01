@@ -60,7 +60,7 @@ export default function HomePage() {
         sx={{ mt: 6 }}
       >
         Minetech IA Desk es propiedad de{" "} 
-        <a href="https://www.minetech.com" target="_blank" rel="noopener noreferrer">
+        <a href="https://www.minetech.com.ar" target="_blank" rel="noopener noreferrer">
           MineTech
         </a>
       </Typography>
@@ -70,8 +70,8 @@ export default function HomePage() {
         color="text.secondary"
         sx={{ mt: 1 }}
       >
-        Desarrollado por{" "}
-        <a href="mailto:fabian@minetech.com">Ing. Fabian Lucena</a> por cuenta y orden de MineTech.
+          Desarrollado por{" "}
+          <a href="mailto:fabianlucena@gmail.com">Ing. Fabian Lucena</a> por cuenta y orden de MineTech.
       </Typography>
     </Paper>
   </Container>;

@@ -17,13 +17,13 @@ export default function Footer() {
       variant="body3"
       color="black"
     >
-      Copyright © 2026 MineTech. Todos los derechos reservados.
+      <a href="https://www.minetech.com.ar" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none' }}>Copyright © 2026 MineTech. Todos los derechos reservados.</a>
     </Typography>
     <Typography
       variant="body3"
       color="text.secondary"
     >
-      Desarrollado por Ing. Fabian Lucena
+      <a href="mailto:info@fabianlucena.com" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none' }}>Desarrollado por Ing. Fabian Lucena</a>
     </Typography>
   </footer>;
 }

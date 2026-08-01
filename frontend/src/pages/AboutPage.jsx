@@ -169,7 +169,7 @@ export default function AboutPage() {
       </Typography>
 
       <Typography variant="body2" color="text.secondary" sx={{ mt: 4 }}>
-        <a href="https://www.minetech.com" target="_blank" rel="noopener noreferrer">© MineTech — Sistema de Gestión Unificada de Consultas Inteligentes.</a>
+        <a href="https://www.minetech.com.ar" target="_blank" rel="noopener noreferrer">© MineTech — Sistema de Gestión Unificada de Consultas Inteligentes.</a>
       </Typography>
 
       <Divider sx={{ my: 3 }} />
@@ -178,7 +178,7 @@ export default function AboutPage() {
         Desarrollo
       </Typography>
       <Typography paragraph>
-        Desarrollado por <a href="mailto:fabian@minetech.com">Ing. Fabian Lucena</a> por cuenta y orden de MineTech.
+        Desarrollado por <a href="mailto:fabianlucena@gmail.com">Ing. Fabian Lucena</a> por cuenta y orden de MineTech.
       </Typography>
     </Paper>
   </Container>;
