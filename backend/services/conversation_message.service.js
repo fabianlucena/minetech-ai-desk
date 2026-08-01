@@ -27,14 +27,14 @@ export default class ConversationMessageService extends ModelService {
   get validPropertiesForCreation() {
     return ['conversationId', 'text', 'media', 'externalMessageId',
       'senderType', 'senderId', 'receiverType', 'receiverId', 
-      'receivedAt', 'sentAt', 'deliveredAt', 'readAt',
+      'receivedAt', 'sentAt', 'deliveredAt', 'readAt', 'failedAt', 'failureReason',
     ];
   }
 
   get validPropertiesForUpdate() {
     return ['conversationId', 'externalMessageId',
       'receiverType', 'receiverId',
-      'receivedAt', 'sentAt', 'deliveredAt', 'readAt',
+      'receivedAt', 'sentAt', 'deliveredAt', 'readAt', 'failedAt', 'failureReason',
     ];
   }
   
