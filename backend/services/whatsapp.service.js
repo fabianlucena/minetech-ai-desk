@@ -168,6 +168,11 @@ export default class WhatsappService {
         },
       );
     } catch (err) {
+      if (err.name === 'AbortError') {
+        logger.error(`Timeout error sending message to ${to}`);
+        throw new Error('Tiempo de espera agotado al enviar el mensaje.');
+      }
+
       const message = err?.cause?.message ?? err.message;
       logger.error(`Error sending message to ${to}: ${message}`);
       throw new Error(message);
