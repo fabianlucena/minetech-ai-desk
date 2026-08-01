@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
-import Chat from '../components/Chat.jsx';
+import Chat from '../components/ConversationChat.jsx';
 import { ReloadButton } from '../components/buttons';
 import { getConversation } from '../services/conversation.service.js';
 import { getConversationMessages } from '../services/conversationMessage.service.js';
@@ -33,6 +33,7 @@ export default function ConversationMessagesPage() {
       timestamp: msg.receivedAt,
       message: msg.text,
       isMine: msg.senderType !== 'requester',
+      ...msg,
     })));
   }, [uuid]);
 

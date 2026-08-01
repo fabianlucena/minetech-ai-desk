@@ -1,9 +1,11 @@
 import { Box, Typography } from '@mui/material';
+import MessageStatusIcon from './icons/MessageStatusIcon';
 
 export default function MessageBubble({
   message,
   isMine,
   timestamp,
+  ...status
 }) {
   return <Box
     sx={{
@@ -29,6 +31,7 @@ export default function MessageBubble({
         sx={{ display: 'block', textAlign: 'right', opacity: 0.6 }}
       >
         {timestamp}
+        <MessageStatusIcon {...status} />
       </Typography>
     </Box>
   </Box>;

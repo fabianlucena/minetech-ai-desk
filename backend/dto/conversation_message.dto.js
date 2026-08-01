@@ -6,14 +6,18 @@ export class ConversationMessageDTO {
     this.uuid = message.uuid;
 
     this.conversation = message.conversation;
-    this.receivedAt = message.receivedAt;
-    this.senderType = message.senderType;
-
     this.text = message.text;
     this.media = message.media;
 
+    this.senderType = message.senderType;
     this.receiverType = message.receiverType;
+
+    this.receivedAt = message.receivedAt;
     this.sentAt = message.sentAt;
+    this.deliveredAt = message.deliveredAt;
+    this.readAt = message.readAt;
+    this.failedAt = message.failedAt;
+    this.failMessage = message.failMessage;
     
     this.deletedAt = message.deletedAt;
 

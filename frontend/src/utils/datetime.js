@@ -18,7 +18,7 @@ export function addHours(date, hours) {
   return newDate;
 }
 
-export function formatDate(date) {
+export function formatDate(date, options = { dateTimeSeparator: '' }) {
   if (!date)
     return date;
 
@@ -29,7 +29,7 @@ export function formatDate(date) {
     hour: '2-digit',
     minute: '2-digit',
     hour12: false
-  }).replaceAll(',', '');
+  }).replaceAll(',', options?.dateTimeSeparator || '');
 }
 
 export function formatTime(date) {
@@ -40,7 +40,7 @@ export function formatTime(date) {
   return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
 }
 
-export function formatRelativeDate(date) {
+export function formatRelativeDate(date, options = { article: true }) {
   if (!date?.getTime) {
     return '';
   }
@@ -56,7 +56,7 @@ export function formatRelativeDate(date) {
   if (isYesterday)
     return 'Ayer';
 
-  return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
+  return (options.article ? 'El ' : '') + `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
 }
 
 export function formatRelativeDateTime(date) {
