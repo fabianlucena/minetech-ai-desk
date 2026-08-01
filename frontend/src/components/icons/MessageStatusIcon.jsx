@@ -18,7 +18,7 @@ export default function MessageStatusIcon({
   const sx = {
     marginLeft: .3,
     fontSize: 16,
-    verticalAlign: 'center',
+    verticalAlign: 'text-bottom',
     ...sxProp,
   };
 

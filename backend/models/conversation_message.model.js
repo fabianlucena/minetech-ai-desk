@@ -26,7 +26,7 @@ export default (sequelize) => {
     deliveredAt: { field: 'delivered_at', type: DataTypes.DATE, allowNull: true },
     readAt: { field: 'read_at', type: DataTypes.DATE, allowNull: true },
     failedAt: { field: 'failed_at', type: DataTypes.DATE, allowNull: true },
-    failMessage: { field: 'fail_message', type: DataTypes.STRING, allowNull: true },
+    failMessage: { field: 'fail_message', type: DataTypes.TEXT, allowNull: true },
   }, {
     tableName: 'conversation_messages',
     schema: 'ia_desk',
