@@ -1,11 +1,8 @@
-import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Box } from '@mui/material';
 import Header from './Header';
 import Footer from './Footer';
 import Menu from './Menu';
-
-import MenuIcon from '@mui/icons-material/Menu';
 
 export default function Layout() {
   return <>

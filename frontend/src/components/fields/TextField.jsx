@@ -1,5 +1,4 @@
 import { TextField as MuiTextField, Box } from '@mui/material';
-import RefreshTwoToneIcon from '@mui/icons-material/RefreshTwoTone';
 
 export default function TextField({
   tools,

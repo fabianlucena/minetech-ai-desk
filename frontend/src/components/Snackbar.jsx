@@ -1,8 +1,7 @@
-import { Snackbar as MuiSnackbar, Alert, Button, Slide } from '@mui/material';
+import { Snackbar as MuiSnackbar, Alert, Slide } from '@mui/material';
 import { useState } from 'react';
 
 export default function Snackbar({
-  title,
   text,
   severity = 'success',
   variant = 'filled',
