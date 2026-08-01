@@ -8,9 +8,14 @@ let technicianService;
 let sessionService;
 let conversationService;
 
-const clients = new Map();
+const peers = new Map();
 
-export default function configureConversationMessagesWebSocketHandler(ws) {
+export const routes = {
+  '/ws/chat': handler,
+  '/ws/chat/:uuid': handler,
+};
+
+export function handler(ws) {
   technicianService = getDependency('technicianService');
   sessionService = getDependency('sessionService');
   conversationService = getDependency('conversationService');
@@ -23,20 +28,20 @@ export default function configureConversationMessagesWebSocketHandler(ws) {
     try {      
       const msg = tryParseJSON(raw);
       if (!msg) {
-        const clientInfo = clients.get(ws);
+        const clientInfo = peers.get(ws);
         if (!clientInfo || !clientInfo.session || clientInfo.errorCount >= config.maxWSErrorCount)
           throw new WSFatalError(1007, 'El JSON recibido es inválido');
 
         clientInfo.errorCount = (clientInfo.errorCount || 0) + 1;
         throw new WSError('El JSON recibido es inválido');
       } else {
-        const clientInfo = clients.get(ws);
+        const clientInfo = peers.get(ws);
         if (clientInfo)
           clientInfo.errorCount = 0;
       }
       
       if (msg.type === 'auth') 
-        res = await handleAuth({msg, ws});
+        res = await handleAuth({msg, ws, conversationUuid: ws.params.uuid});
       else if (msg.type === 'send_message')
         res = await handleSendMessage({msg, ws});
       else
@@ -64,31 +69,47 @@ export default function configureConversationMessagesWebSocketHandler(ws) {
   });
 
   ws.on('close', () => {
-    clients.delete(ws);
+    peers.delete(ws);
   });
 }
 
-export function sendToTechnicianId(technicianId, message) {
+export async function sendToConversationId(conversationId, message) {
   if (typeof message !== 'string')
     message = JSON.stringify(message);
 
-  const filteredClients = [...clients.entries()]
-    .filter(([, info]) => info && info.technicianId === technicianId);
-  for (const [ws] of filteredClients) {
+  const filteredPeers = [...peers.entries()]
+    .filter(([, info]) => info && info.conversationId === conversationId);
+  for (const [ws] of filteredPeers) {
     try {
-      ws.send(message);
+      await ws.send(message);
     } catch (err) {
-      clients.delete(ws);
+      peers.delete(ws);
+      logger.warn(`Failed to send WS message to conversationId=${conversationId}: ${err.message}`);
+    }
+  }
+}
+
+export async function sendToTechnicianId(technicianId, message) {
+  if (typeof message !== 'string')
+    message = JSON.stringify(message);
+
+  const filteredPeers = [...peers.entries()]
+    .filter(([, info]) => info && info.technicianId === technicianId);
+  for (const [ws] of filteredPeers) {
+    try {
+      await ws.send(message);
+    } catch (err) {      
+      peers.delete(ws);
       logger.warn(`Failed to send WS message to technicianId=${technicianId}: ${err.message}`);
     }
   }
 }
 
-async function handleAuth({msg, ws}) {
+async function handleAuth({msg, ws, conversationUuid}) {
   if (!msg.token)
     throw new WSFatalError(1008, 'Falta el token de autorización');
 
-  const session = await sessionService.getByAuthorizationToken(msg.token);
+  let session = await sessionService.getByAuthorizationToken(msg.token);
   if (!session)
     throw new WSFatalError(1008, 'Token de autorización inválido');
 
@@ -99,22 +120,38 @@ async function handleAuth({msg, ws}) {
     throw new WSFatalError(1008, 'La sesión ha expirado');
 
   const technician = await technicianService.getById(session.userId);
+  if (technician) {
+    peers.set(ws, { session, technicianId: technician?.id, errorCount: 0 });
+    return { type: 'auth_success' };
+  }
 
-  clients.set(ws, { session, technicianId: technician?.id, errorCount: 0 });
+  if (conversationUuid) {
+    const conversationId = await conversationService.getIdByUuid(conversationUuid);
+    if (conversationId) {
+      session = await sessionService.decorateWithCredentials(session);
+      if (!session)
+        throw new WSFatalError(1008, 'Error al decorar la sesión con credenciales');
 
-  return { type: 'auth_success' };
+      if (session.permissions?.find?.(p => p.name === 'conversations.viewChat')) {
+        peers.set(ws, { session, conversationId, errorCount: 0 });
+        return { type: 'auth_success' };
+      }
+    }
+  }
+
+  throw new WSFatalError(1008, 'Usted no tiene permiso para usar el chat');
 }
 
 async function handleSendMessage({msg, ws}) {
-  if (!clients.has(ws))
-    throw new WSError('Cliente no autenticado');
+  if (!peers.has(ws))
+    throw new WSError('Técnico no autenticado');
 
-  const clientInfo = clients.get(ws);
+  const clientInfo = peers.get(ws);
   if (!clientInfo.session)
-    throw new WSError('Cliente no autenticado');
+    throw new WSError('Técnico no autenticado');
 
   if (!clientInfo.technicianId)
-    throw new WSError('El cliente no es un técnico');
+    throw new WSError('El cliente conectado no es un técnico');
 
   if (!msg.conversationUuid)
     throw new WSError('Conversación no especificada');
@@ -122,7 +159,7 @@ async function handleSendMessage({msg, ws}) {
   await conversationService.addTechnicianMessage({
     conversationUuid: msg.conversationUuid,
     technicianId: clientInfo.technicianId,
-    sentAt: new Date(),
+    receivedAt: new Date(),
     text: msg.text,
   });
 
