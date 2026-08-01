@@ -1,5 +1,6 @@
 import { getDependency } from '../dependency.js';
 import ModelService from './model.service.js';
+import { sendToConversationId } from '../web-sockets/chat.ws.js';
 
 export default class ConversationService extends ModelService {
   constructor() {
@@ -301,6 +302,11 @@ export default class ConversationService extends ModelService {
       media: message.media,
     });
 
+    await sendToConversationId(message.conversationId, {
+      text: message.text,
+      media: message.media,
+    });
+
     await this.conversationMessageService.updateById(message.id, {
       receiverId: technician.id,
       receiverType: 'technician',
@@ -328,6 +334,11 @@ export default class ConversationService extends ModelService {
     const requesterId = conversation.requesterId;
 
     await this.requesterService.sendMessageById(requesterId, {
+      text: message.text,
+      media: message.media,
+    });
+
+    await sendToConversationId(message.conversationId, {
       text: message.text,
       media: message.media,
     });

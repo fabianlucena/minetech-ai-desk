@@ -1,4 +1,4 @@
-import { urlBase } from '../config.js';
+import { apiUrl } from '../config.js';
 
 export default class Api {
   static debug = false;
@@ -12,7 +12,7 @@ export default class Api {
 
     options ??= {};
 
-    var url = `${urlBase}/${service}`;
+    var url = `${apiUrl}/${service}`;
     var method = options.method || 'GET';
     var headers = options.headers || {};
     var body = options.body;
