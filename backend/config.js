@@ -22,6 +22,7 @@ let config = {
     token: '',
     phoneId: '',
     messageUrl: 'https://graph.facebook.com/v20.0/{phoneId}/messages',
+    timeout: 10000,
   },
 };
 
