@@ -48,7 +48,7 @@ export default function HomePage() {
         <Button variant="contained" size="large" href="/about">
           Conocer más sobre el sistema
         </Button>
-        <Button variant="contained" size="large" href="/LOGIN">
+        <Button variant="contained" size="large" href="/login">
           Ingresar al sistema
         </Button>
       </Box>

@@ -54,6 +54,7 @@ export default function LoginPage() {
     onSubmit={onSubmit}
     onCancel={() => navigate('/')}
     submitConfirmEnabled={false}
+    cancelConfirmEnabled={false}
     sx={{
       maxWidth: 400,
       margin: "auto",

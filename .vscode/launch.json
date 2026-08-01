@@ -25,7 +25,7 @@
       "console": "integratedTerminal"
     },
     {
-      "type": "firefox",
+      "type": "chrome",
       "request": "launch",
       "name": "Debug Frontend (Vite)",
       "url": "http://localhost:5173",
