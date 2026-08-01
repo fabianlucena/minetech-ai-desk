@@ -96,7 +96,7 @@ export default class ConversationMessageService extends ModelService {
       throw new Error('El tipo de destinatario es obligatorio si se especifica el ID del destinatario');
     }
 
-    if (data.receivedAt || data.sentAt || data.deliveredAt || data.readAt) {
+    if (data.sentAt || data.deliveredAt || data.readAt) {
       if (!data.receiverType) {
         if (!options?.where)
           throw new Error('El tipo y el ID del destinatario son obligatorios si se especifica alguna fecha de estado');
