@@ -17,12 +17,12 @@ export default function AboutPage() {
       <Typography variant="h5" fontWeight={600} gutterBottom>
         Visión General
       </Typography>
-      <Typography paragraph>
+      <Typography>
         El Sistema de <strong>Gestión Unificada de Consultas Inteligentes</strong> centraliza, automatiza y
         profesionaliza la atención de soporte técnico en MineTech. Evita la comunicación directa entre clientes
         y técnicos fuera de horario, mejora la calidad del servicio y garantiza trazabilidad completa de cada interacción.
       </Typography>
-      <Typography paragraph>
+      <Typography>
         La plataforma unifica todos los canales en un único punto de entrada, aplica inteligencia artificial para
         resolver consultas simples y deriva automáticamente aquellas que requieren intervención humana.
       </Typography>
@@ -51,7 +51,7 @@ export default function AboutPage() {
       <Typography variant="h6" fontWeight={500} gutterBottom>
         1. Punto único de entrada
       </Typography>
-      <Typography paragraph>
+      <Typography>
         Todos los clientes y operadores de campo se comunican a través de un único número de WhatsApp Business API,
         eliminando el contacto directo con los técnicos.
       </Typography>
@@ -59,7 +59,7 @@ export default function AboutPage() {
       <Typography variant="h6" fontWeight={500} gutterBottom>
         2. Validación del cliente
       </Typography>
-      <Typography paragraph>El sistema verifica automáticamente:</Typography>
+      <Typography>El sistema verifica automáticamente:</Typography>
       <Box component="ul" sx={{ pl: 3 }}>
         <li>Identidad del cliente.</li>
         <li>Estado del servicio.</li>
@@ -69,7 +69,7 @@ export default function AboutPage() {
       <Typography variant="h6" fontWeight={500} gutterBottom>
         3. Motor de IA y base de conocimiento
       </Typography>
-      <Typography paragraph>
+      <Typography>
         Utiliza documentación interna y modelos de IA para analizar la intención, buscar respuestas y resolver
         automáticamente cuando la confianza es alta.
       </Typography>
@@ -77,14 +77,14 @@ export default function AboutPage() {
       <Typography variant="h6" fontWeight={500} gutterBottom>
         4. Derivación transparente al operador
       </Typography>
-      <Typography paragraph>
+      <Typography>
         El sistema identifica quién está de turno y envía la consulta por el canal interno correspondiente.
       </Typography>
 
       <Typography variant="h6" fontWeight={500} gutterBottom>
         5. Auditoría completa
       </Typography>
-      <Typography paragraph>
+      <Typography>
         Cada interacción queda registrada para métricas reales y mejora continua.
       </Typography>
 
@@ -138,7 +138,7 @@ export default function AboutPage() {
       <Typography variant="h5" fontWeight={600} gutterBottom>
         Arquitectura del Sistema
       </Typography>
-      <Typography paragraph>El sistema combina:</Typography>
+      <Typography>El sistema combina:</Typography>
       <Box component="ul" sx={{ pl: 3 }}>
         <li>Backend inteligente.</li>
         <li>Motor de IA.</li>
@@ -153,7 +153,7 @@ export default function AboutPage() {
       <Typography variant="h5" fontWeight={600} gutterBottom>
         Objetivo Final
       </Typography>
-      <Typography paragraph>
+      <Typography>
         Brindar un soporte técnico moderno, eficiente y escalable, garantizando calidad de servicio y protección del personal técnico.
       </Typography>
 
@@ -163,13 +163,13 @@ export default function AboutPage() {
       <Typography variant="h5" fontWeight={600} gutterBottom>
         Sobre MineTech
       </Typography>
-      <Typography paragraph>
+      <Typography>
         MineTech es una empresa dedicada a soluciones tecnológicas para la seguridad industrial. Este sistema
         representa su compromiso con la innovación y la excelencia en la atención al cliente.
       </Typography>
 
       <Typography variant="body2" color="text.secondary" sx={{ mt: 4 }}>
-        <a href="https://www.minetech.com.ar" target="_blank" rel="noopener noreferrer">© MineTech — Sistema de Gestión Unificada de Consultas Inteligentes.</a>
+        <a href="https://www.minetech.com.ar" target="_blank" rel="noopener noreferrer"  style={{ color: 'inherit' }}>© MineTech — Sistema de Gestión Unificada de Consultas Inteligentes.</a>
       </Typography>
 
       <Divider sx={{ my: 3 }} />
@@ -177,8 +177,8 @@ export default function AboutPage() {
       <Typography variant="h5" fontWeight={600} gutterBottom>
         Desarrollo
       </Typography>
-      <Typography paragraph>
-        Desarrollado por <a href="mailto:fabianlucena@gmail.com">Ing. Fabian Lucena</a> por cuenta y orden de MineTech.
+      <Typography variant="body2" color="text.secondary" sx={{ mt: 4 }}>
+        Desarrollado por <a href="mailto:fabianlucena@gmail.com" style={{ color: 'inherit' }}>Ing. Fabian Lucena</a> por cuenta y orden de MineTech.
       </Typography>
     </Paper>
   </Container>;

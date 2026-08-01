@@ -12,3 +12,12 @@ body {
   height: 100%;
   overflow: auto;
 }
+
+.hover-underline {
+  text-decoration: none;
+}
+
+.hover-underline:hover {
+  text-decoration: underline;
+  color: #b0b0ff !important;
+}
