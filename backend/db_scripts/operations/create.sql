@@ -424,7 +424,7 @@ insert into auth.permissions (
     ('requesters.create'),('requesters.delete'),('requesters.update'),('requesters.list'),('requesters.read'),('requesters.restore'),('requesters.ban'),('requesters.unban'),
     ('shifts.create'),('shifts.delete'),('shifts.update'),('shifts.list'),('shifts.read'),('shifts.restore'),
     ('settings.create'),('settings.delete'),('settings.update'),('settings.list'),('settings.read'),('settings.restore'),
-    ('conversations.list'),('conversations.read'),('conversations.delete'),('conversations.restore'),('conversations.close'),
+    ('conversations.list'),('conversations.read'),('conversations.delete'),('conversations.restore'),('conversations.close'),('conversations.viewChat'),
     ('conversationMessages.list'),('conversationMessages.read')
   ) as p(name)
   join auth.users system on system.username = 'system'
