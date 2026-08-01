@@ -6,9 +6,13 @@ export default function MessageFailedIcon({
   title,
   ...props
 }) {
-  props ??= {};
-  props.sx ??= {};
-  props.sx.color = red[600];
+  props = {
+    ...props,
+    sx: {
+      color: red[600],
+      ...props?.sx,
+    }
+  };
 
   return <Tooltip title={title || 'Fallido'}>
       <Icon {...props} />

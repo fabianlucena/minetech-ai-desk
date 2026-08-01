@@ -6,9 +6,13 @@ export default function MessageDeliveredIcon({
   title,
   ...props
 }) {
-  props ??= {};
-  props.sx ??= {};
-  props.sx.color = grey[800];
+  props = {
+    ...props,
+    sx: {
+      color: grey[800],
+      ...props?.sx,
+    }
+  };
 
   return <Tooltip title={title || 'Entregado'}>
       <Icon {...props} />

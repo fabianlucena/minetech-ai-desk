@@ -6,9 +6,13 @@ export default function MessageWaitingIcon({
   title,
   ...props
 }) {
-  props ??= {};
-  props.sx ??= {};
-  props.sx.color = grey[800];
+  props = {
+    ...props,
+    sx: {
+      color: grey[800],
+      ...props?.sx,
+    }
+  };
 
   return <Tooltip title={title || 'Esperando'}>
       <Icon {...props} />

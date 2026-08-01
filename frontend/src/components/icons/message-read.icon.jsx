@@ -6,9 +6,13 @@ export default function MessageReadIcon({
   title,
   ...props
 }) {
-  props ??= {};
-  props.sx ??= {};
-  props.sx.color = blue[600];
+  props = {
+    ...props,
+    sx: {
+      color: blue[600],
+      ...props?.sx,
+    }
+  };
 
   return <Tooltip title={title || 'Leído'}>
       <Icon {...props} />
