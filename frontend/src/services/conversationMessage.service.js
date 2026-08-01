@@ -1,13 +1,44 @@
 import Api from '../utils/api.js';
+import { wsUrl } from '../config.js';
 
-export async function getConversationMessages(uuid, params) {
-  const messages = await Api.getJson(`v1/conversations/${uuid}/messages`, params);
-  return messages.map(msg => ({
+export function normalizeReceivedMessage(msg) {
+  return {
     ...msg,
     receivedAt: msg.receivedAt ? new Date(msg.receivedAt) : null,
     sentAt: msg.sentAt ? new Date(msg.sentAt) : null,
     deliveredAt: msg.deliveredAt ? new Date(msg.deliveredAt) : null,
     readAt: msg.readAt ? new Date(msg.readAt) : null,
     failedAt: msg.failedAt ? new Date(msg.failedAt) : null,
-  }));
+  };
+}
+
+export async function getConversationMessages(uuid, params) {
+  const messages = await Api.getJson(`v1/conversations/${uuid}/messages`, params);
+  return messages.map(normalizeReceivedMessage);
+}
+
+export async function connectToChat(uuid, handler) {
+  const ws = new WebSocket(wsUrl + `/chat/${uuid}`);
+
+  ws.onopen = () => {
+    ws.send(JSON.stringify({
+      type: 'auth',
+      token: Api.authorizationToken
+    }));
+  };
+
+  ws.onmessage = (event) => {
+    const msg = JSON.parse(event.data);
+    handler?.(msg);
+  };
+
+  ws.onclose = () => {
+    console.log('WS closed');
+  };
+
+  ws.onerror = (err) => {
+    console.error('WS error:', err);
+  };
+
+  return ws;
 }
