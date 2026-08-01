@@ -1,3 +1,4 @@
+import { ConversationMinDTO } from './conversation.dto.js';
 import { RequesterMinDTO } from './requester.dto.js';
 import { TechnicianMinDTO } from './technician.dto.js';
 
@@ -5,7 +6,7 @@ export class ConversationMessageDTO {
   constructor(message) {
     this.uuid = message.uuid;
 
-    this.conversation = message.conversation;
+    this.conversation = message.conversation ? new ConversationMinDTO(message.conversation) : null;
     this.text = message.text;
     this.media = message.media;
 
@@ -17,7 +18,7 @@ export class ConversationMessageDTO {
     this.deliveredAt = message.deliveredAt;
     this.readAt = message.readAt;
     this.failedAt = message.failedAt;
-    this.failMessage = message.failMessage;
+    this.failureReason = message.failureReason;
     
     this.deletedAt = message.deletedAt;
 
