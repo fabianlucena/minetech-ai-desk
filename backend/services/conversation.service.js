@@ -1,6 +1,6 @@
 import { getDependency } from '../dependency.js';
 import ModelService from './model.service.js';
-import { sendToConversationId } from '../web-sockets/chat.ws.js';
+import { sendMessageToConversationId } from '../web-sockets/chat.ws.js';
 import { ConversationMessageDTO } from '../dto/conversation_message.dto.js';
 
 const logger = getDependency('logger');
@@ -343,7 +343,7 @@ export default class ConversationService extends ModelService {
 
     const messageToSend = new ConversationMessageDTO(message);
 
-    await sendToConversationId(
+    await sendMessageToConversationId(
       message.conversationId,
       messageToSend,
     );
@@ -368,7 +368,7 @@ export default class ConversationService extends ModelService {
       options
     );
 
-    await sendToConversationId(
+    await sendMessageToConversationId(
       message.conversationId,
       {
         uuid: message.uuid,
@@ -419,7 +419,7 @@ export default class ConversationService extends ModelService {
 
     const messageToSend = new ConversationMessageDTO(message);
 
-    await sendToConversationId(
+    await sendMessageToConversationId(
       message.conversationId,
       messageToSend,
       options
@@ -445,7 +445,7 @@ export default class ConversationService extends ModelService {
       options
     );
 
-    await sendToConversationId(
+    await sendMessageToConversationId(
       message.conversationId,
       {
         uuid: message.uuid,

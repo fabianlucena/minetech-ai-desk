@@ -73,15 +73,18 @@ export function handler(ws) {
   });
 }
 
-export async function sendToConversationId(conversationId, message) {
-  if (typeof message !== 'string')
-    message = JSON.stringify(message);
+export async function sendMessageToConversationId(conversationId, message) {
+  let payload = {
+    type: 'chat_message',
+    message,
+  };
+  payload = JSON.stringify(payload);
 
   const filteredPeers = [...peers.entries()]
     .filter(([, info]) => info && info.conversationId === conversationId);
   for (const [ws] of filteredPeers) {
     try {
-      await ws.send(message);
+      await ws.send(payload);
     } catch (err) {
       peers.delete(ws);
       logger.warn(`Failed to send WS message to conversationId=${conversationId}: ${err.message}`);
@@ -89,15 +92,18 @@ export async function sendToConversationId(conversationId, message) {
   }
 }
 
-export async function sendToTechnicianId(technicianId, message) {
-  if (typeof message !== 'string')
-    message = JSON.stringify(message);
+export async function sendMessageToTechnicianId(technicianId, message) {
+  let payload = {
+    type: 'chat_message',
+    message,
+  };
+  payload = JSON.stringify(payload);
 
   const filteredPeers = [...peers.entries()]
     .filter(([, info]) => info && info.technicianId === technicianId);
   for (const [ws] of filteredPeers) {
     try {
-      await ws.send(message);
+      await ws.send(payload);
     } catch (err) {      
       peers.delete(ws);
       logger.warn(`Failed to send WS message to technicianId=${technicianId}: ${err.message}`);

@@ -1,7 +1,7 @@
 import { getDependency } from '../dependency.js';
 import ModelService from './model.service.js';
 import { Op } from 'sequelize';
-import { sendToTechnicianId } from '../web-sockets/chat.ws.js';
+import { sendMessageToTechnicianId } from '../web-sockets/chat.ws.js';
 
 export default class TechnicianService extends ModelService {
   constructor() {
@@ -114,6 +114,6 @@ export default class TechnicianService extends ModelService {
   }
 
   async sendMessageById(technicianId, message) {
-    await sendToTechnicianId(technicianId, message);
+    await sendMessageToTechnicianId(technicianId, message);
   }
 }
