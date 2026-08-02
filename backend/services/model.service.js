@@ -189,6 +189,19 @@ export default class ModelService {
     }
   }
 
+  async getUuidById(id, options) {
+    if (!id)
+      throw new Error('ID es obligatorio');
+
+    if (Array.isArray(id)) {
+      const rows = await this.getList({ ...options, attributes: ['uuid'], where: { ...options?.where, id } });
+      return rows.map(r => r.uuid);
+    } else {
+      const row = await this.getFirstOrDefault({ ...options, attributes: ['uuid'], where: { ...options?.where, id } });
+      return row?.uuid;
+    }
+  }
+
   get validPropertiesForUpdate() {
     return [];
   }

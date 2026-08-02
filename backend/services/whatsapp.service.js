@@ -56,16 +56,18 @@ export default class WhatsappService {
         if (value.statuses?.length) {
           for (const status of value.statuses) {
             logger.info(`📩 Mensaje ${status.status} (externalMessageId=${status.id}, wa_id=${status.recipient_id})`);
-            const messageId = await conversationMessageService.getIdByExternalMessageId(status.id, options);
-            if (!messageId) {
+            const message = await conversationMessageService.getByExternalMessageId(status.id, options);
+            if (!message) {
               logger.warn(`⚠️ No se encontró el mensaje con externalMessageId=${status.id} para actualizar su estado`);
               continue;
             }
 
-            await conversationMessageService.updateById(messageId, {
+            const statusToUpdate = {
               deliveredAt: status.status === 'delivered' ? new Date() : undefined,
               readAt: status.status === 'read' ? new Date() : undefined,
-            }, options);
+            };
+
+            await conversationMessageService.updateStatus(message, statusToUpdate, options);
           }
         }
       }

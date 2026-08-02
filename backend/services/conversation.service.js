@@ -362,20 +362,7 @@ export default class ConversationService extends ModelService {
       logger.error('Error sending message to technician', error);
     }
 
-    await this.conversationMessageService.updateById(
-      message.id,
-      status,
-      options
-    );
-
-    await sendMessageToConversationId(
-      message.conversationId,
-      {
-        uuid: message.uuid,
-        ...status,
-      },
-      options
-    );
+    await this.conversationMessageService.updateStatus(message, status, options);
   }
 
   async sendMessageToRequester(message, options) {
@@ -439,19 +426,6 @@ export default class ConversationService extends ModelService {
       logger.error('Error sending message to requester', error);
     }
 
-    await this.conversationMessageService.updateById(
-      message.id,
-      status,
-      options
-    );
-
-    await sendMessageToConversationId(
-      message.conversationId,
-      {
-        uuid: message.uuid,
-        ...status,
-      },
-      options
-    );
+    await this.conversationMessageService.updateStatus(message, status, options);
   }
 }

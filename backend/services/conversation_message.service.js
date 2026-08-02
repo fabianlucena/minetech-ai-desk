@@ -1,5 +1,6 @@
 import { getDependency } from '../dependency.js';
 import ModelService from './model.service.js';
+import { sendMessageToConversationId } from '../web-sockets/chat.ws.js';
 
 export default class ConversationMessageService extends ModelService {
   constructor() {
@@ -246,16 +247,28 @@ export default class ConversationMessageService extends ModelService {
     });
   }
 
-  async getIdByExternalMessageId(externalMessageId, options) {
+  async getByExternalMessageId(externalMessageId, options) {
     if (!externalMessageId)
       throw new Error('El ID externo del mensaje es obligatorio');
 
     if (Array.isArray(externalMessageId)) {
-      const rows = await this.getList({ ...options, attributes: ['id'], where: { ...options?.where, externalMessageId } });
-      return rows.map(r => r.id);
+      const rows = await this.getList({ ...options, where: { ...options?.where, externalMessageId } });
+      return rows;
     } else {
-      const row = await this.getFirstOrDefault({ ...options, attributes: ['id'], where: { ...options?.where, externalMessageId } });
-      return row?.id;
+      const row = await this.getFirstOrDefault({ ...options, where: { ...options?.where, externalMessageId } });
+      return row;
     }
+  }
+
+  async updateStatus(message, status, options) {
+    await this.updateById(message.id, status, options);
+    await sendMessageToConversationId(
+      message.conversationId,
+      {
+        uuid: message.uuid,
+        ...status,
+      },
+      options
+    );
   }
 }
