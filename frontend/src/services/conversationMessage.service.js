@@ -2,14 +2,14 @@ import Api from '../utils/api.js';
 import { wsUrl } from '../config.js';
 
 export function normalizeReceivedMessage(msg) {
-  return {
-    ...msg,
-    receivedAt: msg.receivedAt ? new Date(msg.receivedAt) : null,
-    sentAt: msg.sentAt ? new Date(msg.sentAt) : null,
-    deliveredAt: msg.deliveredAt ? new Date(msg.deliveredAt) : null,
-    readAt: msg.readAt ? new Date(msg.readAt) : null,
-    failedAt: msg.failedAt ? new Date(msg.failedAt) : null,
-  };
+  msg ??= {};
+  if (msg.receivedAt) msg.receivedAt = new Date(msg.receivedAt);
+  if (msg.sentAt) msg.sentAt = new Date(msg.sentAt);
+  if (msg.deliveredAt) msg.deliveredAt = new Date(msg.deliveredAt);
+  if (msg.readAt) msg.readAt = new Date(msg.readAt);
+  if (msg.failedAt) msg.failedAt = new Date(msg.failedAt);
+
+  return msg;
 }
 
 export async function getConversationMessages(uuid, params) {
