@@ -28,10 +28,10 @@ export default class DeviceService extends ModelService {
   }
 
   async getOrCreateByToken(token) {
-    if (!token)
-      throw new Error('El token de dispositivo es obligatorio');
+    let device;
+    if (token)
+      device = await this.getByToken(token);
 
-    let device = await this.getByToken(token);
     if (!device)
       device = await this.create({ token });
 
