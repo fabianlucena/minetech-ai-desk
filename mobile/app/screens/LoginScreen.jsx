@@ -16,6 +16,14 @@ export default function LoginScreen() {
   const submitHandler = useCallback(async () => {
     try {
       const res = await loginService(data);
+      if (!res.roles.includes('technician')) {
+        error(
+          'Error no es un técnico',
+          'No tienes permisos para acceder a esta aplicación'
+        );
+        return;
+      }
+      
       await updateSession(res);
       success(
         'Bienvenido de nuevo',
