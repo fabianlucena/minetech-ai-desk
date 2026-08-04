@@ -6,6 +6,7 @@ export default function Button({
   style,
   labelStyle,
   disabled,
+  children,
   ...props
 }) {
   style = {
@@ -33,6 +34,7 @@ export default function Button({
     disabled={disabled}
     {...props}
   >
-    <Text style={labelStyle}>{label}</Text>
+    {label && <Text style={labelStyle}>{label}</Text>}
+    {children}
   </Pressable>;
 }

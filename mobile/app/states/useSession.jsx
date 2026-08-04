@@ -1,8 +1,8 @@
 import useGlobal from './useGlobal.jsx';
 
 const useSession = () => {
-  const { session, updateSession } = useGlobal();
-  return { session, updateSession };
+  const { session, updateSession, setSession } = useGlobal();
+  return { session, updateSession, setSession };
 }
 
 export default useSession;
