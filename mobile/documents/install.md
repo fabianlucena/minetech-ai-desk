@@ -44,3 +44,9 @@ npm run android
 ```bash
 npm start
 ```
+
+# Para notificaciones
+
+```bash
+npx expo install react-native-toast-message
+```

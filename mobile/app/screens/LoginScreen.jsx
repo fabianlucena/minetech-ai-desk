@@ -1,9 +1,10 @@
 import { useState, useCallback } from 'react';
-import Screen from '../components/Screen.jsx';
-import Form from '../components/Form.jsx';
-import TextField from '../components/TextField.jsx';
-import { loginService } from '../services/login.service.js';
-import useGlobal from '../states/useGlobal.jsx';
+import { success, error } from '../components/Toast';
+import Screen from '../components/Screen';
+import Form from '../components/Form';
+import TextField from '../components/TextField';
+import { loginService } from '../services/login.service';
+import useGlobal from '../states/useGlobal';
 
 export default function LoginScreen() {
   const { updateSession } = useGlobal();
@@ -15,10 +16,17 @@ export default function LoginScreen() {
   const submitHandler = useCallback(async () => {
     try {
       const res = await loginService(data);
-      updateSession(res);
+      await updateSession(res);
+      success(
+        'Bienvenido de nuevo',
+        'Has iniciado sesión correctamente'
+      );
     }
-    catch (error) {
-      console.error('Login failed:', error);
+    catch (err) {
+      error(
+        'Error al iniciar sesión',
+        err.message || 'No se pudo iniciar sesión'
+      );
     }
   }, [data]);
 

@@ -1,7 +1,10 @@
 import { useEffect } from 'react';
 import useGlobal from './states/useGlobal';
-import { autoLoginService } from './services/login.service.js';
-import Api from './utils/api.js';
+import { autoLoginService } from './services/login.service';
+import Api from './utils/api';
+import { success, info, warning } from './components/Toast';
+
+console.log(warning);
 
 import InitiatingScreen from './screens/InitiatingScreen';
 import Router from './Router';
@@ -17,6 +20,25 @@ export default function Main() {
 
     autoLoginService()
       .then(res => updateSession(res))
+      .then(() => {
+        if (Api.authorizationToken) {
+          success(
+            'Bienvenido de nuevo',
+            'Sesión iniciada correctamente'
+          );
+        } else {
+          info(
+            'Sesión no iniciada',
+            'No se pudo iniciar sesión automáticamente'
+          );
+        }
+      })
+      .catch((err) => {
+        warning(
+          'Error al iniciar sesión',
+          err.message || 'No se pudo iniciar sesión automáticamente'
+        );
+      })
       .finally(() => setLoading(false));
   }, []);
 
