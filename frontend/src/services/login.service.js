@@ -20,11 +20,15 @@ export async function autoLoginService() {
     return _loginService('v1/auto-login', body);
 }
 
-export async function logoutService() {
-  await Api.getJson('v1/logout');
+export async function logoutService(options) {
+  options = {
+    authorization: Api.authorization,
+    ...options,
+  };
+  
+  clearCredentials();
   localStorage.removeItem('autoLoginToken');
-  if (Api.Authorization)
-    Api.Authorization = null;
+  await Api.getJson('v1/logout', options);
 }
 
 export async function _loginService(service, body) {
@@ -36,9 +40,9 @@ export async function _loginService(service, body) {
 export async function setCredentials(res) {
   if (res.authorizationToken) {
     Api.authorizationToken = res.authorizationToken;
-    Api.Authorization = 'Bearer ' + res.authorizationToken;
+    Api.authorization = 'Bearer ' + res.authorizationToken;
     if (res.expireAt) {
-      Api.AuthorizationExpireAt = new Date(res.expireAt);
+      Api.authorizationExpireAt = new Date(res.expireAt);
     }
   }
 
@@ -57,8 +61,7 @@ export async function setCredentials(res) {
 
 export function clearCredentials() {
   localStorage.removeItem('autoLoginToken');
-  if (Api.Authorization) {
-    Api.Authorization = null;
-    Api.AuthorizationExpireAt = null;
-  }
+  Api.authorizationToken = null;
+  Api.authorizationExpireAt = null;
+  Api.authorization = null;
 }

@@ -2,8 +2,9 @@ import { apiUrl } from '../config.js';
 
 export default class Api {
   static debug = false;
-  static Authorization = null;
-  static AuthorizationExpireAt = null;
+  static authorizationToken = null;
+  static authorizationExpireAt = null;
+  static authorization = null;
 
   static async fetch(service, options) {
     if (!service) {
@@ -39,14 +40,14 @@ export default class Api {
       }
     }
 
-    if (typeof options.Authorization !== 'undefined') {
-      if (options.Authorization) {
-        headers['Authorization'] = options.Authorization;
+    if (typeof options.authorization !== 'undefined') {
+      if (options.authorization) {
+        headers['Authorization'] = options.authorization;
       }
-    } else if (this.Authorization && !options.headers?.Authorization && (!this.AuthorizationExpireAt || this.AuthorizationExpireAt > new Date())) {
-      headers['Authorization'] = this.Authorization;
-    } else if (Api.Authorization && !options.headers?.Authorization && (!Api.AuthorizationExpireAt || Api.AuthorizationExpireAt > new Date())) {
-      headers['Authorization'] = Api.Authorization;
+    } else if (this.authorization && !options.headers?.Authorization && (!this.authorizationExpireAt || this.authorizationExpireAt > new Date())) {
+      headers['Authorization'] = this.authorization;
+    } else if (Api.authorization && !options.headers?.Authorization && (!Api.authorizationExpireAt || Api.authorizationExpireAt > new Date())) {
+      headers['Authorization'] = Api.authorization;
     }
 
     if (options.json) {
@@ -95,11 +96,11 @@ export default class Api {
       if (options.error) {
         options.error({ data, res });
       } else {
-        throw {
-          error: new Error('Error en la respuesta de la API: ' + res.status + ' ' + res.statusText),
-          data,
-          response: res,
-        };
+        const error = new Error('Error en la respuesta de la API: ' + res.status + ' ' + res.statusText);
+        error.data = data;
+        error.response = res;
+
+        throw error;
       }
     }
 
