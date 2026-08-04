@@ -36,6 +36,8 @@ export async function _loginService(service, body, options) {
 }
 
 export async function setCredentials(res) {
+  res ??= {};
+
   if (res.authorizationToken) {
     Api.authorizationToken = res.authorizationToken;
     Api.Authorization = 'Bearer ' + res.authorizationToken;
@@ -45,7 +47,7 @@ export async function setCredentials(res) {
   }
 
   if (res.deviceToken) {
-    asyncStorage.setItem('deviceToken', res.deviceToken);
+    await asyncStorage.setItem('deviceToken', res.deviceToken);
   }
 
   if (res.autoLoginToken) {

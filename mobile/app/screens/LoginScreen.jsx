@@ -3,8 +3,10 @@ import Screen from '../components/Screen.jsx';
 import Form from '../components/Form.jsx';
 import TextField from '../components/TextField.jsx';
 import { loginService } from '../services/login.service.js';
+import useGlobal from '../states/useGlobal.jsx';
 
 export default function LoginScreen() {
+  const { updateSession } = useGlobal();
   const [data, setData] = useState({
     username: '',
     password: '',
@@ -12,8 +14,8 @@ export default function LoginScreen() {
 
   const submitHandler = useCallback(async () => {
     try {
-      const res = await loginService(data, { debug: true });
-      console.log('Login successful:', res);
+      const res = await loginService(data);
+      updateSession(res);
     }
     catch (error) {
       console.error('Login failed:', error);
