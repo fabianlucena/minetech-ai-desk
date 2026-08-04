@@ -1,5 +1,6 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
+import GlobalProvider from './app/states/GlobalProvider.jsx';
 
 import HomeScreen from './app/screens/HomeScreen';
 import ChatScreen from './app/screens/ChatScreen';
@@ -12,42 +13,44 @@ export default function App() {
   const user = false;
 
   return <NavigationContainer>
-    <Drawer.Navigator>
-      <Drawer.Screen
-        name="home"
-        component={HomeScreen}
-        options={{
-          title: "Inicio"
-        }}
-      />
-
-      {!user && <Drawer.Screen
-        name="login"
-        component={LoginScreen}
-        options={{
-          title: "Iniciar Sesión"
-        }}
-      />}
-      
-      {user && <>
+    <GlobalProvider>
+      <Drawer.Navigator>
         <Drawer.Screen
-          name="chat"
-          component={ChatScreen}
+          name="home"
+          component={HomeScreen}
           options={{
-            title: "Chat",
-            drawerLabel: "Panel Principal" // Nombre que aparece en el menú
+            title: "Inicio"
           }}
         />
 
-        <Drawer.Screen
-          name="tickets"
-          component={TicketsScreen}
+        {!user && <Drawer.Screen
+          name="login"
+          component={LoginScreen}
           options={{
-            title: "Tickets",
-            drawerLabel: "Gestionar Tickets"
+            title: "Iniciar Sesión"
           }}
-        />
-      </>}
-    </Drawer.Navigator>
+        />}
+        
+        {user && <>
+          <Drawer.Screen
+            name="chat"
+            component={ChatScreen}
+            options={{
+              title: "Chat",
+              drawerLabel: "Panel Principal" // Nombre que aparece en el menú
+            }}
+          />
+
+          <Drawer.Screen
+            name="tickets"
+            component={TicketsScreen}
+            options={{
+              title: "Tickets",
+              drawerLabel: "Gestionar Tickets"
+            }}
+          />
+        </>}
+      </Drawer.Navigator>
+    </GlobalProvider>
   </NavigationContainer>;
 }

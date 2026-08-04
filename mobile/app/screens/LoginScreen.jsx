@@ -5,7 +5,10 @@ import TextField from '../components/TextField.jsx';
 import { loginService } from '../services/login.service.js';
 
 export default function LoginScreen() {
-  const [data, setData] = useState({});
+  const [data, setData] = useState({
+    username: '',
+    password: '',
+  });
 
   const submitHandler = useCallback(async () => {
     try {

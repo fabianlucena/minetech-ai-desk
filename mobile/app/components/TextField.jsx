@@ -1,5 +1,6 @@
 import { TextInput } from 'react-native';
 import Field from './Field';
+import { useForm } from './FormContext';
 
 export default function TextField({
   label,
@@ -8,6 +9,8 @@ export default function TextField({
   labelStyle,
   ...props
 }) {
+  const { onSubmit } = useForm();
+
   style = {
     borderColor: '#ccc',
     placeholderTextColor: '#888',
@@ -30,6 +33,7 @@ export default function TextField({
   >
     <TextInput
       style={style}
+      onSubmitEditing={onSubmit}
       {...props}
     />
   </Field>;
