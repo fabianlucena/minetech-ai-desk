@@ -1,25 +1,36 @@
-import { Text, TextInput, View } from 'react-native';
+import { TextInput } from 'react-native';
+import Field from './Field';
 
 export default function TextField({
   label,
-  navigation,
   style,
+  fieldStyle,
+  labelStyle,
   ...props
 }) {
   style = {
-    borderWidth: 1,
     borderColor: '#ccc',
-    padding: 10,
+    placeholderTextColor: '#888',
+    backgroundColor: '#fff',
+    fontSize: 16,
     borderRadius: 4,
-    marginBottom: 10,
+    paddingHorizontal: 6,
     ...style,
   };
+
+  labelStyle = {
+    paddingHorizontal: 6,
+    ...labelStyle
+  }
   
-  return <View>
-    {label && <Text>{label}</Text>}
+  return <Field
+    label={label}
+    style={fieldStyle}
+    labelStyle={labelStyle}
+  >
     <TextInput
       style={style}
       {...props}
     />
-  </View>;
+  </Field>;
 }

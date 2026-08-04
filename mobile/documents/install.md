@@ -24,3 +24,23 @@ npx expo start
 npx expo install @react-navigation/native-stack
 npx expo install @react-navigation/bottom-tabs
 ```
+
+## Para correr en navegadores web
+
+```bash
+npx expo install react-dom react-native-web @expo/metro-runtime
+```
+
+# Para correr en moviles
+
+El móvil debe estar conectado por ADB
+
+```bash
+npm run android
+```
+
+# Para inicar
+
+```bash
+npm start
+```

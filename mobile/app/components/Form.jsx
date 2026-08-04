@@ -1,15 +1,17 @@
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
 import Title from './Title.jsx';
+import Button from './Button.jsx';
 
 export default function Form({
   title,
   children,
   onSubmit,
-  //navigation,
+  submitLabel = 'Enviar',
+  ...props
 }) {
-  return <View>
+  return <View {...props}>
     {title && <Title>{title}</Title>}
     {children}
-    {onSubmit && <Text onPress={onSubmit}>Enviar</Text>}
+    {onSubmit && <Button onPress={onSubmit} label={submitLabel} />}
   </View>;
 }
