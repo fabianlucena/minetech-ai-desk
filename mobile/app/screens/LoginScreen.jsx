@@ -38,12 +38,14 @@ export default function LoginScreen() {
     >
       <TextField
         label="Nombre de usuario"
+        required
         value={data.username}
         onChangeText={(value) => setData({ ...data, username: value })}
         placeholder="Escriba aquí su nombre de usuario"
       />
       <TextField
         label="Contraseña"
+        required
         value={data.password}
         onChangeText={(value) => setData({ ...data, password: value })}
         placeholder="Escriba aquí su contraseña"

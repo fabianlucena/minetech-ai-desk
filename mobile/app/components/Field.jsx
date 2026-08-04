@@ -2,6 +2,7 @@ import { Text, View } from 'react-native';
 
 export default function TextField({
   label,
+  required,
   children,
   style,
   labelStyle,
@@ -31,7 +32,10 @@ export default function TextField({
   };
   
   return <View style={style} >
-    {label && <Text style={labelStyle} {...props}>{label}</Text>}
+    <View style={{ flexDirection: "row" }}>
+      {required && <Text style={{ color: 'red', fontSize: 12, marginBottom: 3 }}>*</Text>}
+      {label && <Text style={labelStyle} {...props}>{label}</Text>}
+    </View>
     {children}
   </View>;
 }

@@ -4,6 +4,7 @@ import { useForm } from './FormContext';
 
 export default function TextField({
   label,
+  required,
   style,
   fieldStyle,
   labelStyle,
@@ -28,6 +29,7 @@ export default function TextField({
   
   return <Field
     label={label}
+    required={required}
     style={fieldStyle}
     labelStyle={labelStyle}
   >
