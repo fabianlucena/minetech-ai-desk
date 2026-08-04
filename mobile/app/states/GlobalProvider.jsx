@@ -1,8 +1,9 @@
 import { useState, useCallback, useMemo } from 'react';
 import GlobalContext from './GlobalContext.jsx';
+import { setCredentials } from '../services/login.service.js';
 
 export default function GlobalProvider({ children }) {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [session, setSession] = useState({});
 
   const updateSession = useCallback((newSession) => {
@@ -10,6 +11,7 @@ export default function GlobalProvider({ children }) {
       ...prevSession,
       ...newSession,
     }));
+    setCredentials(newSession);
   }, []);
 
   const value = useMemo(() => ({
