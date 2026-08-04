@@ -1,5 +1,6 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
+import Icon from '@react-native-vector-icons/material-icons';
 import { success, error } from './components/Toast';
 
 import useSession from './states/useSession';
@@ -22,8 +23,9 @@ export default function Router() {
         <CustomDrawer
           {...props}
           buttons={[
-            {
+            (user && {
               label: 'Cerrar sesión',
+              icon: ({ size, color }) => <Icon name="logout" size={size} color={color} />,
               color: 'red',
               onPress: async () => {
                 props.navigation.closeDrawer();
@@ -35,8 +37,8 @@ export default function Router() {
                   error('Error al cerrar sesión:', err.message || err);
                 }                
               }
-            }
-          ]}
+            })
+          ].filter(Boolean)}
         />
       )}
     >
@@ -44,7 +46,8 @@ export default function Router() {
         name="login"
         component={LoginScreen}
         options={{
-          title: "Iniciar Sesión"
+          title: 'Iniciar Sesión',
+          drawerIcon: ({ color, size }) => <Icon name="login" size={size} color={color} />,
         }}
       />}
       
@@ -53,8 +56,9 @@ export default function Router() {
           name="chat"
           component={ChatScreen}
           options={{
-            title: "Chat",
-            drawerLabel: "Chats" // Nombre que aparece en el menú
+            title: 'Chat',
+            drawerLabel: 'Chats', // Nombre que aparece en el menú
+            drawerIcon: ({ color, size }) => <Icon name="forum" size={size} color={color} />,
           }}
         />
 
@@ -63,7 +67,10 @@ export default function Router() {
           component={TicketsScreen}
           options={{
             title: "Tickets",
-            drawerLabel: "Gestionar Tickets"
+            drawerLabel: "Tickets",
+            drawerIcon: ({ color, size }) => (
+                <Icon name="assignment" size={size} color={color} />
+              ),
           }}
         />
       </>}

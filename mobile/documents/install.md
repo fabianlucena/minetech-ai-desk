@@ -50,3 +50,9 @@ npm start
 ```bash
 npx expo install react-native-toast-message
 ```
+
+### Íconos
+
+```bash
+npx expo install @react-native-vector-icons/material-icons
+```
