@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import useGlobal from './states/useGlobal';
 import { autoLoginService } from './services/login.service';
 import Api from './utils/api';
-import { success, info, warning } from './components/Toast';
+import { success, info, warning, error } from './components/Toast';
 
 console.log(warning);
 
@@ -19,7 +19,18 @@ export default function Main() {
     }
 
     autoLoginService()
-      .then(res => updateSession(res))
+      .then(res => {
+        if (!res.roles.includes('technician')) {
+          error(
+            'Error no es un técnico',
+            'No tienes permisos para acceder a esta aplicación'
+          );
+          throw new Error('No tienes permisos para acceder a esta aplicación');
+        }
+  
+        const result = updateSession(res);
+        return result;
+      })
       .then(() => {
         if (Api.authorizationToken) {
           success(
