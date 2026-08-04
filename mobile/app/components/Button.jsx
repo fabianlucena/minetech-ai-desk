@@ -5,10 +5,11 @@ export default function Button({
   onPress,
   style,
   labelStyle,
+  disabled,
   ...props
 }) {
   style = {
-    backgroundColor: '#D8B128',
+    backgroundColor: disabled ? '#ccc' : '#D8B128',
     padding: 10,
     marginHorizontal: 8,
     borderRadius: 4,
@@ -29,6 +30,7 @@ export default function Button({
   return <Pressable
     style={style}
     onPress={onPress}
+    disabled={disabled}
     {...props}
   >
     <Text style={labelStyle}>{label}</Text>

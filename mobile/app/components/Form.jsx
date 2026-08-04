@@ -10,6 +10,7 @@ export default function Form({
   submitLabel = 'Enviar',
   onCancel,
   cancelLabel = 'Cancelar',
+  canSubmit = true,
   ...props
 }) {
   function submitHandler() {
@@ -35,7 +36,7 @@ export default function Form({
     >
       {title && <Title>{title}</Title>}
       {children}
-      {onSubmit && <Button onPress={onSubmit} label={submitLabel} />}
+      {onSubmit && <Button disabled={!canSubmit} onPress={onSubmit} label={submitLabel} />}
       {onCancel && <Button onPress={onCancel} label={cancelLabel} />}
     </View>
   </FormProvider>;

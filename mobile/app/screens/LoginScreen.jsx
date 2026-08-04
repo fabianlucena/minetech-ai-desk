@@ -35,6 +35,7 @@ export default function LoginScreen() {
       title="Iniciar Sesión"
       submitLabel="Iniciar Sesión"
       onSubmit={submitHandler}
+      canSubmit={data.username && data.password}
     >
       <TextField
         label="Nombre de usuario"
