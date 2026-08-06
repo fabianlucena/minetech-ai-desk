@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import FormDialog from './FormDialog.jsx';
 import TextField from './fields/TextField.jsx';
-import { banRequester } from '../services/requester.service.js';
+import useRequester from '../services/useRequester';
 import useToast from '../contexts/useToast';
 import Button from './buttons/Button.jsx';
 import { Box } from '@mui/material';
@@ -20,8 +20,9 @@ export default function BanRequesterDialog({
   onSubmit,
   ...rest
 }) {
-  const [disabled, setDisabled] = useState(false);
   const { addInfo, addError } = useToast();
+  const { banRequester } = useRequester();
+  const [disabled, setDisabled] = useState(false);
   const [data, setData] = useState({
     banReason: '',
   });

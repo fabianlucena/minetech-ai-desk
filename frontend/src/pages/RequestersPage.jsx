@@ -3,7 +3,7 @@ import Grid from '../components/Grid.jsx';
 import useToast from '../contexts/useToast';
 import usePermissions from '../contexts/usePermissions';
 import { formatDate } from '../utils/datetime.js';
-import { getRequesters, unbanRequester, deleteRequester, restoreRequester } from '../services/requester.service.js';
+import useRequester from '../services/useRequester';
 import SwitchField from '../components/fields/SwitchField.jsx';
 import { BanIcon, UnbanIcon } from '../components/icons';
 import { GridActionsCellItem } from '@mui/x-data-grid';
@@ -13,6 +13,7 @@ import BanRequesterDialog from '../components/BanRequesterDialog.jsx';
 export default function RequestersPage() {
   const { hasPermission } = usePermissions();
   const { addMessage, addError } = useToast();
+  const { getRequesters, deleteRequester, restoreRequester, unbanRequester } = useRequester();
   const [data, setData] = useState([]);
   const [includeDeleted, setIncludeDeleted] = useState(false);
   const [banDialog, setBanDialog] = useState({});
@@ -69,7 +70,7 @@ export default function RequestersPage() {
       addError('Error al obtener los solicitantes');
       console.error('Error al obtener los solicitantes:', error);
     }
-  }, [includeDeleted, addError]);
+  }, [includeDeleted, addError, getRequesters]);
 
   useEffect(() => {
     load();
