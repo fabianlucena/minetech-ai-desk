@@ -14,3 +14,7 @@ export async function autoLogin(req, res) {
   const response = new SessionResponse(session);
   res.json(response);
 }
+
+export async function logout(req, res) {
+  res.status(204).end();
+}
