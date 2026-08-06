@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Form from '../components/Form.jsx';
 import { TextField } from '../components/fields/index.jsx';
 import useToast from '../contexts/useToast';
-import { getSetting, updateSetting, createSetting } from '../services/setting.service.js';
+import useSetting from '../services/useSetting';
 
 const defaultData = {
   key: '',
@@ -15,6 +15,7 @@ export default function SettingPage() {
   const navigate = useNavigate();
   const { uuid } = useParams();
   const { addInfo, addError } = useToast();
+  const { getSetting, updateSetting, createSetting } = useSetting();
   const [disabled, setDisabled] = useState(false);
   const [data, setData] = useState({...defaultData});
   const [unchangedData, setUnchangedData] = useState({...defaultData});
@@ -44,7 +45,7 @@ export default function SettingPage() {
       addError('Error al obtener la configuración');
       console.error('Error al obtener la configuración:', error);
     }
-  }, [uuid, addError]);
+  }, [uuid, addError, getSetting]);
 
   useEffect(() => {
     if (uuid) {

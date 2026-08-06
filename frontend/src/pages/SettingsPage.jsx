@@ -3,12 +3,13 @@ import Grid from '../components/Grid.jsx';
 import useToast from '../contexts/useToast';
 import usePermissions from '../contexts/usePermissions';
 import { formatDate } from '../utils/datetime.js';
-import { getSettings, deleteSetting, restoreSetting } from '../services/setting.service.js';
+import useSetting from '../services/useSetting';
 import SwitchField from '../components/fields/SwitchField.jsx';
 
 export default function SettingsPage() {
   const { hasPermission } = usePermissions();
   const { addMessage, addError } = useToast();
+  const { getSettings, deleteSetting, restoreSetting } = useSetting();
   const [data, setData] = useState([]);
   const [includeDeleted, setIncludeDeleted] = useState(false);
 
@@ -57,7 +58,7 @@ export default function SettingsPage() {
       addError('Error al obtener las configuraciones');
       console.error('Error al obtener las configuraciones:', error);
     }
-  }, [addError, includeDeleted]);
+  }, [addError, includeDeleted, getSettings]);
 
   async function deleteSettingHandler({ uuid }) {
     try {
