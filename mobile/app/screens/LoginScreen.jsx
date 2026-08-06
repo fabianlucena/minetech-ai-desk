@@ -19,7 +19,6 @@ export default function LoginScreen() {
     setDisabled(true);
     try {
       const res = await login(data);
-      console.log(res);
       if (!res?.roles?.includes('technician')) {
         error(
           'Error no es un técnico',
