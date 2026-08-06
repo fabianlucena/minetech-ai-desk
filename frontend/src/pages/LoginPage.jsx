@@ -3,14 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import Form from '../components/Form';
 import { TextField, PasswordField } from '../components/fields';
 import Button from '../components/buttons/Button.jsx';
-import { loginService } from '../services/login.service.js';
 import { getOAuth2ProvidersService } from '../services/oauth2provider.service';
 import useGlobal from '../states/useGlobal.jsx';
+import useLogin from '../services/useLogin';
 import useToast from '../states/useToast.jsx';
 
 export default function LoginPage() {
   const { updateSession } = useGlobal();
   const { addInfo, addError } = useToast();
+  const { login } = useLogin();
   const [providers, setProviders] = useState([]);
   const navigate = useNavigate();
   const [disabled, setDisabled] = useState(false);
@@ -22,7 +23,7 @@ export default function LoginPage() {
   async function onSubmit() {
     setDisabled(true);
     try {
-      const response = await loginService(data);
+      const response = await login(data);
       updateSession({
         user: response.user ?? null,
         roles: response.roles ?? null,

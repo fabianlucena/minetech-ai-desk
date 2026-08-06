@@ -2,11 +2,12 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useGlobal from '../states/useGlobal.jsx';
 import useToast from '../states/useToast.jsx';
-import { clearCredentials } from '../services/login.service.js';
+import useLogin from '../services/useLogin';
 
 export default function LogoutPage() {
   const navigate = useNavigate();
   const { updateSession } = useGlobal();
+  const { clearCredentials } = useLogin();
   const { addWarning, addError } = useToast();
 
   useEffect(() => {
@@ -23,7 +24,7 @@ export default function LogoutPage() {
       console.error('Error al cerrar sesión:', error);
       addError('Error al cerrar sesión: ' + (error.data?.message || error.message || error.data?.error));
     }
-  }, [updateSession, navigate, addWarning, addError]);
+  }, [updateSession, navigate, addWarning, addError, clearCredentials]);
 
   return <h6>Cerrando sesión...</h6>;
 }

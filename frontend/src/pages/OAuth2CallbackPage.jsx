@@ -1,10 +1,10 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { oAuth2Callback } from '../services/oauth2provider.service.js';
-import { setCredentials, clearCredentials } from '../services/login.service.js';
 import { ErrorDialog } from '../components/dialogs';
 import useToast from '../states/useToast.jsx';
 import useGlobal from '../states/useGlobal.jsx';
+import useLogin from '../services/useLogin';
 
 let oauth2AutorizationRequested = false;
 function setOauth2AutorizationRequested(value) {
@@ -24,6 +24,7 @@ export default function OAuth2CallbackPage() {
   const navigate = useNavigate();
   const { updateSession } = useGlobal();
   const { addMessage, addError } = useToast();
+  const { setCredentials, clearCredentials } = useLogin();
 
   // oxlint-disable-next-line react-hooks/exhaustive-deps
   const goHome = useCallback(() => { navigate('/'); }, []);
