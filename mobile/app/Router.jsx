@@ -7,14 +7,14 @@ import useSession from './contexts/useSession';
 import useLogin from './services/useLogin';
 
 import CustomDrawer from './components/CustomDrawer';
-import ChatScreen from './screens/ChatScreen';
+import ConversationsScreen from './screens/ConversationsScreen';
 import LoginScreen from './screens/LoginScreen';
 import TicketsScreen from './screens/TicketsScreen';
 
 const Drawer = createDrawerNavigator();
 
 export default function Router() {
-  const { session } = useSession();
+  const { session, clearSession } = useSession();
   const { logout } = useLogin();
   const user = session.user;
 
@@ -54,11 +54,11 @@ export default function Router() {
       
       {user && <>
         <Drawer.Screen
-          name="chat"
-          component={ChatScreen}
+          name="conversations"
+          component={ConversationsScreen}
           options={{
-            title: 'Chat',
-            drawerLabel: 'Chats', // Nombre que aparece en el menú
+            title: 'Conversaciones',
+            drawerLabel: 'Conversaciones', // Nombre que aparece en el menú
             drawerIcon: ({ color, size }) => <Icon name="forum" size={size} color={color} />,
           }}
         />
