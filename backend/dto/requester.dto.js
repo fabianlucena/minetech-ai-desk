@@ -5,6 +5,7 @@ export class RequesterMinDTO {
   constructor(requester) {
     this.uuid = requester.uuid;
     this.displayName = requester.displayName;
+    this.phone = requester.phone;
     this.bannedAt = requester.bannedAt;
   }
 }

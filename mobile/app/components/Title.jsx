@@ -9,9 +9,9 @@ export default function Title({
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 10,
-    ...style,
     textAlign: 'center',
     color: '#D8B128',
+    ...style,
   };
 
   return <Text

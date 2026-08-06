@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { View, Text, FlatList } from 'react-native';
 import { error } from '../components/Toast';
+import Title from '../components/Title';
 import useConversation from '../services/useConversation';
 
 export default function ConversationsScreen() {
@@ -14,11 +15,21 @@ export default function ConversationsScreen() {
   }, []);
 
   return <View>
-    <Text>Pantalla de Conversaciones</Text>
+    <Title>Pantalla de Conversaciones</Title>
     <FlatList
       data={conversations}
       keyExtractor={(item) => item.uuid}
-      renderItem={({ item }) => <Text>{item.lastMessageAt.toString()}</Text>}
+      renderItem={({ item }) => <View
+        style={{
+          padding: 10,
+          borderWidth: 1,
+          borderColor: '#ccc',
+          borderRadius: 8,
+          margin: 10,
+        }}>
+          <Text>{item.requester.displayName}</Text>
+          <Text>{item.requester.phone}</Text>
+        </View>}
     />
   </View>;
 }
