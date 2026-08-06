@@ -17,6 +17,7 @@ export default function Router() {
   const { session, clearSession } = useSession();
   const { logout } = useLogin();
   const user = session.user;
+  const permissions = session.permissions || [];
 
   return <NavigationContainer>
     <Drawer.Navigator
@@ -52,29 +53,27 @@ export default function Router() {
         }}
       />}
       
-      {user && <>
-        <Drawer.Screen
-          name="conversations"
-          component={ConversationsScreen}
-          options={{
-            title: 'Conversaciones',
-            drawerLabel: 'Conversaciones', // Nombre que aparece en el menú
-            drawerIcon: ({ color, size }) => <Icon name="forum" size={size} color={color} />,
-          }}
-        />
+      {permissions.includes('conversations.list') && <Drawer.Screen
+        name="conversations"
+        component={ConversationsScreen}
+        options={{
+          title: 'Conversaciones',
+          drawerLabel: 'Conversaciones', // Nombre que aparece en el menú
+          drawerIcon: ({ color, size }) => <Icon name="forum" size={size} color={color} />,
+        }}
+      />}
 
-        <Drawer.Screen
-          name="tickets"
-          component={TicketsScreen}
-          options={{
-            title: "Tickets",
-            drawerLabel: "Tickets",
-            drawerIcon: ({ color, size }) => (
-                <Icon name="assignment" size={size} color={color} />
-              ),
-          }}
-        />
-      </>}
+      {permissions.includes('tickets.list') && <Drawer.Screen
+        name="tickets"
+        component={TicketsScreen}
+        options={{
+          title: "Tickets",
+          drawerLabel: "Tickets",
+          drawerIcon: ({ color, size }) => (
+              <Icon name="assignment" size={size} color={color} />
+            ),
+        }}
+      />}
     </Drawer.Navigator>
   </NavigationContainer>;
 }
