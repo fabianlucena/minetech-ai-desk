@@ -3,12 +3,13 @@ import Grid from '../components/Grid.jsx';
 import useToast from '../contexts/useToast';
 import usePermissions from '../contexts/usePermissions';
 import { formatDate } from '../utils/datetime.js';
-import { getClients, deleteClient, restoreClient, getStatus } from '../services/client.service.js';
+import useClient from '../services/useClient';
 import SwitchField from '../components/fields/SwitchField.jsx';
 
 export default function ClientsPage() {
   const { hasPermission } = usePermissions();
   const { addMessage, addError } = useToast();
+  const { getClients, getStatus, deleteClient, restoreClient } = useClient();
   const [data, setData] = useState([]);
   const [includeDeleted, setIncludeDeleted] = useState(false);
   const [showAccessCode, setShowAccessCode] = useState(false);
@@ -72,7 +73,7 @@ export default function ClientsPage() {
       addError('Error al obtener los clientes');
       console.error('Error al obtener los clientes:', error);
     }
-  }, [includeDeleted, addError]);
+  }, [includeDeleted, addError, getClients]);
 
   const loadStatus = useCallback(async () => {
     try {
@@ -82,7 +83,7 @@ export default function ClientsPage() {
       addError('Error al obtener los estados');
       console.error('Error al obtener los estados:', error);
     }
-  }, [addError]);
+  }, [addError, getStatus]);
 
   async function deleteClientHandler({ uuid }) {
     try {

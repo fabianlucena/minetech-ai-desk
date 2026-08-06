@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Form from '../components/Form.jsx';
 import { TextField, SwitchField, ChippedCheckboxSelectField } from '../components/fields/index.jsx';
 import useToast from '../contexts/useToast';
-import { getClient, getStatus, updateClient, createClient } from '../services/client.service.js';
+import useClient from '../services/useClient';
 import { generateClientIdentifiers } from '../utils/client.js';
 import RenewButton from '../components/buttons/renew.button.jsx';
 
@@ -19,6 +19,7 @@ export default function ClientPage() {
   const navigate = useNavigate();
   const { uuid } = useParams();
   const { addInfo, addError } = useToast();
+  const { getClient, getStatus, updateClient, createClient } = useClient();
   const [disabled, setDisabled] = useState(false);
   const [data, setData] = useState({...defaultData});
   const [unchangedData, setUnchangedData] = useState({...defaultData});
@@ -36,7 +37,7 @@ export default function ClientPage() {
       addError('Error al obtener los estados');
       console.error('Error al obtener los estados:', error);
     }
-  }, [addError]);
+  }, [addError, getStatus]);
 
   const load = useCallback(async () => {
     try {
@@ -51,7 +52,7 @@ export default function ClientPage() {
       addError('Error al obtener el cliente');
       console.error('Error al obtener el cliente:', error);
     }
-  }, [addError, uuid]);
+  }, [addError, uuid, getClient]);
 
   useEffect(() => {
     loadStatus();
