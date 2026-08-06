@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useCallback } from 'react';
 
+// oxlint-disable-next-line react/only-export-components
 export const ApiContext = createContext();
 
 export function ApiProvider({
@@ -67,7 +68,7 @@ export function ApiProvider({
         headers['Authorization'] = options.headers.Authorization;
       }
     } else if (authorization && (!authorizationExpireAt || authorizationExpireAt > new Date())) {
-      headers['Authorization'] = this.authorization;
+      headers['Authorization'] = authorization;
     }
 
     if (options.json) {
@@ -101,8 +102,8 @@ export function ApiProvider({
         data = await data.json();
       } else if (res.status === 204) {
         data = null;
-      } else {
-        throw new Error('Se esperaba una respuesta JSON, pero no se recibió: ' + res.headers.get('Content-Type'));
+      } else if (res.status === 200) {
+        throw new Error('Se esperaba una respuesta JSON, pero se recibió: ' + res.headers.get('Content-Type'));
       }
     }
 
@@ -126,50 +127,58 @@ export function ApiProvider({
       }
     }
 
+    if (options.normalizeItem && typeof options.normalizeItem === 'function') {
+      if (Array.isArray(data)) {
+        data = data.map(options.normalizeItem);
+      } else {
+        data = options.normalizeItem(data);
+      }
+    }
+
     return data;
-  }, []);
+  }, [debug, urlBase, authorization, authorizationExpireAt]);
 
   const fetchJson = useCallback(async (service, options) => {
     return await fetch(service, {
       ...options,
       json: true,
     });
-  }, []);
+  }, [fetch]);
 
   const getJson = useCallback(async (service, options) => {
     return await fetchJson(service, {
       ...options,
       method: 'GET',
     });
-  }, []);
+  }, [fetchJson]);
 
   const postJson = useCallback(async (service, options) => {
     return await fetchJson(service, {
       ...options,
       method: 'POST',
     });
-  }, []);
+  }, [fetchJson]);
 
   const putJson = useCallback(async (service, options) => {
     return await fetchJson(service, {
       ...options,
       method: 'PUT',
     });
-  }, []);
+  }, [fetchJson]);
 
   const deleteJson = useCallback(async (service, options) => {
     return await fetchJson(service, {
       ...options,
       method: 'DELETE',
     });
-  }, []);
+  }, [fetchJson]);
 
   const patchJson = useCallback(async (service, options) => {
     return await fetchJson(service, {
       ...options,
       method: 'PATCH',
     });
-  }, []);
+  }, [fetchJson]);
 
   return <ApiContext.Provider
     value={{
@@ -191,6 +200,7 @@ export function ApiProvider({
   </ApiContext.Provider>;
 }
 
+// oxlint-disable-next-line react/only-export-components
 export default function useApi() {
   return useContext(ApiContext);
 }
