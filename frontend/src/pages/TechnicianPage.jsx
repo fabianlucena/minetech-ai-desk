@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Form from '../components/Form.jsx';
 import { TextField, SelectField, SwitchField, ColorField } from '../components/fields/index.jsx';
 import useToast from '../contexts/useToast';
-import { getTechnician, updateTechnician, createTechnician, getTechnicianUsers } from '../services/technician.service.js';
+import useTechnician from '../services/useTechnician';
 
 const defaultData = {
   userUuid: '',
@@ -15,6 +15,7 @@ export default function TechnicianPage() {
   const navigate = useNavigate();
   const { uuid } = useParams();
   const { addInfo, addError } = useToast();
+  const { getTechnician, createTechnician, updateTechnician, getTechnicianUsers } = useTechnician();
   const [disabled, setDisabled] = useState(false);
   const [data, setData] = useState({...defaultData});
   const [unchangedData, setUnchangedData] = useState({...defaultData});
@@ -32,7 +33,7 @@ export default function TechnicianPage() {
       addError('Error al obtener los usuarios técnicos: ' + (error.data?.message || error.message || error.data?.error));
       console.error('Error al obtener los usuarios técnicos:', error);
     }
-  }, [addError]);
+  }, [addError, getTechnicianUsers]);
 
   const load = useCallback(async () => {
     try {
@@ -47,7 +48,7 @@ export default function TechnicianPage() {
       addError('Error al obtener el técnico: ' + (error.data?.message || error.message || error.data?.error));
       console.error('Error al obtener el técnico:', error);
     }
-  }, [uuid, addError]);
+  }, [uuid, addError, getTechnician]);
 
   useEffect(() => {
     loadTechnicianUsers();

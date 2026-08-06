@@ -4,13 +4,14 @@ import useToast from '../contexts/useToast';
 import usePermissions from '../contexts/usePermissions';
 import { formatDate } from '../utils/datetime.js';
 import Chip from '../components/Chip.jsx';
-import { getTechnicians, deleteTechnician, restoreTechnician } from '../services/technician.service.js';
+import useTechnician from '../services/useTechnician';
 import SwitchField from '../components/fields/SwitchField.jsx';
 import { getLighterColor } from '../utils/color.js';
 
 export default function TechniciansPage() {
   const { hasPermission } = usePermissions();
   const { addMessage, addError } = useToast();
+  const { getTechnicians, deleteTechnician, restoreTechnician } = useTechnician();
   const [data, setData] = useState([]);
   const [includeDeleted, setIncludeDeleted] = useState(false);
   const [rowColors, setRowColors] = useState({});
@@ -70,7 +71,7 @@ export default function TechniciansPage() {
       addError('Error al obtener los técnicos');
       console.error('Error al obtener los técnicos:', error);
     }
-  }, [includeDeleted, addError]);
+  }, [includeDeleted, addError, getTechnicians]);
 
   async function deleteTechnicianHandler({ uuid }) {
     try {
