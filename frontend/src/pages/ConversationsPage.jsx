@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import useToast from '../contexts/useToast';
 import usePermissions from '../contexts/usePermissions';
 import { formatDate } from '../utils/datetime.js';
-import { getConversations, deleteConversation, restoreConversation, closeConversation } from '../services/conversation.service.js';
+import useConversation from '../services/useConversation';
 import SwitchField from '../components/fields/SwitchField.jsx';
 import ConfirmDialog from '../components/dialogs/ConfirmDialog.jsx';
 
@@ -14,6 +14,7 @@ export default function ConversationsPage() {
   const navigate = useNavigate();
   const { hasPermission } = usePermissions();
   const { addMessage, addError } = useToast();
+  const { getConversations, deleteConversation, restoreConversation, closeConversation } = useConversation();
   const [data, setData] = useState([]);
   const [includeDeleted, setIncludeDeleted] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState({});
@@ -72,7 +73,7 @@ export default function ConversationsPage() {
       addError('Error al obtener las conversaciones');
       console.error('Error al obtener las conversaciones:', error);
     }
-  }, [includeDeleted, addError]);
+  }, [includeDeleted, addError, getConversations]);
 
   async function deleteConversationHandler({ uuid }) {
     try {
