@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import useGlobal from '../states/useGlobal.jsx';
-import useToast from '../states/useToast.jsx';
+import useGlobal from '../contexts/useGlobal.jsx';
+import useToast from '../contexts/useToast';
 import useLogin from '../services/useLogin';
 
 export default function LogoutPage() {

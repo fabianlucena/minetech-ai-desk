@@ -2,8 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import Calendar from '../components/Calendar.jsx';
 import ShiftDialog from '../components/ShiftDialog.jsx';
 import { getShifts, deleteShift, restoreShift } from '../services/shift.service.js';
-import usePermissions from '../states/usePermissions.jsx';
-import useToast from '../states/useToast.jsx';
+import usePermissions from '../contexts/usePermissions';
+import useToast from '../contexts/useToast';
 import SwitchField from '../components/fields/SwitchField.jsx';
 
 export default function ShiftsPage() {

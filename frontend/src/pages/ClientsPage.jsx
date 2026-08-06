@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import Grid from '../components/Grid.jsx';
-import useToast from '../states/useToast.jsx';
-import usePermissions from '../states/usePermissions.jsx';
+import useToast from '../contexts/useToast';
+import usePermissions from '../contexts/usePermissions';
 import { formatDate } from '../utils/datetime.js';
 import { getClients, deleteClient, restoreClient, getStatus } from '../services/client.service.js';
 import SwitchField from '../components/fields/SwitchField.jsx';

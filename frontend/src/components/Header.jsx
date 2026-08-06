@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography';
 import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import IconButton from '@mui/material/IconButton';
-import useGlobal from '../states/useGlobal';
+import useGlobal from '../contexts/useGlobal';
 
 export default function Header({
   hideMenuButton = false,

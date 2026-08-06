@@ -1,4 +1,4 @@
-import useGlobal from './states/useGlobal.jsx';
+import useGlobal from './contexts/useGlobal.jsx';
 import { AboutIcon, ClientIcon, ConversationIcon, DashboardIcon, HomeIcon, 
   LoginIcon, LogoutIcon, RequesterIcon, SettingsIcon, ShiftIcon, TechnicianIcon, 
   UsersIcon

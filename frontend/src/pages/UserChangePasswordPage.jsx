@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Form from '../components/Form.jsx';
 import { TextField, PasswordField } from '../components/fields';
-import useToast from '../states/useToast.jsx';
+import useToast from '../contexts/useToast';
 import { getUser, updateUserPassword } from '../services/user.service.js';
 
 const defaultData = {

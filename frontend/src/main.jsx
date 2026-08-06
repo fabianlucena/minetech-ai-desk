@@ -4,9 +4,9 @@ import { ThemeProvider } from '@mui/material/styles';
 import './index.css';
 import App from './App.jsx';
 import { mineTechTheme } from './theme/mineTechTheme';
-import GlobalProvider from './states/GlobalProvider.jsx';
+import GlobalProvider from './contexts/GlobalProvider';
 import { ApiProvider } from './services/useApi';
-import ToastProvider from './states/ToastProvider.jsx';
+import ToastProvider from './contexts/ToastProvider';
 import config from './config';
 
 createRoot(document.getElementById('root')).render(

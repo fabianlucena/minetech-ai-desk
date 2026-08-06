@@ -2,8 +2,8 @@ import { useEffect, useCallback } from 'react';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { useRoutes } from './routes.jsx';
 import useLogin from './services/useLogin';
-import useGlobal from './states/useGlobal.jsx';
-import useToast from './states/useToast.jsx';
+import useGlobal from './contexts/useGlobal.jsx';
+import useToast from './contexts/useToast';
 
 export default function App() {
   const routes = useRoutes();

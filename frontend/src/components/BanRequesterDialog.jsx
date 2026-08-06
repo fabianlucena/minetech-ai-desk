@@ -2,7 +2,7 @@ import { useState } from 'react';
 import FormDialog from './FormDialog.jsx';
 import TextField from './fields/TextField.jsx';
 import { banRequester } from '../services/requester.service.js';
-import useToast from '../states/useToast.jsx';
+import useToast from '../contexts/useToast';
 import Button from './buttons/Button.jsx';
 import { Box } from '@mui/material';
 

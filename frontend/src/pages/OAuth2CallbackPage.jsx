@@ -2,8 +2,8 @@ import { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { oAuth2Callback } from '../services/oauth2provider.service.js';
 import { ErrorDialog } from '../components/dialogs';
-import useToast from '../states/useToast.jsx';
-import useGlobal from '../states/useGlobal.jsx';
+import useToast from '../contexts/useToast';
+import useGlobal from '../contexts/useGlobal.jsx';
 import useLogin from '../services/useLogin';
 
 let oauth2AutorizationRequested = false;
