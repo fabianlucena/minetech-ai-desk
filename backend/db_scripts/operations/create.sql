@@ -443,6 +443,21 @@ insert into auth.permissions_x_roles (
   join auth.roles r on r.name = 'admin'
 on conflict (permission_id, role_id) do nothing;
 
+insert into auth.permissions_x_roles (
+  permission_id, role_id,
+  created_at, created_by_id,
+  deleted_at, deleted_by_id
+) select
+    p.id, r.id,
+    now(), system.id,
+    null, null
+  from auth.permissions p
+  join auth.users system on system.username = 'system'
+  join auth.roles r on r.name = 'technician'
+  where p.name in('conversations.list')
+on conflict (permission_id, role_id) do nothing;
+
+
 -- Schema  ia_desk
 create schema if not exists ia_desk;
 
