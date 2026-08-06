@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { oAuth2Callback } from '../services/oauth2provider.service.js';
+import useOAuth2Provider from '../services/useOAuth2Provider';
 import { ErrorDialog } from '../components/dialogs';
 import useToast from '../contexts/useToast';
 import useGlobal from '../contexts/useGlobal.jsx';
@@ -18,13 +18,14 @@ function setOauth2AutorizationRequested(value) {
 
 export default function OAuth2CallbackPage() {
   const { name, action } = useParams();
+  const { updateSession } = useGlobal();
+  const { addMessage, addError } = useToast();
+  const { setCredentials, clearCredentials } = useLogin();
+  const { oAuth2Callback } = useOAuth2Provider();
   const [errorMessage, setErrorMessage] = useState();
   const [errorTitle, setErrorTitle] = useState();
   const [message, setMessage] = useState('Autorizando...');
   const navigate = useNavigate();
-  const { updateSession } = useGlobal();
-  const { addMessage, addError } = useToast();
-  const { setCredentials, clearCredentials } = useLogin();
 
   // oxlint-disable-next-line react-hooks/exhaustive-deps
   const goHome = useCallback(() => { navigate('/'); }, []);

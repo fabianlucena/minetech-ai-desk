@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Form from '../components/Form';
 import { TextField, PasswordField } from '../components/fields';
 import Button from '../components/buttons/Button.jsx';
-import { getOAuth2ProvidersService } from '../services/oauth2provider.service';
+import useOAuth2provider from '../services/useOAuth2Provider';
 import useGlobal from '../contexts/useGlobal.jsx';
 import useLogin from '../services/useLogin';
 import useToast from '../contexts/useToast';
@@ -12,6 +12,7 @@ export default function LoginPage() {
   const { updateSession } = useGlobal();
   const { addInfo, addError } = useToast();
   const { login } = useLogin();
+  const { getOAuth2Providers } = useOAuth2provider();
   const [providers, setProviders] = useState([]);
   const navigate = useNavigate();
   const [disabled, setDisabled] = useState(false);
@@ -39,13 +40,13 @@ export default function LoginPage() {
   }
   
   useEffect(() => {
-    getOAuth2ProvidersService()
+    getOAuth2Providers()
       .then(setProviders)
       .catch(error => {
         console.error('Error al obtener los proveedores de OAuth2:', error);
         addError('Error al obtener los proveedores de autorización: ' + (error.data?.message || error.message || error.data?.error || error.error || 'Error desconocido'));
       });
-  }, [addError]);
+  }, [addError, getOAuth2Providers]);
 
   return <Form
     title="Ingresar"
