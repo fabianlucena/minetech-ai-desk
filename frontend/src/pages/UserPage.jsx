@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Form from '../components/Form.jsx';
 import { TextField, SwitchField, PasswordField, ChippedCheckboxSelectField } from '../components/fields/index.jsx';
 import useToast from '../contexts/useToast';
-import { getUser, getRoles, updateUser, createUser } from '../services/user.service.js';
+import useUser from '../services/useUser';
 
 const defaultData = {
   username: '',
@@ -18,6 +18,7 @@ export default function UserPage() {
   const navigate = useNavigate();
   const { uuid } = useParams();
   const { addInfo, addError } = useToast();
+  const { getUser, getRoles, updateUser, createUser } = useUser();
   const [disabled, setDisabled] = useState(false);
   const [data, setData] = useState({...defaultData});
   const [unchangedData, setUnchangedData] = useState({...defaultData});
@@ -36,7 +37,7 @@ export default function UserPage() {
       addError('Error al obtener los roles: ' + (error.data?.message || error.message || error.data?.error));
       console.error('Error al obtener los roles:', error);
     }
-  }, [addError]);
+  }, [addError, getRoles]);
 
   const load = useCallback(async () => {
     try {
@@ -52,7 +53,7 @@ export default function UserPage() {
       addError('Error al obtener el usuario');
       console.error('Error al obtener el usuario:', error);
     }
-  }, [uuid, addError]);
+  }, [uuid, addError, getUser]);
 
   useEffect(() => {
     loadRoles();

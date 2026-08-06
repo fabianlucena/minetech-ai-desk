@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Form from '../components/Form.jsx';
 import { TextField, PasswordField } from '../components/fields';
 import useToast from '../contexts/useToast';
-import { getUser, updateUserPassword } from '../services/user.service.js';
+import useUser from '../services/useUser';
 
 const defaultData = {
   username: '',
@@ -16,6 +16,7 @@ export default function UserChangePasswordPage() {
   const navigate = useNavigate();
   const { uuid } = useParams();
   const { addInfo, addError } = useToast();
+  const { getUser, updateUserPassword } = useUser();
   const [disabled, setDisabled] = useState(false);
   const [data, setData] = useState({...defaultData});
   const [unchangedData, setUnchangedData] = useState({...defaultData});
@@ -35,7 +36,7 @@ export default function UserChangePasswordPage() {
       addError('Error al obtener el usuario: ' + (error.data?.message || error.message || error.data?.error));
       console.error('Error al obtener el usuario:', error);
     }
-  }, [uuid, addError]);
+  }, [uuid, addError, getUser]);
 
   useEffect(() => {
     if (!uuid) {

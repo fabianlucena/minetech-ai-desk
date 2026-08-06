@@ -6,7 +6,7 @@ import useToast from '../contexts/useToast';
 import usePermissions from '../contexts/usePermissions';
 import { formatDate } from '../utils/datetime.js';
 import Chips from '../components/Chips.jsx';
-import { getUsers, deleteUser, restoreUser } from '../services/user.service.js';
+import useUser from '../services/useUser';
 import { PasswordIcon } from '../components/icons';
 import SwitchField from '../components/fields/SwitchField.jsx';
 
@@ -14,6 +14,7 @@ export default function UsuariosPage() {
   const navigate = useNavigate();
   const { hasPermission } = usePermissions();
   const { addMessage, addError } = useToast();
+  const { getUsers, deleteUser, restoreUser } = useUser();
   const [data, setData] = useState([]);
   const [includeDeleted, setIncludeDeleted] = useState(false);
 
@@ -86,7 +87,7 @@ export default function UsuariosPage() {
       addError('Error al obtener los usuarios');
       console.error('Error al obtener los usuarios:', error);
     }
-  }, [addError, includeDeleted]);
+  }, [addError, includeDeleted, getUsers]);
 
   async function deleteUserHandler({ uuid }) {
     try {
