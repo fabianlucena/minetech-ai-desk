@@ -102,8 +102,8 @@ export function ApiProvider({
         data = await data.json();
       } else if (res.status === 204) {
         data = null;
-      } else {
-        throw new Error('Se esperaba una respuesta JSON, pero no se recibió: ' + res.headers.get('Content-Type'));
+      } else if (res.status === 200) {
+        throw new Error('Se esperaba una respuesta JSON, pero se recibió: ' + res.headers.get('Content-Type'));
       }
     }
 
@@ -124,6 +124,14 @@ export function ApiProvider({
         error.response = res;
 
         throw error;
+      }
+    }
+
+    if (options.normalizeItem && typeof options.normalizeItem === 'function') {
+      if (Array.isArray(data)) {
+        data = data.map(options.normalizeItem);
+      } else {
+        data = options.normalizeItem(data);
       }
     }
 

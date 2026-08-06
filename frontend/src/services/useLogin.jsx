@@ -1,6 +1,6 @@
 import useApi from './useApi';
 
-export default function useLoginService() {
+export default function useLogin() {
   const api = useApi();
 
   async function login(data, options) {

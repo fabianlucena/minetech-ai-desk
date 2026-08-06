@@ -1,43 +1,27 @@
 import useApi from './useApi';
+import useUser from './useUser';
 
-export default function useLoginService() {
+export default function useTechnician() {
   const api = useApi();
+  const { normalizeUser } = useUser();
 
-  async function getTechnicians(params) {
-    return await api.getJson('v1/technicians', params);
-  }
-
-  async function getTechnician(uuid, params) {
-    return await api.getJson(`v1/technicians/${uuid}`, params);
-  }
-
-  async function createTechnician(data) {
-    return await api.postJson('v1/technicians', { body: data });
-  }
-
-  async function updateTechnician(uuid, data) {
-    return await api.putJson(`v1/technicians/${uuid}`, { body: data });
-  }
-
-  async function deleteTechnician(uuid) {
-    return await api.deleteJson(`v1/technicians/${uuid}`);
-  }
-
-  async function restoreTechnician(uuid) {
-    return await api.patchJson(`v1/technicians/${uuid}/restore`);
-  }
-
-  async function getTechnicianUsers(params) {
-    return await api.getJson('v1/technicians/users', params);
+  function normalizeTechnician(technician) {
+    return {
+      ...technician,
+      createdAt: technician.createdAt && new Date(technician.createdAt),
+      updatedAt: technician.updatedAt && new Date(technician.updatedAt),
+      deletedAt: technician.deletedAt && new Date(technician.deletedAt),
+    }
   }
 
   return {
-    getTechnicians,
-    getTechnician,
-    createTechnician,
-    updateTechnician,
-    deleteTechnician,
-    restoreTechnician,
-    getTechnicianUsers,
+    normalizeTechnician,
+    getTechnicians: (params) => api.getJson('v1/technicians', { normalizeItem: normalizeTechnician, ...params }),
+    getTechnician: (uuid, params) => api.getJson(`v1/technicians/${uuid}`, { normalizeItem: normalizeTechnician, ...params }),
+    createTechnician: (data) => api.postJson('v1/technicians', { normalizeItem: normalizeTechnician, body: data }),
+    updateTechnician: (uuid, data) => api.putJson(`v1/technicians/${uuid}`, { normalizeItem: normalizeTechnician, body: data }),
+    deleteTechnician: (uuid) => api.deleteJson(`v1/technicians/${uuid}`),
+    restoreTechnician: (uuid) => api.patchJson(`v1/technicians/${uuid}/restore`),
+    getTechnicianUsers: (params) => api.getJson('v1/technicians/users', { normalizeItem: normalizeUser, ...params }),
   };
 }
