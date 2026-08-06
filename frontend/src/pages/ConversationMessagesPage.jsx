@@ -3,8 +3,8 @@ import { useParams } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
 import Chat from '../components/ConversationChat.jsx';
 import { ReloadButton } from '../components/buttons';
-import { getConversation } from '../services/conversation.service.js';
-import { getConversationMessages, connectToChat, normalizeReceivedMessage } from '../services/conversationMessage.service.js';
+import useConversation from '../services/useConversation';
+import useConversationMessage from '../services/useConversationMessage';
 import { formatRelativeDateTime } from '../utils/datetime.js';
 
 function normalizeMessageToShow(msg) {
@@ -18,6 +18,8 @@ function normalizeMessageToShow(msg) {
 
 export default function ConversationMessagesPage() {
   const { uuid } = useParams();
+  const { getConversation } = useConversation();
+  const { getConversationMessages, connectToChat } = useConversationMessage();
   const [conversation, setConversation] = useState(null);
   const [messages, setMessages] = useState([]);
 
@@ -52,7 +54,7 @@ export default function ConversationMessagesPage() {
         ws.close(1000, 'Conexión cerrada por el cliente');
       }
     }
-  }, [uuid]);
+  }, [uuid, getConversationMessages, connectToChat]);
 
   const fetchConversation = useCallback(async () => {
     try {
@@ -62,7 +64,7 @@ export default function ConversationMessagesPage() {
       console.error('Error al obtener la conversación:', error);
       setConversation(null);
     }
-  }, [uuid]);
+  }, [uuid, getConversation]);
 
   useEffect(() => {
     fetchConversation();
@@ -71,7 +73,7 @@ export default function ConversationMessagesPage() {
   const fetchMessages = useCallback(async () => {
     const messages = await getConversationMessages(uuid);
     setMessages(messages.map(normalizeMessageToShow));
-  }, [uuid]);
+  }, [uuid, getConversationMessages]);
 
   useEffect(() => {
     fetchMessages();
