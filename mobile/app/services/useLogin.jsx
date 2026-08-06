@@ -1,5 +1,5 @@
 import asyncStorage from '@react-native-async-storage/async-storage';
-import useApi from './useApi.js';
+import useApi from './useApi';
 
 export default function useLoginService() {
   const api = useApi();
@@ -13,6 +13,12 @@ export default function useLoginService() {
       },
       options
     );
+  }
+
+  async function canAutoLogin() {
+    const autoLoginToken = await asyncStorage.getItem('autoLoginToken');
+    const deviceToken = await asyncStorage.getItem('deviceToken');
+    return !!autoLoginToken && !!deviceToken;
   }
 
   async function autoLogin(options) {
@@ -73,6 +79,7 @@ export default function useLoginService() {
   
   return {
     login,
+    canAutoLogin,
     autoLogin,
     logout,
     setCredentials,
