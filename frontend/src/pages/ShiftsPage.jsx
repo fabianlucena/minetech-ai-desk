@@ -1,13 +1,15 @@
 import { useState, useEffect, useCallback } from 'react';
 import Calendar from '../components/Calendar.jsx';
 import ShiftDialog from '../components/ShiftDialog.jsx';
-import { getShifts, deleteShift, restoreShift } from '../services/shift.service.js';
+import useShift from '../services/useShift';
 import usePermissions from '../contexts/usePermissions';
 import useToast from '../contexts/useToast';
 import SwitchField from '../components/fields/SwitchField.jsx';
 
 export default function ShiftsPage() {
+  const { addMessage, addError } = useToast();
   const { hasPermission } = usePermissions();
+  const { getShifts, deleteShift, restoreShift } = useShift();
   const [shifts, setShifts] = useState([]);
   const [firstDate, setFirstDate] = useState(null);
   const [lastDate, setLastDate] = useState(null);
@@ -15,7 +17,6 @@ export default function ShiftsPage() {
   const [openShiftDialog, setOpenShiftDialog] = useState(false);
   const [shiftDialogUuid, setShiftDialogUuid] = useState(null);
   const [shiftDialogStart, setShiftDialogStart] = useState(null);
-  const { addMessage, addError } = useToast();
 
   const load = useCallback(async () => {
     if (!firstDate || !lastDate)
@@ -31,7 +32,7 @@ export default function ShiftsPage() {
 
     const shifts = await getShifts({ query });
     setShifts(shifts);
-  }, [firstDate, lastDate, includeDeleted]);
+  }, [firstDate, lastDate, includeDeleted, getShifts]);
 
   useEffect(() => { load(); }, [load]);
 

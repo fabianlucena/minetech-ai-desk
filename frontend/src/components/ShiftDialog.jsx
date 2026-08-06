@@ -5,7 +5,7 @@ import DateTimeField from './fields/DateTimeField.jsx';
 import SliderField from './fields/SliderField.jsx';
 import useToast from '../contexts/useToast';
 import { diffHours, addHours, diffHoursMinutes } from '../utils/datetime.js';
-import { getTechnicians, getTypes, getShift, createShift, updateShift } from '../services/shift.service.js';
+import useShift from '../services/useShift';
 
 const defaultData = {
   technicianUuid: '',
@@ -20,12 +20,13 @@ export default function ShiftDialog({
   onSubmit,
   ...rest
 }) {
+  const { addInfo, addError } = useToast();
+  const { getTechnicians, getTypes, getShift, createShift, updateShift } = useShift();
   const [technicians, setTechnicians] = useState([]);
   const [shiftTypes, setShiftTypes] = useState([]);
   const [disabled, setDisabled] = useState(false);
   const [data, setData] = useState({});
   const [unchangedData, setUnchangedData] = useState({...defaultData});
-  const { addInfo, addError } = useToast();
 
   const loadShift = useCallback(async () => {
     if (uuid) {
@@ -35,7 +36,7 @@ export default function ShiftDialog({
       setData({...data});
       setUnchangedData({...data});
     }
-  }, [uuid]);
+  }, [uuid, getShift]);
 
   useEffect(() => {
     if (uuid) {
@@ -52,20 +53,20 @@ export default function ShiftDialog({
     }
   }, [uuid, start, loadShift]);
 
-  async function loadTechnicians() {
+  const loadTechnicians = useCallback(async () => {
     const techniciansData = await getTechnicians();
     setTechnicians(techniciansData);
-  }
+  }, [getTechnicians]);
 
-  async function loadShiftTypes() {
+  const loadShiftTypes = useCallback(async () => {
     const shiftTypesData = await getTypes();
     setShiftTypes(shiftTypesData);
-  }
+  }, [getTypes]);
 
   useEffect(() => {
     loadTechnicians();
     loadShiftTypes();
-  }, []);
+  }, [loadTechnicians, loadShiftTypes]);
 
   function getValidationError() {
     if (!data.technicianUuid)
