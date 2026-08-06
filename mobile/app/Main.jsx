@@ -1,26 +1,26 @@
 import { useEffect } from 'react';
-import useGlobal from './states/useGlobal';
-import { autoLoginService } from './services/login.service';
-import Api from './utils/api';
+import useGlobal from './contexts/useGlobal';
+import useLogin from './services/useLogin';
+import useApi from './services/useApi';
 import { success, info, warning, error } from './components/Toast';
-
-console.log(warning);
 
 import InitiatingScreen from './screens/InitiatingScreen';
 import Router from './Router';
 
 export default function Main() {
-  const { loading, updateSession, setLoading } = useGlobal();
+  const { loading, updateSession, setLoading, clearSession } = useGlobal();
+  const { autoLogin, setCredentials, clearCredentials } = useLogin();
+  const api = useApi();
 
   useEffect(() => {
-    if (Api.authorizationToken) {
+    if (!api.authorization) {
       setLoading(false);
       return;
     }
 
-    autoLoginService()
+    autoLogin()
       .then(res => {
-        if (!res.roles.includes('technician')) {
+        if (!res?.roles?.includes('technician')) {
           error(
             'Error no es un técnico',
             'No tienes permisos para acceder a esta aplicación'
@@ -28,6 +28,7 @@ export default function Main() {
           throw new Error('No tienes permisos para acceder a esta aplicación');
         }
   
+        setCredentials(res);
         const result = updateSession(res);
         return result;
       })
@@ -45,6 +46,8 @@ export default function Main() {
         }
       })
       .catch((err) => {
+        clearCredentials();
+        clearSession();
         warning(
           'Error al iniciar sesión',
           err.message || 'No se pudo iniciar sesión automáticamente'

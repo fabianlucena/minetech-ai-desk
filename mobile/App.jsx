@@ -1,5 +1,7 @@
 import Toast, { BaseToast } from 'react-native-toast-message';
-import GlobalProvider from './app/states/GlobalProvider.jsx';
+import config from './config';
+import GlobalProvider from './app/contexts/GlobalProvider';
+import { ApiProvider } from './app/services/useApi';
 import Main from './app/Main';
 
 export const toastConfig = {
@@ -13,7 +15,11 @@ export const toastConfig = {
 
 export default function App() {
   return <GlobalProvider>
-    <Main />
-    <Toast config={toastConfig} />
+    <ApiProvider
+      urlBase={config.apiUrl}
+    >
+      <Main />
+      <Toast config={toastConfig} />
+    </ApiProvider>
   </GlobalProvider>;
 }

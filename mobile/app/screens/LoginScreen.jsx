@@ -3,20 +3,24 @@ import { success, error } from '../components/Toast';
 import Screen from '../components/Screen';
 import Form from '../components/Form';
 import TextField from '../components/TextField';
-import { loginService } from '../services/login.service';
-import useGlobal from '../states/useGlobal';
+import useLogin from '../services/useLogin';
+import useGlobal from '../contexts/useGlobal';
 
 export default function LoginScreen() {
   const { updateSession } = useGlobal();
+  const { login } = useLogin();
+  const [disabled, setDisabled] = useState(false);
   const [data, setData] = useState({
     username: '',
     password: '',
   });
 
   const submitHandler = useCallback(async () => {
+    setDisabled(true);
     try {
-      const res = await loginService(data);
-      if (!res.roles.includes('technician')) {
+      const res = await login(data);
+      console.log(res);
+      if (!res?.roles?.includes('technician')) {
         error(
           'Error no es un técnico',
           'No tienes permisos para acceder a esta aplicación'
@@ -36,12 +40,14 @@ export default function LoginScreen() {
         err.message || 'No se pudo iniciar sesión'
       );
     }
+    setDisabled(false);
   }, [data]);
 
   return <Screen>
-      <Form
+    <Form
       title="Iniciar Sesión"
       submitLabel="Iniciar Sesión"
+      disabled={disabled}
       onSubmit={submitHandler}
       canSubmit={data.username && data.password}
     >

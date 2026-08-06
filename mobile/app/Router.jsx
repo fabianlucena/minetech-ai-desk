@@ -3,8 +3,8 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import Icon from '@react-native-vector-icons/material-icons';
 import { success, error } from './components/Toast';
 
-import useSession from './states/useSession';
-import { logoutService } from './services/login.service';
+import useSession from './contexts/useSession';
+import useLogin from './services/useLogin';
 
 import CustomDrawer from './components/CustomDrawer';
 import ChatScreen from './screens/ChatScreen';
@@ -14,7 +14,8 @@ import TicketsScreen from './screens/TicketsScreen';
 const Drawer = createDrawerNavigator();
 
 export default function Router() {
-  const { session, setSession } = useSession();
+  const { session } = useSession();
+  const { logout } = useLogin();
   const user = session.user;
 
   return <NavigationContainer>
@@ -30,8 +31,8 @@ export default function Router() {
               onPress: async () => {
                 props.navigation.closeDrawer();
                 try {
-                  setSession({});
-                  await logoutService();
+                  clearSession();
+                  await logout();
                   success('Session cerrada correctamente');
                 } catch (err) {
                   error('Error al cerrar sesión:', err.message || err);
