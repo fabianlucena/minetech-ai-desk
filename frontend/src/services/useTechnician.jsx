@@ -6,6 +6,9 @@ export default function useTechnician() {
   const { normalizeUser } = useUser();
 
   function normalizeTechnician(technician) {
+    if (!technician)
+      return null;
+    
     return {
       ...technician,
       createdAt: technician.createdAt && new Date(technician.createdAt),

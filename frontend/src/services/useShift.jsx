@@ -6,6 +6,9 @@ export default function useShift() {
   const { normalizeTechnician } = useTechnician();
 
   function normalizeShift(shift) {
+    if (!shift)
+      return null;
+
     return {
       ...shift,
       start: shift.start && new Date(shift.start),
@@ -17,6 +20,9 @@ export default function useShift() {
   }
 
   function normalizeShiftType(type) {
+    if (!type)
+      return null;
+    
     return {
       ...type,
     }

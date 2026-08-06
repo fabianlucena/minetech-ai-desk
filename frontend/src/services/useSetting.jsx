@@ -4,6 +4,9 @@ export default function useSetting() {
   const api = useApi();
 
   function normalizeSetting(setting) {
+    if (!setting)
+      return null;
+    
     return {
       ...setting,
       createdAt: setting.createdAt && new Date(setting.createdAt),

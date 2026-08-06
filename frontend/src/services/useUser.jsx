@@ -4,6 +4,9 @@ export default function useUser() {
   const api = useApi();
 
   function normalizeUser(user) {
+    if (!user)
+      return null;
+    
     return {
       ...user,
       createdAt: user.createdAt && new Date(user.createdAt),

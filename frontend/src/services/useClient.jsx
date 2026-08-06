@@ -4,6 +4,9 @@ export default function useClient() {
   const api = useApi();
 
   function normalizeClient(client) {
+    if (!client)
+      return null;
+    
     return {
       ...client,
       createdAt: client.createdAt && new Date(client.createdAt),
