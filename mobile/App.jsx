@@ -5,12 +5,10 @@ import { ApiProvider } from './app/services/useApi';
 import Main from './app/Main';
 
 export const toastConfig = {
-  warning: (props) => (
-    <BaseToast
-      {...props}
-      style={{ borderLeftColor: '#F4C300' }}
-    />
-  ),
+  warning: (props) => <BaseToast
+    {...props}
+    style={{ borderLeftColor: '#F4C300' }}
+  />,
 };
 
 export default function App() {

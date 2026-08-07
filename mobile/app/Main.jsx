@@ -1,3 +1,4 @@
+import { NavigationContainer } from '@react-navigation/native';
 import { useEffect, useCallback } from 'react';
 import useGlobal from './contexts/useGlobal';
 import useLogin from './services/useLogin';
@@ -71,5 +72,7 @@ export default function Main() {
   if (loading)
     return <InitiatingScreen />;
 
-  return <Router />;
+  return <NavigationContainer>
+    <Router />
+  </NavigationContainer>;
 }
