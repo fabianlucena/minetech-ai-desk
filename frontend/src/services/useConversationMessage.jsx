@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import useApi from './useApi';
 import { wsUrl } from '../config.js';
 
-export default function useConversation() {
+export default function useConversationMessages() {
   const api = useApi();
 
   function normalizeConversationMessage(msg) {
