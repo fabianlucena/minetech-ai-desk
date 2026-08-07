@@ -454,7 +454,7 @@ insert into auth.permissions_x_roles (
   from auth.permissions p
   join auth.users system on system.username = 'system'
   join auth.roles r on r.name = 'technician'
-  where p.name in('conversations.list')
+  where p.name in('conversations.list', 'conversationMessages.read')
 on conflict (permission_id, role_id) do nothing;
 
 
