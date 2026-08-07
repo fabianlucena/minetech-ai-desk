@@ -79,6 +79,12 @@ export default function Router() {
       name='messages'
       component={ConversationMessagesScreen}
       options={{
+        headerStyle: {
+          backgroundColor: '#666',
+          elevation: 0, // Android
+          shadowOpacity: 0, // iOS
+        },
+        headerTintColor: '#ddd',
         title: 'Mensajes',
         drawerLabel: 'Mensajes',
         drawerItemStyle: { display: 'none' },
