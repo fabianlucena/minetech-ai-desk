@@ -14,6 +14,8 @@ export default function TextField({
   const { onSubmit } = useForm();
 
   style = {
+    color: globalStyles.field.color,
+    fontSize: globalStyles.field.fontSize,
     ...globalStyles.textField,
     placeholder: globalStyles.placeholder,
     ...style,
