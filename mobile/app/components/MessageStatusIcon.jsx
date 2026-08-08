@@ -1,8 +1,9 @@
 import Icon from '@react-native-vector-icons/material-icons';
+import globalStyles from '../global-styles';
 
 export default function MessageStatusIcon({
-  size = 16,
-  color = '#888',
+  size = globalStyles.messageStatusIcon.size,
+  color = globalStyles.messageStatusIcon.color,
   sentAt,
   deliveredAt,
   readAt,

@@ -1,6 +1,7 @@
 import { TextInput } from 'react-native';
 import Field from './Field';
 import { useForm } from './FormContext';
+import globalStyles from '../global-styles';
 
 export default function TextField({
   label,
@@ -13,17 +14,13 @@ export default function TextField({
   const { onSubmit } = useForm();
 
   style = {
-    borderColor: '#ccc',
-    placeholderTextColor: '#888',
-    backgroundColor: '#fff',
-    fontSize: 16,
-    borderRadius: 4,
-    paddingHorizontal: 6,
+    ...globalStyles.textField,
+    placeholder: globalStyles.placeholder,
     ...style,
   };
 
   labelStyle = {
-    paddingHorizontal: 6,
+    ...globalStyles.label,
     ...labelStyle
   }
   

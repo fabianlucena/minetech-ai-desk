@@ -1,4 +1,5 @@
 import { View } from 'react-native';
+import globalStyles from '../global-styles';
 
 export default function Screen({
   children,
@@ -8,7 +9,7 @@ export default function Screen({
   style = {
     flex: 1,
     padding: 10,
-    backgroundColor: '#e6e6e6',
+    backgroundColor: globalStyles.screen.backgroundColor || globalStyles.backgroundColor,
     ...style,
   };
 

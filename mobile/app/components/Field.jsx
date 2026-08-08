@@ -1,4 +1,5 @@
 import { Text, View } from 'react-native';
+import globalStyles from '../global-styles';
 
 export default function TextField({
   label,
@@ -9,31 +10,18 @@ export default function TextField({
   ...props
 }) {
   style = {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    paddingHorizontal: 6,
-    paddingVertical: 6,
-    borderRadius: 4,
-    marginHorizontal: 8,
-    marginBottom: 10,
-
-    color: '#6b6b6b',
-    fontSize: 12,
-    
+    ...globalStyles.field,
     ...style,
   };
 
   labelStyle = {
-    fontSize: style.fontSize,
-    fontWeight: style.fontWeight,
-    color: style.color,
-    marginBottom: 3,
+    ...globalStyles.field.label,
     ...labelStyle
   };
   
   return <View style={style} >
     <View style={{ flexDirection: "row" }}>
-      {required && <Text style={{ color: 'red', fontSize: 12, marginBottom: 3 }}>*</Text>}
+      {required && <Text style={globalStyles.field.required}>*</Text>}
       {label && <Text style={labelStyle} {...props}>{label}</Text>}
     </View>
     {children}

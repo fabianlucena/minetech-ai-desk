@@ -1,4 +1,5 @@
 import { Text } from 'react-native';
+import globalStyles from '../global-styles';
 
 export default function Title({
   children,
@@ -6,11 +7,7 @@ export default function Title({
   ...props
 }) {
   style = {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    textAlign: 'center',
-    color: '#D8B128',
+    ...globalStyles.title,
     ...style,
   };
 

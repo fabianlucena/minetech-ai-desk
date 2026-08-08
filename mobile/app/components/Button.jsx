@@ -1,4 +1,5 @@
 import { Pressable, Text } from 'react-native';
+import globalStyles from '../global-styles';
 
 export default function Button({
   label,
@@ -10,21 +11,15 @@ export default function Button({
   ...props
 }) {
   style = {
-    backgroundColor: disabled ? '#ccc' : '#D8B128',
-    padding: 10,
-    marginHorizontal: 8,
-    borderRadius: 4,
-    alignItems: 'center',
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
+    ...globalStyles.button,
+    ...disabled ? globalStyles.button.disabled : {},
     ...style,
   };
 
   labelStyle = {
     color: style.color,
     fontSize: style.fontSize,
-    fontWeight: 'bold',
+    ...globalStyles.button.label,
     ...labelStyle,
   }
 
