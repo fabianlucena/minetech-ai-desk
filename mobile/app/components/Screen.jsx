@@ -7,9 +7,10 @@ export default function Screen({
   ...props
 }) {
   style = {
+    ...globalStyles,
+    ...globalStyles.screen,
     flex: 1,
     padding: 10,
-    backgroundColor: globalStyles.screen.backgroundColor || globalStyles.backgroundColor,
     ...style,
   };
 

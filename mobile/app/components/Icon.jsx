@@ -5,12 +5,12 @@ export default function Icon({
   name,
   size,
   color,
-  style,
+  style = {},
 }) {
   return <MIIcon
     name={name}
-    size={size || globalStyles.icon.size}
-    color={color || globalStyles.icon.color}
+    size={size || style.size || globalStyles.icon.size}
+    color={color || style.color || globalStyles.icon.color}
     style={{...globalStyles.icon, ...style}}
   />;
 }

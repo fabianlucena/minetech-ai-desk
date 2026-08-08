@@ -8,14 +8,37 @@ export default function ConversationItem({
 }) {
   const navigation = useNavigation();
 
+  const style = {
+    ...globalStyles,
+    ...globalStyles.item,
+    ...globalStyles.conversation.item,
+  };
+
+  const textStyle = {
+    color: style.color,
+  };
+
+  const phoneStyle = {
+    ...textStyle,
+    ...globalStyles.conversation.item.phone,
+  };
+
+  const iconStyle = {
+    ...textStyle,
+    ...globalStyles.conversation.item.icon,
+  };
+
   return <Pressable
-    style={globalStyles.conversation.item}
+    style={style}
     onPress={() => navigation.navigate('messages', { conversationUuid: conversation.uuid })}
   >
     <View>
-      <Text>{conversation.requester.displayName}</Text>
-      <Text>{conversation.requester.phone}</Text>
+      <Text style={textStyle}>{conversation.requester.displayName}</Text>
+      <Text style={phoneStyle}>{conversation.requester.phone}</Text>
     </View>
-    <Icon name="forum" />
+    <Icon
+      name="forum"
+      style={iconStyle}
+    />
   </Pressable>;
 }

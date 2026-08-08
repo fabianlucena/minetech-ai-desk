@@ -2,6 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import Icon from '@react-native-vector-icons/material-icons';
 import { success, error } from './components/Toast';
+import globalStyles from './global-styles';
 
 import useSession from './contexts/useSession';
 import useLogin from './services/useLogin';
@@ -32,6 +33,15 @@ export default function Router() {
   }
 
   return <Drawer.Navigator
+    screenOptions={{
+      headerStyle: {
+        ...globalStyles.header,
+        title: undefined,
+      },
+      headerTitleStyle: {
+        ...globalStyles.header.title,
+      },
+    }}
     drawerContent={(props) => (
       <CustomDrawer
         {...props}
@@ -51,7 +61,7 @@ export default function Router() {
       component={LoginScreen}
       options={{
         title: 'Iniciar Sesión',
-        drawerIcon: ({ color, size }) => <Icon name="login" size={size} color={color} />,
+        drawerIcon: (props) => <Icon name="login" {...props} />,
       }}
     />}
     
@@ -61,7 +71,7 @@ export default function Router() {
       options={{
         title: 'Conversaciones',
         drawerLabel: 'Conversaciones', // Nombre que aparece en el menú
-        drawerIcon: ({ color, size }) => <Icon name="forum" size={size} color={color} />,
+        drawerIcon: (props) => <Icon name="forum" {...props} />,
       }}
     />}
 
@@ -71,7 +81,7 @@ export default function Router() {
       options={{
         title: "Tickets",
         drawerLabel: "Tickets",
-        drawerIcon: ({ color, size }) => <Icon name="assignment" size={size} color={color} />,
+        drawerIcon: (props) => <Icon name="assignment" {...props} />,
       }}
     />}
 
@@ -79,12 +89,10 @@ export default function Router() {
       name='messages'
       component={ConversationMessagesScreen}
       options={{
-        headerStyle: {
-          backgroundColor: '#666',
-          elevation: 0, // Android
-          shadowOpacity: 0, // iOS
+        /*headerStyle: {
+          ...globalStyles.header,
         },
-        headerTintColor: '#ddd',
+        headerTintColor: globalStyles.header.color,*/
         title: 'Mensajes',
         drawerLabel: 'Mensajes',
         drawerItemStyle: { display: 'none' },

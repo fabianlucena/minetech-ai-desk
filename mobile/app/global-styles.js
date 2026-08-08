@@ -1,20 +1,31 @@
 export default {
-  backgroundColor: '#e6e6e6',
-  color: '#000',
+  backgroundColor: '#888888',
+  color: '#D8B128',
+  borderColor: '#ccc',
   fontSize: 16,
   borderRadius: 4,
   activityIndicator: {
     size: "large",
-    color: "#F4C300",
+    color: "#BE9B23",
   },
   screen: {
+  },
+  header: {
+    elevation: 0, // Android
+    shadowOpacity: 0, // iOS
+    backgroundColor: '#504C46', //, '#D8B128',
+    title: {
+      color: '#D8B128',
+      fontSize: 20,
+      fontWeight: 'bold',
+    },
   },
   title: {
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 10,
     textAlign: 'center',
-    color: '#D8B128',
+    color: 'white',
   },
   icon: {
     size: 24,
@@ -64,21 +75,27 @@ export default {
   placeholder: {
     color: '#888',
   },
+  item: {
+    padding: 10,
+    borderWidth: 1,
+    borderRadius: 8,
+    margin: 10,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#5C5145',
+  },
   messageStatusIcon: {
     size: 14,
     color: '#888',
   },
   conversation: {
     item: {
-      padding: 10,
-      borderWidth: 1,
-      borderColor: '#ccc',
-      borderRadius: 8,
-      margin: 10,
-      display: 'flex',
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
+      phone: {
+        color: '#888',
+        fontSize: 12,
+      },
     },
     message: {
       item: {
