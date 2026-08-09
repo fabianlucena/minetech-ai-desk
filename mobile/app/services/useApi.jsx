@@ -32,6 +32,7 @@ function openIADeskSocket(
     onClose,
     onError,
     handler,
+    skipMessageTyles = [],
   }
 ) {
   console.log('Opening WebSocket connection to IA Desk...');
@@ -74,6 +75,9 @@ function openIADeskSocket(
 
       clearTimeout(pongTimer);
     }
+
+    if (skipMessageTyles.includes(msg.type))
+      return;
 
     handler?.(msg);
   };
@@ -321,6 +325,7 @@ export function ApiProvider({
           setIADeskSocket(null);
           console.error('IA Desk WS error:', err);
         },
+        skipMessageTyles: ['ping', 'pong', 'auth_success'],
         handler: (msg) => console.log('IA Desk WS message:', msg),
       }
     );
