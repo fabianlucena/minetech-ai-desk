@@ -322,10 +322,12 @@ export function ApiProvider({
           }
         },
         onError: (err) => {
-          setIADeskSocket(null);
-          console.error('IA Desk WS error:', err);
+          if (iaDeskSocket === socket) {
+            setIADeskSocket(null);
+            console.error('IA Desk WS error:', err);
+          }
         },
-        skipMessageTyles: ['ping', 'pong', 'auth_success'],
+        skipMessageTyles: ['ping', 'pong', 'auth_success', 'send_message_success'],
         handler: (msg) => console.log('IA Desk WS message:', msg),
       }
     );

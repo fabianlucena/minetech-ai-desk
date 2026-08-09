@@ -5,6 +5,7 @@ import useConversationMessages from '../services/useConversationMessage';
 import { View, FlatList, TextInput } from 'react-native';
 import Icon from '../components/Icon';
 import ConversationMessageCard from '../components/ConversationMessageCard';
+import useApi from '../services/useApi';
 
 export default function ConversationMessagesScreen() {
   const route = useRoute();
@@ -14,6 +15,7 @@ export default function ConversationMessagesScreen() {
   const [message, setMessage] = useState('');
   const flatListRef = useRef(null);
   const [isAtBottom, setIsAtBottom] = useState(true);
+  const { iaDeskSocket } = useApi();
 
   const fetchMessages = useCallback(async () => {
     if (!conversationUuid)
@@ -26,7 +28,7 @@ export default function ConversationMessagesScreen() {
           ...msg,
           isMine: msg.senderType !== 'requester',
         }))
-        .sort((a, b) => a.timestamp - b.timestamp);
+        .sort((a, b) => a.receivedAt.getTime() - b.receivedAt.getTime());
             
       let lastDate = null;
       for (let i = 0; i < messages.length; i++) {
@@ -76,6 +78,11 @@ export default function ConversationMessagesScreen() {
     warning('Falta lógica para enviar mensaje', message);
     addMessage(message);
     setMessage('');
+    iaDeskSocket.send(JSON.stringify({
+      type: 'send_message',
+      conversationUuid,
+      text: message,
+    }));
   }
 
   function handleScroll(e) {
@@ -94,6 +101,14 @@ export default function ConversationMessagesScreen() {
     }
   }
 
+  function scrollToBottom() {
+    if (flatListRef.current) {
+      setTimeout(() => {
+        flatListRef.current.scrollToEnd({ animated: true });
+      }, 1500);
+    }
+  }
+
   return <View
     style={{
       flex: 1,
@@ -104,6 +119,7 @@ export default function ConversationMessagesScreen() {
   >
     <FlatList
       ref={flatListRef}
+      onLayout={scrollToBottom}
       data={messages}
       keyExtractor={(item) => item.uuid || item.timestamp.toString()}
       renderItem={({ item }) => <ConversationMessageCard message={item} />}
