@@ -9,15 +9,22 @@ export default {
     color: "#BE9B23",
   },
   screen: {
+    borderRadius: 0,
   },
   header: {
     elevation: 0, // Android
     shadowOpacity: 0, // iOS
+    borderBottomWidth: 0, // Web
     backgroundColor: '#504C46', //, '#D8B128',
     title: {
       color: '#D8B128',
       fontSize: 20,
       fontWeight: 'bold',
+    },
+    icon: {
+      color: '#BE9B23',
+      marginLeft: 12,
+      size: 22,
     },
   },
   title: {
@@ -29,7 +36,7 @@ export default {
   },
   icon: {
     size: 24,
-    color: '#888',
+    color: '#BE9B23',
   },
   button: {
     backgroundColor: '#D8B128',
@@ -75,7 +82,8 @@ export default {
   placeholder: {
     color: '#888',
   },
-  item: {
+  card: {
+    borderColor: '#BE9B23',
     padding: 10,
     borderWidth: 1,
     borderRadius: 8,
@@ -85,20 +93,25 @@ export default {
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: '#5C5145',
+    elevation: 2, // Android
+    shadowColor: '#353535', // iOS
+    shadowOffset: { width: 3, height: 3 }, // iOS
+    shadowOpacity: 0.25, // iOS
+    shadowRadius: 3.84,
   },
   messageStatusIcon: {
     size: 14,
     color: '#888',
   },
   conversation: {
-    item: {
+    card: {
       phone: {
         color: '#888',
         fontSize: 12,
       },
     },
     message: {
-      item: {
+      card: {
         padding: 10,
         borderRadius: 8,
         margin: 10,

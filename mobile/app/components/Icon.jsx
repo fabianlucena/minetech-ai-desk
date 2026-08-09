@@ -6,11 +6,13 @@ export default function Icon({
   size,
   color,
   style = {},
+  ...props
 }) {
   return <MIIcon
     name={name}
     size={size || style.size || globalStyles.icon.size}
     color={color || style.color || globalStyles.icon.color}
     style={{...globalStyles.icon, ...style}}
+    {...props}
   />;
 }

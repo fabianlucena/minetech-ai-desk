@@ -3,15 +3,15 @@ import { useNavigation } from '@react-navigation/native';
 import Icon from './Icon';
 import globalStyles from '../global-styles';
 
-export default function ConversationItem({
+export default function ConversationCard({
   conversation
 }) {
   const navigation = useNavigation();
 
   const style = {
     ...globalStyles,
-    ...globalStyles.item,
-    ...globalStyles.conversation.item,
+    ...globalStyles.card,
+    ...globalStyles.conversation.card,
   };
 
   const textStyle = {
@@ -20,12 +20,12 @@ export default function ConversationItem({
 
   const phoneStyle = {
     ...textStyle,
-    ...globalStyles.conversation.item.phone,
+    ...globalStyles.conversation.card.phone,
   };
 
   const iconStyle = {
     ...textStyle,
-    ...globalStyles.conversation.item.icon,
+    ...globalStyles.conversation.card.icon,
   };
 
   return <Pressable

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { FlatList } from 'react-native';
 import { error } from '../components/Toast';
 import Screen from '../components/Screen';
-import ConversationItem from '../components/ConversationItem';
+import ConversationItem from '../components/ConversationCard';
 import Title from '../components/Title';
 import useConversation from '../services/useConversation';
 

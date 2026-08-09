@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import Icon from '@react-native-vector-icons/material-icons';
 import { success, error } from './components/Toast';
+import Icon from './components/Icon';
 import globalStyles from './global-styles';
 
 import useSession from './contexts/useSession';
@@ -37,7 +37,9 @@ export default function Router() {
       headerStyle: {
         ...globalStyles.header,
         title: undefined,
+        icon: undefined,
       },
+      headerTintColor: globalStyles.header.icon.color, 
       headerTitleStyle: {
         ...globalStyles.header.title,
       },
@@ -89,18 +91,13 @@ export default function Router() {
       name='messages'
       component={ConversationMessagesScreen}
       options={{
-        /*headerStyle: {
-          ...globalStyles.header,
-        },
-        headerTintColor: globalStyles.header.color,*/
         title: 'Mensajes',
         drawerLabel: 'Mensajes',
         drawerItemStyle: { display: 'none' },
         showMenu: false,
         headerLeft: () => <Icon
           name="arrow-back-ios"
-          size={22}
-          style={{ marginLeft: 12 }}
+          style={globalStyles.header.icon}
           onPress={() => navigation.goBack()}
         />,
       }}
