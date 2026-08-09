@@ -5,6 +5,7 @@ import Icon from './components/Icon';
 import globalStyles from './global-styles';
 
 import useSession from './contexts/useSession';
+import useApi from './services/useApi';
 import useLogin from './services/useLogin';
 
 import CustomDrawer from './components/CustomDrawer';
@@ -19,6 +20,7 @@ export default function Router() {
   const navigation = useNavigation();
   const { session, clearSession } = useSession();
   const { logout } = useLogin();
+  const { iaDeskSocket, authorizationToken } = useApi();
   const user = session.user;
   const permissions = session.permissions || [];
 
@@ -43,6 +45,14 @@ export default function Router() {
       headerTitleStyle: {
         ...globalStyles.header.title,
       },
+      headerRight: () => <Icon
+        name={iaDeskSocket ? 'wifi' : authorizationToken ? 'wifi-off' : 'access-time'}
+        style={{
+          size: 26,
+          color: iaDeskSocket ? '#4a4' : authorizationToken ? '#a44' : 'grey',
+          marginRight: 10,
+        }}
+      />,
     }}
     drawerContent={(props) => (
       <CustomDrawer
