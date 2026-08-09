@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRoute } from '@react-navigation/native';
 import { error, warning } from '../components/Toast';
 import useConversationMessages from '../services/useConversationMessage';
@@ -12,6 +12,8 @@ export default function ConversationMessagesScreen() {
   const { getConversationMessages } = useConversationMessages();
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState('');
+  const flatListRef = useRef(null);
+  const [isAtBottom, setIsAtBottom] = useState(true);
 
   const fetchMessages = useCallback(async () => {
     if (!conversationUuid)
@@ -48,9 +50,48 @@ export default function ConversationMessagesScreen() {
     fetchMessages();
   }, [fetchMessages]);
 
+  function addMessage(message) {
+    if (typeof message === 'string') {
+      message = {
+        isMine: true,
+        text: message,
+      };
+    }
+
+    message.uuid ||= `temp-${Date.now()}`;
+    message.receivedAt ||= new Date();
+
+    const messagesToAdd = [message];
+    let lastDate = messages.length > 0 ? messages[messages.length - 1].receivedAt.toDateString() : null;
+    const msgDate = message.receivedAt.toDateString();
+    if (msgDate !== lastDate) {
+      lastDate = msgDate;
+      messagesToAdd.splice(0, 0, { type: 'dateSeparator', timestamp: message.receivedAt });
+    }
+
+    setMessages(prevMessages => [...prevMessages, ...messagesToAdd]);
+  }
+
   function handleSubmit() {
     warning('Falta lógica para enviar mensaje', message);
+    addMessage(message);
     setMessage('');
+  }
+
+  function handleScroll(e) {
+    const { contentOffset, contentSize, layoutMeasurement } = e.nativeEvent;
+
+    const paddingToBottom = 20; // margen de tolerancia
+    const isBottom =
+      contentOffset.y + layoutMeasurement.height >= contentSize.height - paddingToBottom;
+
+    setIsAtBottom(isBottom);
+  }
+
+  function handleContentSizeChange() {
+    if (isAtBottom && flatListRef.current) {
+      flatListRef.current.scrollToEnd({ animated: true });
+    }
   }
 
   return <View
@@ -62,9 +103,13 @@ export default function ConversationMessagesScreen() {
     }}
   >
     <FlatList
+      ref={flatListRef}
       data={messages}
       keyExtractor={(item) => item.uuid || item.timestamp.toString()}
       renderItem={({ item }) => <ConversationMessageCard message={item} />}
+      onScroll={handleScroll}
+      onContentSizeChange={handleContentSizeChange}
+      scrollEventThrottle={16}
     />
     <View
       style={{
@@ -90,7 +135,6 @@ export default function ConversationMessagesScreen() {
       <Icon
         name="send"
         size={18}
-        //color={globalStyles.header.icon.color}
         onPress={handleSubmit}
       />
     </View>
