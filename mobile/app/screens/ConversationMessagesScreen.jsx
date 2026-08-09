@@ -1,21 +1,50 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRoute } from '@react-navigation/native';
-import { error, warning } from '../components/Toast';
+import { error } from '../components/Toast';
 import useConversationMessages from '../services/useConversationMessage';
 import { View, FlatList, TextInput } from 'react-native';
 import Icon from '../components/Icon';
 import ConversationMessageCard from '../components/ConversationMessageCard';
 import useApi from '../services/useApi';
+import uuid from 'react-native-uuid';
 
 export default function ConversationMessagesScreen() {
   const route = useRoute();
   const conversationUuid = route.params?.conversationUuid;
-  const { getConversationMessages } = useConversationMessages();
+  const { getConversationMessages, normalizeConversationMessage } = useConversationMessages();
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState('');
   const flatListRef = useRef(null);
   const [isAtBottom, setIsAtBottom] = useState(true);
-  const { iaDeskSocket } = useApi();
+  const { iaDeskSocket, addSocketHandler, removeSocketHandler } = useApi();
+
+  const normalizeMessage = useCallback((msg) => {
+    const normalizedMsg = normalizeConversationMessage(msg);
+    normalizedMsg.isMine = normalizedMsg.senderType !== 'requester';
+    return normalizedMsg;
+  }, [normalizeConversationMessage]);
+
+  const iaDeskSocketHandler = useCallback((msg) => {
+    if (msg.message.conversation.uuid !== conversationUuid || msg.type !== 'send_message' && msg.type !== 'send_message_success' )
+      return;
+
+    setMessages(prevMessages => {
+      if (msg.ref && prevMessages.some(m => m.ref === msg.ref)) {
+        return prevMessages.map(m => m.ref === msg.ref ? { ...m, ...normalizeMessage(msg.message) } : m);
+      }
+
+      if (prevMessages.some(m => m.uuid === msg.message.uuid)) {
+        return prevMessages.map(m => m.uuid === msg.message.uuid ? { ...m, ...normalizeMessage(msg.message) } : m);
+      }
+  
+      return [...prevMessages, normalizeMessage(msg.message)];
+    });
+  }, [conversationUuid]);
+
+  useEffect(() => {
+    addSocketHandler(iaDeskSocketHandler);
+    return () => removeSocketHandler(iaDeskSocketHandler);
+  }, [iaDeskSocketHandler]);
 
   const fetchMessages = useCallback(async () => {
     if (!conversationUuid)
@@ -24,10 +53,7 @@ export default function ConversationMessagesScreen() {
     try {
       const msgs = await getConversationMessages(conversationUuid);
       const messages = msgs
-        .map(msg => ({
-          ...msg,
-          isMine: msg.senderType !== 'requester',
-        }))
+        .map(normalizeMessage)
         .sort((a, b) => a.receivedAt.getTime() - b.receivedAt.getTime());
             
       let lastDate = null;
@@ -42,6 +68,7 @@ export default function ConversationMessagesScreen() {
       }
 
       setMessages(messages);
+      scrollToBottom();
     } catch (err) {
       console.error('Error fetching conversation messages:', err);
       error('Error al cargar los mensajes de la conversación:', err);
@@ -53,16 +80,6 @@ export default function ConversationMessagesScreen() {
   }, [fetchMessages]);
 
   function addMessage(message) {
-    if (typeof message === 'string') {
-      message = {
-        isMine: true,
-        text: message,
-      };
-    }
-
-    message.uuid ||= `temp-${Date.now()}`;
-    message.receivedAt ||= new Date();
-
     const messagesToAdd = [message];
     let lastDate = messages.length > 0 ? messages[messages.length - 1].receivedAt.toDateString() : null;
     const msgDate = message.receivedAt.toDateString();
@@ -75,11 +92,17 @@ export default function ConversationMessagesScreen() {
   }
 
   function handleSubmit() {
-    warning('Falta lógica para enviar mensaje', message);
-    addMessage(message);
+    const data = {
+      ref: uuid.v4(),
+      isMine: true,
+      text: message,
+      receivedAt: new Date(),
+    };
+    addMessage(data);
     setMessage('');
     iaDeskSocket.send(JSON.stringify({
       type: 'send_message',
+      ref: data.ref,
       conversationUuid,
       text: message,
     }));
@@ -105,7 +128,7 @@ export default function ConversationMessagesScreen() {
     if (flatListRef.current) {
       setTimeout(() => {
         flatListRef.current.scrollToEnd({ animated: true });
-      }, 1500);
+      }, 150);
     }
   }
 
@@ -121,7 +144,7 @@ export default function ConversationMessagesScreen() {
       ref={flatListRef}
       onLayout={scrollToBottom}
       data={messages}
-      keyExtractor={(item) => item.uuid || item.timestamp.toString()}
+      keyExtractor={(item) => item.ref || item.uuid || item.timestamp.toString()}
       renderItem={({ item }) => <ConversationMessageCard message={item} />}
       onScroll={handleScroll}
       onContentSizeChange={handleContentSizeChange}

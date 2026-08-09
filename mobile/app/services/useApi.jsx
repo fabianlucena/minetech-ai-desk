@@ -119,6 +119,8 @@ function connectToIADeskSocket(authorizationToken, options, attempt = 0) {
   return ws;
 }
 
+let socketHandlers = [];
+
 export function ApiProvider({
   children,
   urlBase: initialUrlBase = '',
@@ -327,11 +329,30 @@ export function ApiProvider({
             console.error('IA Desk WS error:', err);
           }
         },
-        skipMessageTyles: ['ping', 'pong', 'auth_success', 'send_message_success'],
-        handler: (msg) => console.log('IA Desk WS message:', msg),
+        skipMessageTyles: ['ping', 'pong', 'auth_success'],
+        handler: (msg) => {
+          if (debug)
+            console.log('IA Desk WS message:', msg);
+
+          socketHandlers.forEach(handler => {
+            try {
+              handler(msg);
+            } catch (err) {
+              console.error('Error in IA Desk WS handler:', err);
+            }
+          });
+        },
       }
     );
   }, [authorizationToken]);
+
+  const addSocketHandler = useCallback((handler) => {
+    socketHandlers.push(handler);
+  }, []);
+
+  const removeSocketHandler = useCallback((handler) => {
+    socketHandlers = socketHandlers.filter(h => h !== handler);
+  }, []);
 
   return <ApiContext.Provider
     value={{
@@ -347,7 +368,7 @@ export function ApiProvider({
       putJson,
       deleteJson,
       patchJson,
-      iaDeskSocket,
+      iaDeskSocket, addSocketHandler, removeSocketHandler,
     }}
   >
     {children}
