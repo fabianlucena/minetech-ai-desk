@@ -1,6 +1,7 @@
 import { tryParseJSON } from '../utils/json.js';
 import { getDependency } from '../dependency.js';
 import { WSFatalError, WSError } from './WSError.js';
+import { ConversationMessageDTO } from '../dto/conversation_message.dto.js';
 
 const config = getDependency('config');
 const logger = getDependency('logger');
@@ -163,12 +164,16 @@ async function handleSendMessage({msg, ws}) {
   if (!msg.conversationUuid)
     throw new WSError('Conversación no especificada');
 
-  await conversationService.addTechnicianMessage({
+  const message = await conversationService.addTechnicianMessage({
     conversationUuid: msg.conversationUuid,
     technicianId: clientInfo.technicianId,
     receivedAt: new Date(),
     text: msg.text,
   });
 
-  return { type: 'send_message_success' };
+  return {
+    type: 'send_message_success',
+    ref: msg.ref,
+    message: new ConversationMessageDTO(message),
+  };
 }
