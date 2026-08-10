@@ -14,19 +14,15 @@ export default function MessageStatusIcon({
   if (failedAt) {
     name = 'error-outline';
     color = '#d00';
-  }
-
-  if (readAt) {
+  } else if (readAt) {
     name = 'done-all';
     color = '#5bf';
-  }
-
-  if (deliveredAt) {
+  } else if (deliveredAt) {
     name = 'done-all';
-  }
-
-  if (sentAt) {
+    color = '#888';
+  } else if (sentAt) {
     name = 'done';
+    color = '#888';
   }
 
   return <Icon

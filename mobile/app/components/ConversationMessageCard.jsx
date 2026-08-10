@@ -43,7 +43,8 @@ export default function ConversationCard({
       style={{
         ...globalStyles.conversation.message.card.time.container,
         width: '100%',
-        flex: 1,
+        height: 'auto',
+        flex: 0,
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
