@@ -19,14 +19,14 @@ function normalizeMessageToShow(msg) {
 export default function ConversationMessagesPage() {
   const { uuid } = useParams();
   const { getConversation } = useConversation();
-  const { getConversationMessages, connectToChat } = useConversationMessage();
+  const { getConversationMessages, connectToChat, normalizeConversationMessage } = useConversationMessage();
   const [conversation, setConversation] = useState(null);
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
     const ws = connectToChat(uuid, (msg) => {
       if (msg.type === 'chat_message') {
-        const message = normalizeReceivedMessage(msg.message);
+        const message = normalizeConversationMessage(msg.message);
         setMessages(messages => {
           const exists = messages.some(m => m.uuid === message.uuid);
 
@@ -54,7 +54,7 @@ export default function ConversationMessagesPage() {
         ws.close(1000, 'Conexión cerrada por el cliente');
       }
     }
-  }, [uuid, getConversationMessages, connectToChat]);
+  }, [uuid, getConversationMessages, connectToChat, normalizeConversationMessage]);
 
   const fetchConversation = useCallback(async () => {
     try {
@@ -72,7 +72,10 @@ export default function ConversationMessagesPage() {
 
   const fetchMessages = useCallback(async () => {
     const messages = await getConversationMessages(uuid);
-    setMessages(messages.map(normalizeMessageToShow));
+    setMessages(messages
+      .map(normalizeMessageToShow)
+      .sort((a, b) => a.receivedAt.getTime() - b.receivedAt.getTime())
+    );
   }, [uuid, getConversationMessages]);
 
   useEffect(() => {
