@@ -1,4 +1,6 @@
 export default {
+  webPath: '../frontend/dist',
+  
   dbName: 'minetech-ai-desk',
   dbUser: 'minetech-ai-desk',
   dbPass: 'password',
