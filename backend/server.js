@@ -29,7 +29,12 @@ try {
   app.use(checkAuthorizationTokenMiddleware);
   app.use(logMiddleware);
   app.use('/api', routes);
+  if (config.webPath)
+    app.use(express.static(config.webPath));
   app.use(errorMiddleware);
+
+  if (config.webPath)
+    app.get('{*path}', (_req, res) => {res.sendFile(path.resolve(config.webPath, 'index.html'))});
 
   await (await import('./web-sockets/index.js')).default(server);
 
