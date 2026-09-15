@@ -517,7 +517,7 @@ create table if not exists ia_desk.technicians(
     
     constraint uk_ia_desk_technicians_uuid unique (uuid),
     
-    constraint uk_ia_desk_technicians_id foreign key (id)
+    constraint uk_ia_desk_technicians_user_id foreign key (id)
       references auth.users(id) on delete restrict,
     
     constraint uk_ia_desk_technicians_created_by_id foreign key (created_by_id)
