@@ -2,6 +2,7 @@ import express from 'express';
 import http from 'http';
 import cors from 'cors';
 import config from './config.js';
+import path from 'path';
 import logger from './logger.js';
 import errorMiddleware from './middlewares/error.middleware.js';
 import logMiddleware from './middlewares/log.middleware.js';
@@ -11,6 +12,7 @@ await import('./models/index.js');
 await import('./services/index.js');
 await import('./controllers/index.js');
 const routes = (await import('./routes/index.js')).default;
+const index = path.resolve(config.webPath, 'index.html');
 
 try {
   const app = express();
@@ -30,11 +32,11 @@ try {
   app.use(logMiddleware);
   app.use('/api', routes);
   if (config.webPath)
+  {
     app.use(express.static(config.webPath));
+    app.get('*path', (_req, res) => res.sendFile(index));
+  }
   app.use(errorMiddleware);
-
-  if (config.webPath)
-    app.get('{*path}', (_req, res) => {res.sendFile(path.resolve(config.webPath, 'index.html'))});
 
   await (await import('./web-sockets/index.js')).default(server);
 
