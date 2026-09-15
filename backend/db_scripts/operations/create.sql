@@ -42,11 +42,11 @@ begin
     )
     values (
       gen_random_uuid(),
-      null, null,
       'system', 'System',
       true, true, null,
       now(), 1,
-      now(), 1
+      now(), 1,
+      null, null
     )
     on conflict (username) do nothing;
   end if;
