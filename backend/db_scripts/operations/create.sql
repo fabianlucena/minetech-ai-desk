@@ -6,6 +6,13 @@ begin
     id bigint generated always as identity primary key,
     uuid uuid not null default gen_random_uuid(),
 
+    username varchar(64) not null,
+    display_name varchar(128) not null,
+    is_active boolean not null,
+    can_login boolean not null,
+    last_login_at timestamp null,
+    email varchar(255) null,
+
     created_at timestamp not null default now(),
     created_by_id bigint not null,
 
@@ -14,13 +21,6 @@ begin
 
     deleted_at timestamp null,
     deleted_by_id bigint null,
-
-    username varchar(64) not null,
-    display_name varchar(128) not null,
-    is_active boolean not null,
-    can_login boolean not null,
-    last_login_at timestamp null,
-    email varchar(255) null,
 
     constraint uk_auth_users_uuid unique (uuid),
     constraint uk_auth_users_username unique (username),
@@ -34,19 +34,19 @@ begin
   ) then
     insert into auth.users (
       uuid,
+      username, display_name,
+      is_active, can_login, last_login_at,
       created_at, created_by_id, 
       updated_at, updated_by_id, 
-      deleted_at, deleted_by_id,
-      username, display_name,
-      is_active, can_login, last_login_at
+      deleted_at, deleted_by_id
     )
     values (
       gen_random_uuid(),
-      now(), 1,
-      now(), 1,
       null, null,
       'system', 'System',
-      true, true, null
+      true, true, null,
+      now(), 1,
+      now(), 1
     )
     on conflict (username) do nothing;
   end if;
@@ -99,6 +99,8 @@ end $$;
 create table if not exists auth.user_passwords (
   id bigint not null primary key,
 
+  password_hash varchar(256) not null,
+
   created_at timestamp not null default now(),
   created_by_id bigint not null,
 
@@ -107,8 +109,6 @@ create table if not exists auth.user_passwords (
 
   deleted_at timestamp null,
   deleted_by_id bigint null,
-
-  password_hash varchar(256) not null,
 
   constraint uk_auth_users_passwords_id unique (id),
 
@@ -141,17 +141,17 @@ begin
   ) then
     insert into auth.users (
       uuid,
-      created_at, created_by_id,
-      updated_at, updated_by_id,
       username, display_name,
-      is_active, can_login, last_login_at
+      is_active, can_login, last_login_at,
+      created_at, created_by_id,
+      updated_at, updated_by_id
     )
     values (
       gen_random_uuid(),
-      now(), 1,
-      now(), 1,
       'admin', 'Administrator',
-      true, true, null
+      true, true, null,
+      now(), 1,
+      now(), 1
     )
     on conflict (username) do nothing;
   end if;
@@ -161,13 +161,15 @@ end $$;
 insert into auth.user_passwords (
   id,
   password_hash,
-  created_at, updated_at, deleted_at,
-  created_by_id, updated_by_id, deleted_by_id
+  created_at, created_by_id,
+  updated_at, updated_by_id,
+  deleted_at, deleted_by_id
 )
 select admin.id, 
   '$argon2id$v=19$m=65536,t=3,p=1$hN9eEqA0ugalPrBh8RljeQ$zaQ96ZcE+UCW/BPWnpnf+2/ZKy6y0/RYo6skrg/KKH0',
-  now(), now(), null,
-  system.id, system.id, null
+  now(), system.id,
+  now(), system.id,
+  null, null
 from auth.users admin, auth.users system
 where admin.username = 'admin'
   and system.username = 'system'
@@ -178,10 +180,10 @@ create table if not exists auth.devices (
   id bigint generated always as identity primary key,
   uuid uuid not null default gen_random_uuid(),
 
+  token varchar(64) not null,
+
   created_at timestamp not null default now(),
   created_by_id bigint not null,
-
-  token varchar(64) not null,
 
   constraint uk_auth_devices_token unique (token),
 
@@ -196,9 +198,6 @@ create table if not exists auth.sessions (
   id bigint generated always as identity primary key,
   uuid uuid not null default gen_random_uuid(),
 
-  created_at timestamp not null default now(),
-  created_by_id bigint not null,
-
   authorization_token varchar(64) not null,
   expires_at timestamp not null,
   auto_login_token varchar(64) not null,
@@ -208,6 +207,9 @@ create table if not exists auth.sessions (
   user_id bigint not null,
   device_id bigint not null,
   data_json text null,
+
+  created_at timestamp not null default now(),
+  created_by_id bigint not null,
 
   constraint uk_auth_sessions_authorization_token unique (authorization_token),
 
@@ -230,6 +232,11 @@ create table if not exists auth.roles (
   id bigint generated always as identity primary key,
   uuid uuid not null default gen_random_uuid(),
 
+  name varchar(256) not null,
+  title text null,
+  description text null,
+  is_asignable boolean not null,
+
   created_at timestamp not null default now(),
   created_by_id bigint not null,
 
@@ -238,11 +245,6 @@ create table if not exists auth.roles (
 
   deleted_at timestamp null,
   deleted_by_id bigint null,
-
-  name varchar(256) not null,
-  title text null,
-  description text null,
-  is_asignable boolean not null,
 
   constraint uk_auth_roles_name unique (name),
 
@@ -457,6 +459,7 @@ insert into auth.permissions_x_roles (
   where p.name in('conversations.list', 'conversationMessages.read')
 on conflict (permission_id, role_id) do nothing;
 
+---------------------------------------------------------------------------
 
 -- Schema  ia_desk
 create schema if not exists ia_desk;
@@ -466,6 +469,10 @@ create table if not exists ia_desk.settings(
     id bigint generated always as identity primary key,
     uuid uuid not null default gen_random_uuid(),
 
+    key text not null,
+    value jsonb null,
+    description text null,
+
     created_at timestamp not null default now(),
     created_by_id bigint not null,
 
@@ -474,10 +481,6 @@ create table if not exists ia_desk.settings(
 
     deleted_at timestamp null,
     deleted_by_id bigint null,
-
-    key text not null,
-    value jsonb null,
-    description text null,
     
     constraint uk_ia_desk_settings_uuid unique (uuid),
     constraint uk_ia_desk_settings_key unique (key),
@@ -497,6 +500,10 @@ create table if not exists ia_desk.technicians(
     id bigint primary key,
     uuid uuid not null default gen_random_uuid(),
 
+    phone varchar(64) not null,
+    is_active boolean not null,
+    color varchar(10) null,
+
     created_at timestamp not null default now(),
     created_by_id bigint not null,
 
@@ -505,10 +512,6 @@ create table if not exists ia_desk.technicians(
 
     deleted_at timestamp null,
     deleted_by_id bigint null,
-
-    phone varchar(64) not null,
-    is_active boolean not null,
-    color varchar(10) null,
   
     constraint uk_ia_desk_technicians_id unique (id),
     
@@ -532,6 +535,12 @@ create table if not exists ia_desk.clients(
     id bigint generated always as identity primary key,
     uuid uuid not null default gen_random_uuid(),
 
+    name varchar(128) not null,
+    code varchar(128) not null,
+    token varchar(64) not null,
+    is_active boolean not null,
+    status varchar(64) not null,
+
     created_at timestamp not null default now(),
     created_by_id bigint not null,
 
@@ -540,12 +549,6 @@ create table if not exists ia_desk.clients(
 
     deleted_at timestamp null,
     deleted_by_id bigint null,
-
-    name varchar(128) not null,
-    code varchar(128) not null,
-    token varchar(64) not null,
-    is_active boolean not null,
-    status varchar(64) not null,
     
     constraint uk_ia_desk_clients_uuid unique (uuid),
     constraint uk_ia_desk_clients_name unique (name),
@@ -565,15 +568,6 @@ create table if not exists ia_desk.clients(
 create table if not exists ia_desk.requesters(
     id bigint generated always as identity primary key,
     uuid uuid not null default gen_random_uuid(),
-
-    created_at timestamp not null default now(),
-    created_by_id bigint not null,
-
-    updated_at timestamp not null default now(),
-    updated_by_id bigint not null,
-
-    deleted_at timestamp null,
-    deleted_by_id bigint null,
     
     client_id bigint null,
 
@@ -585,6 +579,15 @@ create table if not exists ia_desk.requesters(
     banned_at timestamp null,
     banned_by_id bigint null,
     ban_reason text null,
+
+    created_at timestamp not null default now(),
+    created_by_id bigint not null,
+
+    updated_at timestamp not null default now(),
+    updated_by_id bigint not null,
+
+    deleted_at timestamp null,
+    deleted_by_id bigint null,
     
     constraint uk_ia_desk_requesters_uuid unique (uuid),
     constraint uk_ia_desk_requesters_phone unique (phone),
@@ -609,6 +612,12 @@ create table if not exists ia_desk.requesters(
 create table if not exists ia_desk.shifts(
     id bigint generated always as identity primary key,
     uuid uuid not null default gen_random_uuid(),
+    
+    technician_id bigint not null,
+
+    type varchar(64) not null,
+    start timestamp not null,
+    "end" timestamp not null,
 
     created_at timestamp not null default now(),
     created_by_id bigint not null,
@@ -618,12 +627,6 @@ create table if not exists ia_desk.shifts(
 
     deleted_at timestamp null,
     deleted_by_id bigint null,
-    
-    technician_id bigint not null,
-
-    type varchar(64) not null,
-    start timestamp not null,
-    "end" timestamp not null,
     
     constraint uk_ia_desk_shifts_uuid unique (uuid),
     
@@ -646,16 +649,15 @@ create table if not exists ia_desk.conversations(
     uuid uuid not null default gen_random_uuid(),
 
     created_at timestamp null,
-
-    deleted_at timestamp null,
-    deleted_by_id bigint null,
-
     requester_id bigint not null,
     client_id bigint null,
     last_message_at timestamp null,
 
     closed_at timestamp null,
     closed_by_id bigint null,
+
+    deleted_at timestamp null,
+    deleted_by_id bigint null,
 
     constraint uk_ia_desk_conversations_uuid unique (uuid),
     
@@ -678,10 +680,6 @@ create table if not exists ia_desk.conversation_messages(
     uuid uuid not null default gen_random_uuid(),
 
     created_at timestamp not null default now(),
-    updated_at timestamp null,
-    updated_by_id bigint null,
-    deleted_at timestamp null,
-    deleted_by_id bigint null,
 
     conversation_id bigint not null,
     "text" text null,
@@ -700,6 +698,11 @@ create table if not exists ia_desk.conversation_messages(
     failed_at timestamp null,
     fail_message text null,
 
+    updated_at timestamp null,
+    updated_by_id bigint null,
+    deleted_at timestamp null,
+    deleted_by_id bigint null,
+
     constraint uk_ia_desk_conversation_messages_uuid unique (uuid),
     
     constraint uk_ia_desk_conversation_messages_conversation_id foreign key (conversation_id)
@@ -716,15 +719,6 @@ create table if not exists ia_desk.conversation_messages(
 create table if not exists ia_desk.tickets(
     id bigint generated always as identity primary key,
     uuid uuid not null default gen_random_uuid(),
-
-    created_at timestamp not null default now(),
-    created_by_id bigint not null,
-
-    updated_at timestamp not null default now(),
-    updated_by_id bigint not null,
-
-    deleted_at timestamp null,
-    deleted_by_id bigint null,
     
     code varchar(16) not null,
     conversation_id bigint null,
@@ -735,6 +729,15 @@ create table if not exists ia_desk.tickets(
     status varchar(64) not null,
     parent_ticket_id bigint null,
     resolved_at timestamp null,
+
+    created_at timestamp not null default now(),
+    created_by_id bigint not null,
+
+    updated_at timestamp not null default now(),
+    updated_by_id bigint not null,
+
+    deleted_at timestamp null,
+    deleted_by_id bigint null,
     
     constraint uk_ia_desk_tickets_code unique (code),
     constraint uk_ia_desk_tickets_uuid unique (uuid),
