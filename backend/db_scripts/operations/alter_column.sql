@@ -1,0 +1,1 @@
+alter table ia_desk.clients rename column token TO access_code;

@@ -537,7 +537,7 @@ create table if not exists ia_desk.clients(
 
     name varchar(128) not null,
     code varchar(128) not null,
-    token varchar(64) not null,
+    access_code varchar(64) not null,
     is_active boolean not null,
     status varchar(64) not null,
 
@@ -552,7 +552,7 @@ create table if not exists ia_desk.clients(
     
     constraint uk_ia_desk_clients_uuid unique (uuid),
     constraint uk_ia_desk_clients_name unique (name),
-    constraint uk_ia_desk_clients_token unique (token),
+    constraint uk_ia_desk_clients_access_code unique (access_code),
     
     constraint uk_ia_desk_clients_created_by_id foreign key (created_by_id)
       references auth.users(id) on delete restrict,
