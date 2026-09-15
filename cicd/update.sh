@@ -1,4 +1,4 @@
-sudo -u deploy /bin/bash
+sudo su - deploy
 cd /opt/minetech-ai-desk
 git fetch --all --prune
 git checkout dev
@@ -10,4 +10,4 @@ npm run build
 
 cd /opt/minetech-ai-desk/backend
 npm i
-npm run dev
+pm2 restart minetech-ia-desk --update-env
