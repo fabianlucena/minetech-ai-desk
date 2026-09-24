@@ -2,6 +2,8 @@ import { Container, Box, Typography, Button, Paper } from "@mui/material";
 import useUser from '../contexts/useUser';
 import { useNavigate } from 'react-router-dom';
 
+const version = import.meta.env.PACKAGE_VERSION;
+
 export default function HomePage() {
   const user = useUser();
   const navigate = useNavigate();
@@ -13,6 +15,10 @@ export default function HomePage() {
       <Typography variant="h3" fontWeight={700} gutterBottom>
         Bienvenido al Sistema de Consultas Inteligentes de MineTech
       </Typography>
+
+      {version && <Typography variant="h6" fontWeight={1000} gutterBottom>
+        Versión: {version}
+      </Typography>}
 
       <Typography variant="h6" color="text.secondary" gutterBottom>
         Una plataforma moderna que centraliza y optimiza la atención de soporte técnico.
@@ -50,7 +56,7 @@ export default function HomePage() {
           flexWrap: "wrap"
         }}
       >
-        <Button variant="contained" size="large" href="/about">
+        <Button variant="contained" size="large" onClick={() => navigate("/about")}>
           Conocer más sobre el sistema
         </Button>
         {!user && <Button variant="contained" size="large" onClick={() => navigate("/login")}>

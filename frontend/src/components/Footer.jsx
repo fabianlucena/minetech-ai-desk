@@ -1,5 +1,7 @@
 import { Typography } from '@mui/material';
 
+const version = import.meta.env.PACKAGE_VERSION;
+
 export default function Footer() {
   return <footer
     style={{
@@ -17,7 +19,8 @@ export default function Footer() {
       variant="body3"
       color="black"
     >
-      <a className="hover-underline" href="https://www.minetech.com.ar" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>Copyright © 2026 MineTech. Todos los derechos reservados.</a>
+      Minetech AI Desk - Sistema de Consultas Inteligentes {version && ` - v${version} `}
+      - <a className="hover-underline" href="https://www.minetech.com.ar" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>Copyright © 2026 MineTech. Todos los derechos reservados.</a>
     </Typography>
     <Typography
       variant="body3"

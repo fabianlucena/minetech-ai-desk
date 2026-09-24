@@ -1,11 +1,17 @@
 import { Container, Box, Typography, Divider, Paper } from "@mui/material";
 
+const version = import.meta.env.PACKAGE_VERSION;
+
 export default function AboutPage() {
   return <Container sx={{ py: 4 }}>
     <Paper elevation={0} sx={{ p: 4 }}>
       <Typography variant="h3" fontWeight={700} gutterBottom>
         Acerca del Sistema de Gestión Unificada de Consultas Inteligentes
       </Typography>
+      
+      {version && <Typography variant="h6" fontWeight={1000} gutterBottom>
+        Versión: {version}
+      </Typography>}
 
       <Typography variant="subtitle1" color="text.secondary" gutterBottom>
         Plataforma de soporte técnico centralizada y asistida por IA, diseñada para MineTech y sus clientes.

@@ -9,6 +9,8 @@ import useUser from '../contexts/useUser';
 import { LoginIcon } from '../components/icons/index.jsx';
 import { useNavigate } from 'react-router-dom';
 
+const version = import.meta.env.PACKAGE_VERSION;
+
 export default function Header({
   hideMenuButton = false,
   hideUserMenu = false,
@@ -41,7 +43,7 @@ export default function Header({
       />
 
       <Typography
-        variant="h6"
+        variant="h4"
         sx={{
           flexGrow: 1,
           fontFamily: '"Inter", Sans-serif',
@@ -49,6 +51,20 @@ export default function Header({
         }}
       >
         AI Desk
+
+        {version && <Typography
+          variant="h6"
+          sx={{
+            display: 'inline-block',
+            fontSize: '0.4em',
+            flexGrow: 1,
+            fontFamily: '"Inter", Sans-serif',
+            fontWeight: 'bold',
+            marginLeft: '0.5em',
+          }}
+        >
+          v{version}
+        </Typography>}
       </Typography>
 
       {!hideUserMenu && <>
