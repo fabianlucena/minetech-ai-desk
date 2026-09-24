@@ -5,12 +5,17 @@ import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import IconButton from '@mui/material/IconButton';
 import useGlobal from '../contexts/useGlobal';
+import useUser from '../contexts/useUser';
+import { LoginIcon } from '../components/icons/index.jsx';
+import { useNavigate } from 'react-router-dom';
 
 export default function Header({
   hideMenuButton = false,
   hideUserMenu = false,
 }) {
   const { toggleMenuOpen } = useGlobal();
+  const user = useUser();
+  const navigate = useNavigate();
 
   return <AppBar >
     <Toolbar
@@ -46,9 +51,17 @@ export default function Header({
         AI Desk
       </Typography>
 
-      {!hideUserMenu && <IconButton color="inherit">
-        <AccountCircle />
-      </IconButton>}
+      {!hideUserMenu && <>
+        {user ? <>
+          <Typography variant="body1" sx={{ mr: 1 }}>
+            {user.displayName}
+          </Typography>
+          <AccountCircle />
+        </> :
+        <IconButton color="inherit" onClick={() => navigate("/login")}>
+          <LoginIcon />
+        </IconButton>}
+      </>}
     </Toolbar>
   </AppBar>;
 }

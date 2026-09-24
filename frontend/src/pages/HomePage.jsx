@@ -1,6 +1,11 @@
 import { Container, Box, Typography, Button, Paper } from "@mui/material";
+import useUser from '../contexts/useUser';
+import { useNavigate } from 'react-router-dom';
 
 export default function HomePage() {
+  const user = useUser();
+  const navigate = useNavigate();
+
   return <Container sx={{ py: 6 }}>
     <Paper elevation={0} sx={{ p: 4, textAlign: "center" }}>
       
@@ -48,9 +53,9 @@ export default function HomePage() {
         <Button variant="contained" size="large" href="/about">
           Conocer más sobre el sistema
         </Button>
-        <Button variant="contained" size="large" href="/login">
+        {!user && <Button variant="contained" size="large" onClick={() => navigate("/login")}>
           Ingresar al sistema
-        </Button>
+        </Button>}
       </Box>
 
       {/* Créditos */}
