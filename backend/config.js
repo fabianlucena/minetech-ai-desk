@@ -21,7 +21,7 @@ let config = {
     verifyToken: '',
     token: '',
     phoneId: '',
-    messageUrl: 'https://graph.facebook.com/v20.0/{phoneId}/messages',
+    messageUrl: '{baseUrl}/{phoneId}/messages',
     timeout: 10000,
   },
 };

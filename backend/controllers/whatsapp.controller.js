@@ -19,7 +19,10 @@ if (!config.whatsapp.messageUrl || !config.whatsapp.token) {
 }
 
 const whatsappPhoneId = config.whatsapp.phoneId || '';
-const messageUrl = config.whatsapp.messageUrl.replace('{phoneId}', whatsappPhoneId) || '';
+const messageUrl = config.whatsapp.messageUrl
+  .replace('{baseUrl}', config.whatsapp.baseUrl)
+  .replace('{phoneId}', whatsappPhoneId)
+  || '';
 const whatsappAutorization = `Bearer ${config.whatsapp.token}`;
 
 logger.info('    Whatsapp configuration:');
