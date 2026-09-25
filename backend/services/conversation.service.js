@@ -79,7 +79,7 @@ export default class ConversationService extends ModelService {
     return conversation;
   }
 
-  async getOpenByRequesterIdOrCreate(requesterId, data,options = {}) {
+  async getOpenByRequesterIdOrCreate(requesterId, data, options = {}) {
     const conversation = await this.getOpenByRequesterId(requesterId, options);
 
     if (!conversation) {
@@ -98,23 +98,6 @@ export default class ConversationService extends ModelService {
 
   get validPropertiesForUpdate() {
     return ['requesterId', 'clientId', 'lastMessageAt', 'closedAt', 'closedById'];
-  }
-
-  async validateForCreation(data, options) {
-    if (!data.code) {
-      const lastConversation = await this.getFirstOrDefault({
-        ...options,
-        where: {
-          ...options?.where,
-          clientId: data.clientId || null,
-        },
-        order: [['createdAt', 'DESC']]
-      });
-
-      data.code = lastConversation ? `${lastConversation.code + 1}` : '1';
-    }
-
-    return await super.validateForCreation(data, options);
   }
 
   async closeById(id, options) {
