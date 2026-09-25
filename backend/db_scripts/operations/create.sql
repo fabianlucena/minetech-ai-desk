@@ -696,7 +696,7 @@ create table if not exists ia_desk.conversation_messages(
     delivered_at timestamp null,
     read_at timestamp null,
     failed_at timestamp null,
-    fail_message text null,
+    failure_reason text null,
 
     updated_at timestamp null,
     updated_by_id bigint null,
