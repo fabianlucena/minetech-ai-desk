@@ -7,7 +7,7 @@ GET {{url}}/webhooks/whatsapp?hub.mode=subscribe&hub.verify_token={{verify_token
 ### Recibir mensaje de texto de WhatsApp
 POST {{url}}/webhooks/whatsapp
 Content-Type: application/json
-X-Hub-Signature-256: sha256=9b09551e5382925199f5744305f0c816b48e7727285acfa7d386a593d32b2309
+X-Hub-Signature-256: sha256=daf77849a3fc48e6c903dd82d0d1114f3c07e7e621fd26d778de234067825a86
 
 {
   "object": "whatsapp_business_account",
