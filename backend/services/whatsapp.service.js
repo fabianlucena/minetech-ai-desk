@@ -27,9 +27,6 @@ export default class WhatsappService {
 
     const conversationMessageService = getDependency('conversationMessageService');
 
-    const hola = null;
-    console.log(hola.uno);
-
     for (const entry of entries) {
       if (!entry?.changes?.length)
         continue;
