@@ -5,6 +5,11 @@ import { deepMerge } from './utils/object.js';
 let config = {
   port: 3000,
 
+  logger: {
+    level: 'info',
+    showStack: false,
+  },
+
   dbName: 'minetech-ai-desk',
   dbUser: 'minetech-ai-desk',
   dbPass: 'password',
