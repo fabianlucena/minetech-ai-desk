@@ -44,6 +44,8 @@ export async function startWhatsappWebhookServer(req, res) {
 }
 
 export async function processIncomingWhatsApp(req, res) {
+  logger.debug(JSON.stringify(req.body));
+
   const receivedSignature = req.headers['x-hub-signature-256'];
   if (!receivedSignature) {
     logger.error('❌ Missing signature in WhatsApp webhook request');
@@ -75,8 +77,8 @@ export async function processIncomingWhatsApp(req, res) {
       await whatsappService.incomingMessage(req.body.entry, { session: req.session });
     } catch (err) {
       logger.error('❌ Error procesando mensaje entrante:', err);
-      if (config.logger?.showTrace)
-        logger.error(err.stack);
+      if (config.logger.showTrace)
+        logger.debug(err.stack);
     }
   })();
 }

@@ -7,7 +7,7 @@ let config = {
 
   logger: {
     level: 'info',
-    showStack: false,
+    showTrace: false,
   },
 
   dbName: 'minetech-ai-desk',

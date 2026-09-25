@@ -1,7 +1,9 @@
 import winston from 'winston';
 import { addDependency } from './dependency.js';
+import config from './config.js';
 
 const logger = winston.createLogger({
+  ...config.logger,
   format: winston.format.combine(
     winston.format.timestamp({
       format: "YYYY-MM-DD HH:mm:ss.SSS",
