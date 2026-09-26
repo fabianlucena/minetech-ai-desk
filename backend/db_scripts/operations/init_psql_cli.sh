@@ -1,0 +1,1 @@
+psql -h localhost -U minetech_ai_desk -d minetech_ai_desk
