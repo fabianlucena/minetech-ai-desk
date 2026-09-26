@@ -1,8 +1,9 @@
-sudo su - deploy
-cd /opt/minetech-ai-desk/backend
-pm2 start npm --name "minetech-ia-desk" -- start
-pm2 save
-pm2 startup
+# Está comentado para no hacer otro accidental
+#sudo su - deploy
+#cd /opt/minetech-ai-desk/backend
+#pm2 start npm --name "minetech-ia-desk" -- start
+#pm2 save
+#pm2 startup
 
 # Comandos útiles de gestión
 #   Ver estado del proceso: pm2 status

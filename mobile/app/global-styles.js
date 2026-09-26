@@ -112,9 +112,11 @@ export default {
     },
     message: {
       card: {
-        padding: 10,
+        paddingHorizontal: 10,
+        paddingVertical: 6,
         borderRadius: 8,
-        margin: 10,
+        marginHorizontal: 10,
+        marginVertical: 3,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'start',
