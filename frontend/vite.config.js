@@ -1,7 +1,11 @@
 import { defineConfig } from 'vite';
 import react, { reactCompilerPreset } from '@vitejs/plugin-react';
 import babel from '@rolldown/plugin-babel';
-import { version } from './package.json';
+import { readFileSync } from 'node:fs';
+
+const pkg = JSON.parse(
+  readFileSync(new URL('./package.json', import.meta.url), 'utf-8')
+);
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -10,6 +14,6 @@ export default defineConfig({
     babel({ presets: [reactCompilerPreset()] }),
   ],
   define: {
-    'import.meta.env.PACKAGE_VERSION': JSON.stringify(version),
+    'import.meta.env.PACKAGE_VERSION': JSON.stringify(pkg.version),
   }
 })
