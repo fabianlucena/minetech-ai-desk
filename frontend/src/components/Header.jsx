@@ -52,9 +52,8 @@ export default function Header({
       >
         AI Desk
 
-        {version && <Typography
-          variant="h6"
-          sx={{
+        {version && <span
+          style={{
             display: 'inline-block',
             fontSize: '0.4em',
             flexGrow: 1,
@@ -64,7 +63,7 @@ export default function Header({
           }}
         >
           v{version}
-        </Typography>}
+        </span>}
       </Typography>
 
       {!hideUserMenu && <>
