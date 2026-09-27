@@ -47,9 +47,11 @@ export default function useConversationMessages() {
     return messages.map(normalizeConversationMessage);
   }, [api]);
 
-  return useMemo(() => ({
+  const value = useMemo(() => ({
     normalizeConversationMessage,
-    connectToChat,
     getConversationMessages,
+    connectToChat,
   }), [connectToChat, getConversationMessages]);
+
+  return value;
 }
