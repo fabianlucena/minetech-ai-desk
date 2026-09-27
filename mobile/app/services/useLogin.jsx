@@ -1,10 +1,11 @@
+import { useCallback, useMemo } from 'react';
 import asyncStorage from '@react-native-async-storage/async-storage';
 import useApi from './useApi';
 
 export default function useLoginService() {
   const api = useApi();
 
-  async function login(data, options) {
+  const login = useCallback(async (data, options) => {
     return _login(
       'v1/login',
       {
@@ -13,15 +14,15 @@ export default function useLoginService() {
       },
       options
     );
-  }
+  }, [api]);
 
-  async function canAutoLogin() {
+  const canAutoLogin = useCallback(async () => {
     const autoLoginToken = await asyncStorage.getItem('autoLoginToken');
     const deviceToken = await asyncStorage.getItem('deviceToken');
     return !!autoLoginToken && !!deviceToken;
-  }
+  }, []);
 
-  async function autoLogin(options) {
+  const autoLogin = useCallback(async (options) => {
     const body = {
       autoLoginToken: await asyncStorage.getItem('autoLoginToken'),
       deviceToken: await asyncStorage.getItem('deviceToken'),
@@ -29,15 +30,15 @@ export default function useLoginService() {
 
     if (body.autoLoginToken && body.deviceToken)
       return _login('v1/auto-login', body, options);
-  }
+  }, []);
 
-  async function _login(service, body, options) {
+  const _login = useCallback(async (service, body, options) => {
     var res = await api.postJson(service, { ...options, body });
     await setCredentials(res);
     return res;
-  }
+  }, [api]);
 
-  async function logout(options) {
+  const logout = useCallback(async (options) => {
     options = {
       authorization: api.authorization,
       ...options,
@@ -46,9 +47,9 @@ export default function useLoginService() {
     clearCredentials();
     await asyncStorage.removeItem('autoLoginToken');
     await api.getJson('v1/logout', options);
-  }
+  }, [api]);
 
-  async function setCredentials(data) {
+  const setCredentials = useCallback(async (data) => {
     if (data.authorizationToken) {
       api.setAuthorizationToken(data.authorizationToken);
       api.setAutorization('Bearer ' + data.authorizationToken);
@@ -68,21 +69,21 @@ export default function useLoginService() {
     }
 
     return data;
-  }
+  }, [api]);
 
-  async function clearCredentials() {
+  const clearCredentials = useCallback(async () => {
     await asyncStorage.removeItem('autoLoginToken');
     api.setAuthorizationToken(null);
     api.setAutorization(null);
     api.setAuthorizationExpireAt(null);
-  }
-  
-  return {
+  }, [api]);
+
+  return useMemo(() => ({
     login,
     canAutoLogin,
     autoLogin,
     logout,
     setCredentials,
     clearCredentials,
-  };
+  }), [login, canAutoLogin, autoLogin, logout, setCredentials, clearCredentials]);
 }

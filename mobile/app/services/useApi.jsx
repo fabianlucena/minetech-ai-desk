@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { wsUrl, reconnectDelays, pingTimeout, pongTimeout } from '../../config';
 
 export const ApiContext = createContext();
@@ -354,22 +354,38 @@ export function ApiProvider({
     socketHandlers = socketHandlers.filter(h => h !== handler);
   }, []);
 
+  const value = useMemo(() => ({
+    urlBase, setUrlBase,
+    debug, setDebug,
+    authorization, setAutorization,
+    authorizationToken, setAuthorizationToken,
+    authorizationExpireAt, setAuthorizationExpireAt,
+    fetch,
+    fetchJson,
+    getJson,
+    postJson,
+    putJson,
+    deleteJson,
+    patchJson,
+    iaDeskSocket, addSocketHandler, removeSocketHandler,
+  }), [
+    urlBase, setUrlBase,
+    debug, setDebug,
+    authorization, setAutorization,
+    authorizationToken, setAuthorizationToken,
+    authorizationExpireAt, setAuthorizationExpireAt,
+    fetch,
+    fetchJson,
+    getJson,
+    postJson,
+    putJson,
+    deleteJson,
+    patchJson,
+    iaDeskSocket, addSocketHandler, removeSocketHandler,
+  ]);
+
   return <ApiContext.Provider
-    value={{
-      urlBase, setUrlBase,
-      debug, setDebug,
-      authorization, setAutorization,
-      authorizationToken, setAuthorizationToken,
-      authorizationExpireAt, setAuthorizationExpireAt,
-      fetch,
-      fetchJson,
-      getJson,
-      postJson,
-      putJson,
-      deleteJson,
-      patchJson,
-      iaDeskSocket, addSocketHandler, removeSocketHandler,
-    }}
+    value={value}
   >
     {children}
   </ApiContext.Provider>;
