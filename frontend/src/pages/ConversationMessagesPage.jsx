@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
 import Chat from '../components/ConversationChat.jsx';
@@ -6,6 +6,7 @@ import { ReloadButton } from '../components/buttons';
 import useConversation from '../services/useConversation';
 import useConversationMessage from '../services/useConversationMessage';
 import { formatRelativeDateTime } from '../utils/datetime.js';
+import { ConnectedIcon, DisconnectedIcon } from '../components/icons/index.jsx';
 
 function normalizeMessageToShow(msg) {
   msg.id ??= msg.uuid;
@@ -22,9 +23,16 @@ export default function ConversationMessagesPage() {
   const { getConversationMessages, connectToChat, normalizeConversationMessage } = useConversationMessage();
   const [conversation, setConversation] = useState(null);
   const [messages, setMessages] = useState([]);
+  const ws = useRef(null);
+  const wsTimeout = useRef(1500);
 
-  useEffect(() => {
-    const ws = connectToChat(uuid, (msg) => {
+  const connect = useCallback(() => {
+    console.log('Connecting to chat...');
+
+    if (ws.current)
+      return;
+    
+    const newWs = connectToChat(uuid, (msg) => {
       if (msg.type === 'chat_message') {
         const message = normalizeConversationMessage(msg.message);
         setMessages(messages => {
@@ -49,21 +57,43 @@ export default function ConversationMessagesPage() {
       }
     });
 
+    newWs.ref = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    newWs.onclose = () => {
+      console.log('WebSocket connection closed.');
+
+      if (ws.current && ws.current.ref === newWs.ref)
+        ws.current = null;
+
+      if (wsTimeout.current) {
+        console.log('Reconnecting...');
+        setTimeout(connect, wsTimeout.current);
+      }
+    };
+
+    ws.current = newWs;
+
+  // oxlint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    wsTimeout.current = 1500;
+    connect();
+    
     return () => {
-      if (ws.readyState === WebSocket.CONNECTING) {
-        ws.onopen = () => ws.close(1000, 'Conexión cerrada por el cliente');
+      wsTimeout.current = 0;
+      if (!ws.current)
+        return;
+
+      if (ws.current.readyState === WebSocket.CONNECTING) {
+        ws.current.onopen = () => ws.current.close(1000, 'Conexión cerrada por el cliente');
       }
 
-      if (ws.readyState === WebSocket.OPEN) {
-        ws.close(1000, 'Conexión cerrada por el cliente');
+      if (ws.current.readyState === WebSocket.OPEN) {
+        ws.current.close(1000, 'Conexión cerrada por el cliente');
       }
     }
-  }, [
-    uuid,
-    getConversationMessages,
-    connectToChat,
-    normalizeConversationMessage,
-  ]);
+  // oxlint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   
   const fetchConversation = useCallback(async () => {
     try {
@@ -142,6 +172,7 @@ export default function ConversationMessagesPage() {
         </Typography>
       </Box>
       <Box sx={{ marginTop: 1 }}>
+        {ws ? <ConnectedIcon /> : <DisconnectedIcon />}
         <ReloadButton onClick={handleReload} />
       </Box>
     </Box>
