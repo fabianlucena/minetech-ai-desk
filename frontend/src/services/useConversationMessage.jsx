@@ -1,22 +1,22 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import useApi from './useApi';
 import { wsUrl } from '../config.js';
+
+function normalizeConversationMessage(msg) {
+  msg ??= {};
+  if (msg.receivedAt) msg.receivedAt = new Date(msg.receivedAt);
+  if (msg.sentAt) msg.sentAt = new Date(msg.sentAt);
+  if (msg.deliveredAt) msg.deliveredAt = new Date(msg.deliveredAt);
+  if (msg.readAt) msg.readAt = new Date(msg.readAt);
+  if (msg.failedAt) msg.failedAt = new Date(msg.failedAt);
+
+  return msg;
+}
 
 export default function useConversationMessages() {
   const api = useApi();
 
-  function normalizeConversationMessage(msg) {
-    msg ??= {};
-    if (msg.receivedAt) msg.receivedAt = new Date(msg.receivedAt);
-    if (msg.sentAt) msg.sentAt = new Date(msg.sentAt);
-    if (msg.deliveredAt) msg.deliveredAt = new Date(msg.deliveredAt);
-    if (msg.readAt) msg.readAt = new Date(msg.readAt);
-    if (msg.failedAt) msg.failedAt = new Date(msg.failedAt);
-
-    return msg;
-  }
-
-  const connectToChat = useCallback(async (uuid, handler) => {
+  const connectToChat = useCallback((uuid, handler) => {
     const ws = new WebSocket(wsUrl + `/chat/${uuid}`);
 
     ws.onopen = () => {
@@ -32,7 +32,7 @@ export default function useConversationMessages() {
     };
 
     ws.onclose = () => {
-      console.log('WS closed');
+      // console.log('WS closed');
     };
 
     ws.onerror = (err) => {
@@ -47,9 +47,9 @@ export default function useConversationMessages() {
     return messages.map(normalizeConversationMessage);
   }, [api]);
 
-  return {
+  return useMemo(() => ({
     normalizeConversationMessage,
     connectToChat,
     getConversationMessages,
-  };
+  }), [connectToChat, getConversationMessages]);
 }

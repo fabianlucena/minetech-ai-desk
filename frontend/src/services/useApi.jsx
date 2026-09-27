@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useContext, useState, useCallback, useMemo } from 'react';
 
 // oxlint-disable-next-line react/only-export-components
 export const ApiContext = createContext();
@@ -180,21 +180,36 @@ export function ApiProvider({
     });
   }, [fetchJson]);
 
+  const value = useMemo(() => ({
+    urlBase, setUrlBase,
+    debug, setDebug,
+    authorization, setAutorization,
+    authorizationToken, setAuthorizationToken,
+    authorizationExpireAt, setAuthorizationExpireAt,
+    fetch,
+    fetchJson,
+    getJson,
+    postJson,
+    putJson,
+    deleteJson,
+    patchJson,
+  }), [
+    urlBase, setUrlBase,
+    debug, setDebug,
+    authorization, setAutorization,
+    authorizationToken, setAuthorizationToken,
+    authorizationExpireAt, setAuthorizationExpireAt,
+    fetch,
+    fetchJson,
+    getJson,
+    postJson,
+    putJson,
+    deleteJson,
+    patchJson,
+  ]);
+
   return <ApiContext.Provider
-    value={{
-      urlBase, setUrlBase,
-      debug, setDebug,
-      authorization, setAutorization,
-      authorizationToken, setAuthorizationToken,
-      authorizationExpireAt, setAuthorizationExpireAt,
-      fetch,
-      fetchJson,
-      getJson,
-      postJson,
-      putJson,
-      deleteJson,
-      patchJson,
-    }}
+    value={value}
   >
     {children}
   </ApiContext.Provider>;

@@ -50,12 +50,21 @@ export default function ConversationMessagesPage() {
     });
 
     return () => {
-      if (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING) {
+      if (ws.readyState === WebSocket.CONNECTING) {
+        ws.onopen = () => ws.close(1000, 'Conexión cerrada por el cliente');
+      }
+
+      if (ws.readyState === WebSocket.OPEN) {
         ws.close(1000, 'Conexión cerrada por el cliente');
       }
     }
-  }, [uuid, getConversationMessages, connectToChat, normalizeConversationMessage]);
-
+  }, [
+    uuid,
+    getConversationMessages,
+    connectToChat,
+    normalizeConversationMessage,
+  ]);
+  
   const fetchConversation = useCallback(async () => {
     try {
       const conversationData = await getConversation(uuid);
