@@ -1,7 +1,7 @@
 import { getDependency } from '../dependency.js';
 import ModelService from './model.service.js';
 import { Op } from 'sequelize';
-import { sendMessageToTechnicianId } from '../web-sockets/chat.ws.js';
+import { sendMessageToTechnicianId } from '../web-sockets/ia-desk.ws.js';
 
 export default class TechnicianService extends ModelService {
   constructor() {

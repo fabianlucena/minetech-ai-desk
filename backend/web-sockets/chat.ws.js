@@ -4,7 +4,6 @@ import { WSFatalError, WSError } from './WSError.js';
 
 const config = getDependency('config');
 const logger = getDependency('logger');
-let technicianService;
 let sessionService;
 let conversationService;
 
@@ -92,25 +91,6 @@ export async function sendMessageToConversationId(conversationId, message) {
   }
 }
 
-export async function sendMessageToTechnicianId(technicianId, message) {
-  let payload = {
-    type: 'chat_message',
-    message,
-  };
-  payload = JSON.stringify(payload);
-
-  const filteredPeers = [...peers.entries()]
-    .filter(([, info]) => info && info.technicianId === technicianId);
-  for (const [ws] of filteredPeers) {
-    try {
-      await ws.send(payload);
-    } catch (err) {      
-      peers.delete(ws);
-      logger.warn(`Failed to send WS message to technicianId=${technicianId}: ${err.message}`);
-    }
-  }
-}
-
 async function handleAuth({msg, ws, conversationUuid}) {
   if (!msg.token)
     throw new WSFatalError(1008, 'Falta el token de autorización');
@@ -124,12 +104,6 @@ async function handleAuth({msg, ws, conversationUuid}) {
 
   if (session.expiresAt < new Date())
     throw new WSFatalError(1008, 'La sesión ha expirado');
-
-  const technician = await technicianService.getById(session.userId);
-  if (technician) {
-    peers.set(ws, { session, technicianId: technician?.id, errorCount: 0 });
-    return { type: 'auth_success' };
-  }
 
   if (conversationUuid) {
     const conversationId = await conversationService.getIdByUuid(conversationUuid);

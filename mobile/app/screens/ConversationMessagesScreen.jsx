@@ -25,7 +25,7 @@ export default function ConversationMessagesScreen() {
   }, [normalizeConversationMessage]);
 
   const iaDeskSocketHandler = useCallback((msg) => {
-    if (msg.message.conversation.uuid !== conversationUuid || msg.type !== 'send_message' && msg.type !== 'send_message_success' )
+    if (msg.message.conversation.uuid !== conversationUuid || msg.type !== 'chat_message' && msg.type !== 'send_message_success' )
       return;
 
     setMessages(prevMessages => {
