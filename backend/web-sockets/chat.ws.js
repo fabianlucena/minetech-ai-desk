@@ -15,7 +15,6 @@ export const routes = {
 };
 
 export function handler(ws) {
-  technicianService = getDependency('technicianService');
   sessionService = getDependency('sessionService');
   conversationService = getDependency('conversationService');
 
@@ -78,6 +77,8 @@ export async function sendMessageToConversationId(conversationId, message) {
     message,
   };
   payload = JSON.stringify(payload);
+
+  console.log(`Sending WS message to conversationId=${conversationId}: ${payload}`);
 
   const filteredPeers = [...peers.entries()]
     .filter(([, info]) => info && info.conversationId === conversationId);

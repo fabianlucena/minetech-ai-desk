@@ -41,7 +41,7 @@ export function handler(ws) {
       }
       
       if (msg.type === 'auth') 
-        res = await handleAuth({msg, ws, conversationUuid: ws.params.uuid});
+        res = await handleAuth({msg, ws});
       else if (msg.type === 'ping')
         res = { type: 'pong' };
       else if (msg.type === 'send_message')
@@ -113,7 +113,7 @@ export async function sendMessageToTechnicianId(technicianId, message) {
   }
 }
 
-async function handleAuth({msg, ws, conversationUuid}) {
+async function handleAuth({msg, ws}) {
   if (!msg.token)
     throw new WSFatalError(1008, 'Falta el token de autorización');
 
@@ -131,20 +131,6 @@ async function handleAuth({msg, ws, conversationUuid}) {
   if (technician) {
     peers.set(ws, { session, technicianId: technician?.id, errorCount: 0 });
     return { type: 'auth_success' };
-  }
-
-  if (conversationUuid) {
-    const conversationId = await conversationService.getIdByUuid(conversationUuid);
-    if (conversationId) {
-      session = await sessionService.decorateWithCredentials(session);
-      if (!session)
-        throw new WSFatalError(1008, 'Error al decorar la sesión con credenciales');
-
-      if (session.permissions?.find?.(p => p.name === 'conversations.viewChat')) {
-        peers.set(ws, { session, conversationId, errorCount: 0 });
-        return { type: 'auth_success' };
-      }
-    }
   }
 
   throw new WSFatalError(1008, 'Usted no tiene permiso para usar el chat');
