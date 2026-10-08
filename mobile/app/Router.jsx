@@ -20,7 +20,7 @@ export default function Router() {
   const navigation = useNavigation();
   const { session, clearSession } = useSession();
   const { logout } = useLogin();
-  const { iaDeskSocket, authorizationToken } = useApi();
+  const { isConnected, authorizationToken } = useApi();
   const user = session.user;
   const permissions = session.permissions || [];
 
@@ -46,10 +46,10 @@ export default function Router() {
         ...globalStyles.header.title,
       },
       headerRight: () => <Icon
-        name={iaDeskSocket ? 'wifi' : authorizationToken ? 'wifi-off' : 'access-time'}
+        name={isConnected ? 'wifi' : authorizationToken ? 'wifi-off' : 'access-time'}
         style={{
           size: 26,
-          color: iaDeskSocket ? '#4a4' : authorizationToken ? '#a44' : 'grey',
+          color: isConnected ? '#4a4' : authorizationToken ? '#a44' : 'grey',
           marginRight: 10,
         }}
       />,

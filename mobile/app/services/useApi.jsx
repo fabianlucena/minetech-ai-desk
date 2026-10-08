@@ -135,6 +135,7 @@ export function ApiProvider({
   const [authorizationToken, setAuthorizationToken] = useState(initialAuthorizationToken);
   const [authorizationExpireAt, setAuthorizationExpireAt] = useState(initialAuthorizationExpireAt);
   const [iaDeskSocket, setIADeskSocket] = useState(null);
+  const [isConnected, setIsConnected] = useState(false);
 
   const fetch = useCallback(async (service, options) => {
     if (!service) {
@@ -315,16 +316,20 @@ export function ApiProvider({
       {
         onOpen: () => {
           setIADeskSocket(socket);
+            setIsConnected(true);
           console.log('IA Desk WS opened');
         },
         onClose: () => {
           if (iaDeskSocket === socket) {
+            setIsConnected(false);
             setIADeskSocket(null);
             console.log('IA Desk WS closed');
           }
         },
         onError: (err) => {
+          console.log(iaDeskSocket === socket);
           if (iaDeskSocket === socket) {
+            setIsConnected(false);
             setIADeskSocket(null);
             console.error('IA Desk WS error:', err);
           }
@@ -368,6 +373,7 @@ export function ApiProvider({
     deleteJson,
     patchJson,
     iaDeskSocket, addSocketHandler, removeSocketHandler,
+    isConnected,
   }), [
     urlBase, setUrlBase,
     debug, setDebug,
@@ -382,6 +388,7 @@ export function ApiProvider({
     deleteJson,
     patchJson,
     iaDeskSocket, addSocketHandler, removeSocketHandler,
+    isConnected,
   ]);
 
   return <ApiContext.Provider
