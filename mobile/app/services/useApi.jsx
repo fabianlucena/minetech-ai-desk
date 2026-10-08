@@ -324,14 +324,17 @@ export function ApiProvider({
             setIsConnected(false);
             setIADeskSocket(null);
             console.log('IA Desk WS closed');
+          } else if (!iaDeskSocket) {
+            setIsConnected(false);
           }
         },
         onError: (err) => {
-          console.log(iaDeskSocket === socket);
           if (iaDeskSocket === socket) {
             setIsConnected(false);
             setIADeskSocket(null);
             console.error('IA Desk WS error:', err);
+          } else if (!iaDeskSocket) {
+            setIsConnected(false);
           }
         },
         skipMessageTyles: ['ping', 'pong', 'auth_success'],
