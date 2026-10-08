@@ -78,7 +78,7 @@ export async function sendMessageToConversationId(conversationId, message) {
   };
   payload = JSON.stringify(payload);
 
-  console.log(`Sending WS message to conversationId=${conversationId}: ${payload}`);
+  logger.debug(`Sending WS message to conversationId=${conversationId}: ${payload}`);
 
   const filteredPeers = [...peers.entries()]
     .filter(([, info]) => info && info.conversationId === conversationId);
