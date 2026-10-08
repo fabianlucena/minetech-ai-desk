@@ -71,9 +71,7 @@ export default function ConversationMessagesPage() {
     };
 
     ws.current = newWs;
-
-  // oxlint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [uuid, connectToChat, normalizeConversationMessage]);
 
   useEffect(() => {
     wsTimeout.current = 1500;
