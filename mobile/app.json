@@ -11,16 +11,26 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#BE9B23",
         "foregroundImage": "./assets/minetech-logo.png",
         "backgroundImage": "./assets/minetech-logo.png",
         "monochromeImage": "./assets/minetech-logo.png"
-      }
+      },
+      "package": "com.fabianlucena.minetechiadesk"
     },
     "web": {
       "favicon": "./assets/minetech-icon-transparent.png"
     },
     "plugins": [
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/minetech-logo-splash.png",
+          "imageWidth": 220,
+          "resizeMode": "contain",
+          "backgroundColor": "#BE9B23"
+        }
+      ],
       "@react-native-vector-icons/material-icons"
     ]
   }

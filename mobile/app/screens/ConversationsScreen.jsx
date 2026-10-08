@@ -17,7 +17,7 @@ export default function ConversationsScreen() {
   }, []);
 
   return <Screen>
-    <Title>Pantalla de Conversaciones</Title>
+    <Title>Conversaciones</Title>
     <FlatList
       data={conversations}
       keyExtractor={(item) => item.uuid}
