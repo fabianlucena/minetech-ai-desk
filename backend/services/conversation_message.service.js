@@ -26,7 +26,7 @@ export default class ConversationMessageService extends ModelService {
   }
 
   get validPropertiesForCreation() {
-    return ['conversationId', 'text', 'media', 'externalMessageId',
+    return ['ref', 'conversationId', 'text', 'media', 'externalMessageId',
       'senderType', 'senderId', 'receiverType', 'receiverId', 
       'receivedAt', 'sentAt', 'deliveredAt', 'readAt', 'failedAt', 'failureReason',
     ];

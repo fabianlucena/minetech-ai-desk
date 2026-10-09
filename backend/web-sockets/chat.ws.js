@@ -1,6 +1,7 @@
 import { tryParseJSON } from '../utils/json.js';
 import { getDependency } from '../dependency.js';
 import { WSFatalError, WSError } from './WSError.js';
+import { ConversationMessageDTO } from '../dto/conversation_message.dto.js';
 
 const config = getDependency('config');
 const logger = getDependency('logger');
@@ -52,6 +53,7 @@ export function handler(ws) {
         ws.close(err.code, err.message);
         return;
       } else {
+        console.error('WS error:', err);
         logger.error(`WS error: ${err.message}`);
         res = {
           type: 'error',
@@ -156,11 +158,11 @@ async function handleSendMessage({msg, ws}) {
     technicianId: clientInfo.technicianId,
     receivedAt: new Date(),
     text: msg.text,
+    ref: msg.ref,
   });
   
   return {
     type: 'send_message_success',
-    ref: msg.ref,
     message: new ConversationMessageDTO(message),
   };
 }
