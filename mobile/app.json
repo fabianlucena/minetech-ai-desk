@@ -4,7 +4,7 @@
     "slug": "minetech-iadesk",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/minetech-icon-transparent.png",
+    "icon": "./assets/minetech-logo.png",
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true
@@ -13,25 +13,23 @@
       "adaptiveIcon": {
         "backgroundColor": "#BE9B23",
         "foregroundImage": "./assets/minetech-logo.png",
-        "backgroundImage": "./assets/minetech-logo.png",
-        "monochromeImage": "./assets/minetech-logo.png"
+        "monochromeImage": "./assets/minetech-logo-mono.png"
       },
       "package": "com.fabianlucena.minetechiadesk"
     },
     "web": {
-      "favicon": "./assets/minetech-icon-transparent.png"
+      "favicon": "./assets/minetech-logo.png"
     },
     "plugins": [
+      "@react-native-vector-icons/material-icons",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/minetech-logo-splash.png",
-          "imageWidth": 220,
+          "image": "./assets/minetech-logo.png",
           "resizeMode": "contain",
           "backgroundColor": "#BE9B23"
         }
-      ],
-      "@react-native-vector-icons/material-icons"
+      ]
     ]
   }
 }
