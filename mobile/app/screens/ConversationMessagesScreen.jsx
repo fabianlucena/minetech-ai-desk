@@ -64,6 +64,8 @@ export default function ConversationMessagesScreen() {
             normalizeMessageToShow(message),
           ].sort((a, b) => a.timestamp - b.timestamp);
         });
+      } else if (msg.type === 'error') {
+        error(`Error del servidor: ${msg.message}`);
       }
     });
 

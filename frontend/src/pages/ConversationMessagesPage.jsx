@@ -1,13 +1,13 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
+import useToast from '../contexts/useToast';
 import Chat from '../components/ConversationChat.jsx';
 import { ReloadButton } from '../components/buttons';
 import useConversation from '../services/useConversation';
 import useConversationMessage from '../services/useConversationMessage';
 import { formatRelativeDateTime } from '../utils/datetime.js';
 import { ConnectedIcon, DisconnectedIcon } from '../components/icons/index.jsx';
-import crypto from 'crypto';
 
 function normalizeMessageToShow(msg) {
   msg.id ??= msg.uuid;
@@ -20,6 +20,7 @@ function normalizeMessageToShow(msg) {
 
 export default function ConversationMessagesPage() {
   const { uuid } = useParams();
+  const { addError } = useToast();
   const { getConversation } = useConversation();
   const { getConversationMessages, connectToChat, normalizeConversationMessage } = useConversationMessage();
   const [conversation, setConversation] = useState(null);
@@ -55,6 +56,8 @@ export default function ConversationMessagesPage() {
             normalizeMessageToShow(message),
           ].sort((a, b) => a.timestamp - b.timestamp);
         });
+      } else if (msg.type === 'error') {
+        addError(`Error del servidor: ${msg.message}`);
       }
     });
 
