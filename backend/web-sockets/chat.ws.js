@@ -153,16 +153,24 @@ async function handleSendMessage({msg, ws}) {
   if (!msg.conversationUuid)
     throw new WSError('Conversación no especificada');
 
-  const message = await conversationService.addTechnicianMessage({
-    uuid: msg.uuid,
-    conversationUuid: msg.conversationUuid,
-    technicianId: clientInfo.technicianId,
-    receivedAt: new Date(),
-    text: msg.text,
-  });
-  
-  return {
-    type: 'send_message_success',
-    message: new ConversationMessageDTO(message),
-  };
+  try {
+    const message = await conversationService.addTechnicianMessage({
+      uuid: msg.uuid,
+      conversationUuid: msg.conversationUuid,
+      technicianId: clientInfo.technicianId,
+      receivedAt: new Date(),
+      text: msg.text,
+    });
+
+    return {
+      type: 'send_message_success',
+      message: new ConversationMessageDTO(message),
+    };
+  } catch (error) {
+    return {
+      type: 'send_message_error',
+      message: error.message,
+      messageUuid: msg.uuid,
+    };
+  }
 }
