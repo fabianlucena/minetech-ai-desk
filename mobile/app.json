@@ -25,9 +25,14 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/minetech-logo.png",
+          "image": "./assets/minetech-splash.png",
           "resizeMode": "contain",
-          "backgroundColor": "#BE9B23"
+          "backgroundColor": "#BE9B23",
+          "imageWidth": 300,
+          "android": {
+            "resizeMode": "contain",
+            "backgroundColor": "#BE9B23"
+          }
         }
       ]
     ]
