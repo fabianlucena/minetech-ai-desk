@@ -38,7 +38,7 @@ export default function ConversationMessagesScreen() {
   }, [normalizeConversationMessage]);
 
   const connect = useCallback(() => {
-    console.log('Connecting to chat...');
+    console.log('Conectando al chat...');
 
     if (ws.current)
       return;
@@ -95,7 +95,7 @@ export default function ConversationMessagesScreen() {
           ws.current = null;
 
         if (wsTimeout.current) {
-          console.log('Reconnecting...');
+          console.log('Reconectando al chat...');
           setTimeout(connect, wsTimeout.current);
         }
 
