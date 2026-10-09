@@ -11,7 +11,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#BE9B23",
+        "backgroundColor": "#FFFFFF",
         "foregroundImage": "./assets/minetech-logo.png",
         "monochromeImage": "./assets/minetech-logo-mono.png"
       },
