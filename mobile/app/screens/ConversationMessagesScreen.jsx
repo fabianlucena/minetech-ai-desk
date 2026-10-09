@@ -66,22 +66,44 @@ export default function ConversationMessagesScreen() {
         });
       } else if (msg.type === 'error') {
         error(`Error del servidor: ${msg.message}`);
+      } else if (msg.type === 'send_message_error') {
+        error(`Error al enviar el mensaje: ${message}`);
+        setMessages(messages => {
+          const exists = messages.some(m => m.uuid === msg.messageUuid);
+          if (!exists)
+            return messages;
+
+          return messages.map(m =>
+            m.uuid === msg.messageUuid
+              ? {
+                  ...m,
+                  failedAt: new Date(),
+                  failureReason: msg.message,
+                }
+              : m
+          );
+        });
       }
+    }, {
+      onopen: () => {
+        console.log('Chat conectado.');
+      },
+      onclose: () => {
+        console.log('Chat desconectado.');
+
+        if (ws.current && ws.current.ref === newWs.ref)
+          ws.current = null;
+
+        if (wsTimeout.current) {
+          console.log('Reconnecting...');
+          setTimeout(connect, wsTimeout.current);
+        }
+
+        return true;
+      },
     });
 
     newWs.ref = uuid.v4();
-    newWs.onclose = () => {
-      console.log('WebSocket connection closed.');
-
-      if (ws.current && ws.current.ref === newWs.ref)
-        ws.current = null;
-
-      if (wsTimeout.current) {
-        console.log('Reconnecting...');
-        setTimeout(connect, wsTimeout.current);
-      }
-    };
-
     ws.current = newWs;
   }, [conversationUuid, connectToChat, normalizeConversationMessage]);
 
@@ -102,7 +124,7 @@ export default function ConversationMessagesScreen() {
         ws.current.close(1000, 'Conexión cerrada por el cliente');
       }
     }
-  }, [uuid, connectToChat, normalizeConversationMessage]);
+  }, [conversationUuid, connectToChat, normalizeConversationMessage]);
 
   const fetchMessages = useCallback(async () => {
     if (!conversationUuid)
@@ -224,7 +246,7 @@ export default function ConversationMessagesScreen() {
         ref={flatListRef}
         onLayout={scrollToBottom}
         data={messages}
-        keyExtractor={(item) => item.uuid}
+        keyExtractor={(item) => item.uuid || item.timestamp.toString()}
         renderItem={({ item }) => <ConversationMessageCard message={item} />}
         onScroll={handleScroll}
         onContentSizeChange={handleContentSizeChange}
