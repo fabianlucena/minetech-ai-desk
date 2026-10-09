@@ -21,10 +21,13 @@ export default function useConversationMessages() {
     return messages.map(normalizeConversationMessage);
   }, [api]);
 
-  const connectToChat = useCallback((uuid, handler) => {
+  const connectToChat = useCallback((uuid, handler, { onopen, onclose } = {}) => {
     const ws = new WebSocket(wsUrl + `/chat/${uuid}`);
 
     ws.onopen = () => {
+      if (onopen?.())
+        return;
+      
       ws.send(JSON.stringify({
         type: 'auth',
         token: api.authorizationToken
@@ -37,7 +40,10 @@ export default function useConversationMessages() {
     };
 
     ws.onclose = () => {
-      // console.log('WS closed');
+      if (onclose?.())
+        return;
+
+      console.log('WS closed');
     };
 
     ws.onerror = (err) => {
