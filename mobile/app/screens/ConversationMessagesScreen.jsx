@@ -47,11 +47,22 @@ export default function ConversationMessagesScreen() {
       if (msg.type === 'chat_message') {
         const message = normalizeConversationMessage(msg.message);
         setMessages(messages => {
-          const exists = messages.some(m => m.uuid === message.uuid);
-
+          let exists = messages.some(m => m.uuid === message.uuid);
           if (exists) {
             return messages.map(m =>
               m.uuid === message.uuid
+                ? {
+                    ...m,
+                    ...message,
+                  }
+                : m
+            );
+          }
+
+          exists = messages.some(m => m.ref === message.ref);
+          if (exists) {
+            return messages.map(m =>
+              m.ref === message.ref
                 ? {
                     ...m,
                     ...message,
@@ -128,7 +139,7 @@ export default function ConversationMessagesScreen() {
       setMessages(messages);
       scrollToBottom();
     } catch (err) {
-      console.error('Error fetching conversation messages:', err);
+      console.log('Error fetching conversation messages:', err);
       error('Error al cargar los mensajes de la conversación:', err);
     }
   }, [conversationUuid, getConversationMessages]);
@@ -150,20 +161,31 @@ export default function ConversationMessagesScreen() {
   }
 
   function handleSubmit() {
-    const data = {
-      ref: uuid.v4(),
-      isMine: true,
-      text: message,
-      receivedAt: new Date(),
-    };
-    addMessage(data);
-    setMessage('');
-    /*iaDeskSocket.send(JSON.stringify({
-      type: 'send_message',
-      ref: data.ref,
-      conversationUuid,
-      text: message,
-    }));*/
+    if (!ws.current) {
+      error('No hay conexión con el servidor. Intenta de nuevo más tarde.');
+      return;
+    }
+
+    try {
+      const data = {
+        ref: uuid.v4(),
+        isMine: true,
+        text: message,
+        receivedAt: new Date(),
+      };
+      addMessage(data);
+      setMessage('');
+
+      ws.current.send(JSON.stringify({
+        type: 'send_message',
+        ref: data.ref,
+        conversationUuid,
+        text: message,
+      }));
+    } catch (err) {
+      console.error('Error sending message:', err);
+      error('Error al enviar el mensaje:', err);
+    }
   }
 
   function handleScroll(e) {
@@ -213,7 +235,7 @@ export default function ConversationMessagesScreen() {
         ref={flatListRef}
         onLayout={scrollToBottom}
         data={messages}
-        keyExtractor={(item) => item.ref || item.uuid || item.timestamp.toString()}
+        keyExtractor={(item) => item.uuid || item.ref || item.timestamp.toString()}
         renderItem={({ item }) => <ConversationMessageCard message={item} />}
         onScroll={handleScroll}
         onContentSizeChange={handleContentSizeChange}
