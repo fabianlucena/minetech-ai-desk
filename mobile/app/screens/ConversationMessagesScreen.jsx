@@ -5,18 +5,27 @@ import useConversationMessages from '../services/useConversationMessage';
 import { View, FlatList, TextInput } from 'react-native';
 import Icon from '../components/Icon';
 import ConversationMessageCard from '../components/ConversationMessageCard';
-import useApi from '../services/useApi';
 import uuid from 'react-native-uuid';
+
+function normalizeMessageToShow(msg) {
+  msg.id ??= msg.uuid;
+  msg.timestamp ??= msg.receivedAt;
+  msg.message ??= msg.text;
+  msg.isMine ??= msg.senderType !== 'requester';
+
+  return msg;
+}
 
 export default function ConversationMessagesScreen() {
   const route = useRoute();
   const conversationUuid = route.params?.conversationUuid;
-  const { getConversationMessages, normalizeConversationMessage } = useConversationMessages();
+  const { getConversationMessages, normalizeConversationMessage, connectToChat } = useConversationMessages();
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState('');
   const flatListRef = useRef(null);
   const [isAtBottom, setIsAtBottom] = useState(true);
-  const { iaDeskSocket, addSocketHandler, removeSocketHandler } = useApi();
+  const ws = useRef(null);
+  const wsTimeout = useRef(1500);
 
   const normalizeMessage = useCallback((msg) => {
     const normalizedMsg = normalizeConversationMessage(msg);
@@ -24,27 +33,72 @@ export default function ConversationMessagesScreen() {
     return normalizedMsg;
   }, [normalizeConversationMessage]);
 
-  const iaDeskSocketHandler = useCallback((msg) => {
-    if (msg.message.conversation.uuid !== conversationUuid || msg.type !== 'chat_message' && msg.type !== 'send_message_success' )
+  const connect = useCallback(() => {
+    console.log('Connecting to chat...');
+
+    if (ws.current)
       return;
+    
+    const newWs = connectToChat(conversationUuid, (msg) => {
+      if (msg.type === 'chat_message') {
+        const message = normalizeConversationMessage(msg.message);
+        setMessages(messages => {
+          const exists = messages.some(m => m.uuid === message.uuid);
 
-    setMessages(prevMessages => {
-      if (msg.ref && prevMessages.some(m => m.ref === msg.ref)) {
-        return prevMessages.map(m => m.ref === msg.ref ? { ...m, ...normalizeMessage(msg.message) } : m);
-      }
+          if (exists) {
+            return messages.map(m =>
+              m.uuid === message.uuid
+                ? {
+                    ...m,
+                    ...message,
+                  }
+                : m
+            );
+          }
 
-      if (prevMessages.some(m => m.uuid === msg.message.uuid)) {
-        return prevMessages.map(m => m.uuid === msg.message.uuid ? { ...m, ...normalizeMessage(msg.message) } : m);
+          return [
+            ...messages,
+            normalizeMessageToShow(message),
+          ].sort((a, b) => a.timestamp - b.timestamp);
+        });
       }
-  
-      return [...prevMessages, normalizeMessage(msg.message)];
     });
-  }, [conversationUuid]);
+
+    newWs.ref = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    newWs.onclose = () => {
+      console.log('WebSocket connection closed.');
+
+      if (ws.current && ws.current.ref === newWs.ref)
+        ws.current = null;
+
+      if (wsTimeout.current) {
+        console.log('Reconnecting...');
+        setTimeout(connect, wsTimeout.current);
+      }
+    };
+
+    ws.current = newWs;
+  }, [conversationUuid, connectToChat, normalizeConversationMessage]);
 
   useEffect(() => {
-    addSocketHandler(iaDeskSocketHandler);
-    return () => removeSocketHandler(iaDeskSocketHandler);
-  }, [iaDeskSocketHandler]);
+    wsTimeout.current = 1500;
+    connect();
+    
+    return () => {
+      wsTimeout.current = 0;
+      if (!ws.current)
+        return;
+
+      if (ws.current.readyState === WebSocket.CONNECTING) {
+        ws.current.onopen = () => ws.current.close(1000, 'Conexión cerrada por el cliente');
+      }
+
+      if (ws.current.readyState === WebSocket.OPEN) {
+        ws.current.close(1000, 'Conexión cerrada por el cliente');
+      }
+    }
+  // oxlint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const fetchMessages = useCallback(async () => {
     if (!conversationUuid)
@@ -100,12 +154,12 @@ export default function ConversationMessagesScreen() {
     };
     addMessage(data);
     setMessage('');
-    iaDeskSocket.send(JSON.stringify({
+    /*iaDeskSocket.send(JSON.stringify({
       type: 'send_message',
       ref: data.ref,
       conversationUuid,
       text: message,
-    }));
+    }));*/
   }
 
   function handleScroll(e) {

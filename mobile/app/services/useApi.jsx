@@ -1,125 +1,6 @@
-import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
-import { wsUrl, reconnectDelays, pingTimeout, pongTimeout } from '../../config';
+import { createContext, useContext, useState, useCallback, useMemo } from 'react';
 
 export const ApiContext = createContext();
-
-let validSocket = null;
-
-let pingTimer;
-let pongTimer = null;
-
-function startHeartbeat(ws) {
-  pingTimer = setInterval(() => {
-    ws.send(JSON.stringify({ type: 'ping' }));
-
-    pongTimer = setTimeout(() => {
-      ws.close();
-    }, pongTimeout);
-
-  }, pingTimeout);
-}
-
-function stopHeartbeat() {
-  clearInterval(pingTimer);
-  clearTimeout(pongTimer);
-}
-
-function openIADeskSocket(
-  authorizationToken,
-  {
-    debug,
-    onOpen,
-    onClose,
-    onError,
-    handler,
-    skipMessageTyles = [],
-  }
-) {
-  console.log('Opening WebSocket connection to IA Desk...');
-
-  const ws = new WebSocket(wsUrl + `/ia-desk`);
-  validSocket = ws;
-
-  ws.onopen = () => {
-    if (validSocket !== ws)
-      return;
-
-    console.log('WebSocket connection to IA Desk opened, sending auth token...');
-    ws.send(JSON.stringify({
-      type: 'auth',
-      token: authorizationToken
-    }));
-
-    onOpen?.();
-  };
-
-  ws.onmessage = (event) => {
-    if (validSocket !== ws)
-      return;
-
-    if (debug)
-      console.log('WebSocket message from IA Desk:', event.data);
-
-    const msg = JSON.parse(event.data);
-
-    if (msg.type === 'auth_success') {
-      startHeartbeat(ws);
-    } else if (msg.type === 'ping') {
-      if (debug)
-        console.log('WebSocket ping received, sending pong...');
-      
-      ws.send(JSON.stringify({ type: 'pong' }));
-    } else if (msg.type === 'pong') {
-      if (debug)
-        console.log('WebSocket pong received');
-
-      clearTimeout(pongTimer);
-    }
-
-    if (skipMessageTyles.includes(msg.type))
-      return;
-
-    handler?.(msg);
-  };
-
-  ws.onclose = () => {
-    if (validSocket !== ws)
-      return;
-
-    stopHeartbeat();
-    console.log('WebSocket connection to IA Desk closed');
-    onClose?.();
-  };
-
-  ws.onerror = (err) => {
-    if (validSocket !== ws)
-      return;
-
-    console.error('WS error:', err);
-    onError?.(err);
-  };
-
-  return ws;
-}
-
-function connectToIADeskSocket(authorizationToken, options, attempt = 0) {
-  const newOptions = { ...options };
-  newOptions.onClose = () => {
-    const index = attempt % reconnectDelays.length;
-    const delay = reconnectDelays[index];
-    console.log(`WebSocket connection closed, retrying in ${delay}ms...`);
-    setTimeout(() => {
-      connectToIADeskSocket(authorizationToken, options, attempt + 1);
-    }, delay);
-    options.onClose?.();
-  };
-
-  const ws = openIADeskSocket(authorizationToken, newOptions);
-
-  return ws;
-}
-
-let socketHandlers = [];
 
 export function ApiProvider({
   children,
@@ -134,8 +15,6 @@ export function ApiProvider({
   const [authorization, setAutorization] = useState(initialAuthorization);
   const [authorizationToken, setAuthorizationToken] = useState(initialAuthorizationToken);
   const [authorizationExpireAt, setAuthorizationExpireAt] = useState(initialAuthorizationExpireAt);
-  const [iaDeskSocket, setIADeskSocket] = useState(null);
-  const [isConnected, setIsConnected] = useState(false);
 
   const fetch = useCallback(async (service, options) => {
     if (!service) {
@@ -300,68 +179,6 @@ export function ApiProvider({
     });
   }, [fetchJson]);
 
-  
-  useEffect(() => {
-    if (!authorizationToken) {
-      if (iaDeskSocket) {
-        console.log('Closing IA Desk WebSocket connection due to missing authorization token...');
-        iaDeskSocket.close();
-      }
-
-      return;
-    }
-
-    const socket = connectToIADeskSocket(
-      authorizationToken,
-      {
-        onOpen: () => {
-          setIADeskSocket(socket);
-            setIsConnected(true);
-          console.log('IA Desk WS opened');
-        },
-        onClose: () => {
-          if (iaDeskSocket === socket) {
-            setIsConnected(false);
-            setIADeskSocket(null);
-            console.log('IA Desk WS closed');
-          } else if (!iaDeskSocket) {
-            setIsConnected(false);
-          }
-        },
-        onError: (err) => {
-          if (iaDeskSocket === socket) {
-            setIsConnected(false);
-            setIADeskSocket(null);
-            console.error('IA Desk WS error:', err);
-          } else if (!iaDeskSocket) {
-            setIsConnected(false);
-          }
-        },
-        skipMessageTyles: ['ping', 'pong', 'auth_success'],
-        handler: (msg) => {
-          if (debug)
-            console.log('IA Desk WS message:', msg);
-
-          socketHandlers.forEach(handler => {
-            try {
-              handler(msg);
-            } catch (err) {
-              console.error('Error in IA Desk WS handler:', err);
-            }
-          });
-        },
-      }
-    );
-  }, [authorizationToken]);
-
-  const addSocketHandler = useCallback((handler) => {
-    socketHandlers.push(handler);
-  }, []);
-
-  const removeSocketHandler = useCallback((handler) => {
-    socketHandlers = socketHandlers.filter(h => h !== handler);
-  }, []);
-
   const value = useMemo(() => ({
     urlBase, setUrlBase,
     debug, setDebug,
@@ -375,8 +192,6 @@ export function ApiProvider({
     putJson,
     deleteJson,
     patchJson,
-    iaDeskSocket, addSocketHandler, removeSocketHandler,
-    isConnected,
   }), [
     urlBase, setUrlBase,
     debug, setDebug,
@@ -390,8 +205,6 @@ export function ApiProvider({
     putJson,
     deleteJson,
     patchJson,
-    iaDeskSocket, addSocketHandler, removeSocketHandler,
-    isConnected,
   ]);
 
   return <ApiContext.Provider

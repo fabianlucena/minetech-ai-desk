@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import useApi from './useApi';
+import { wsUrl } from '../../config.js';
 
 function normalizeConversationMessage(msg) {
   msg ??= {};
@@ -20,10 +21,37 @@ export default function useConversationMessages() {
     return messages.map(normalizeConversationMessage);
   }, [api]);
 
+  const connectToChat = useCallback((uuid, handler) => {
+    const ws = new WebSocket(wsUrl + `/chat/${uuid}`);
+
+    ws.onopen = () => {
+      ws.send(JSON.stringify({
+        type: 'auth',
+        token: api.authorizationToken
+      }));
+    };
+
+    ws.onmessage = (event) => {
+      const msg = JSON.parse(event.data);
+      handler?.(msg);
+    };
+
+    ws.onclose = () => {
+      // console.log('WS closed');
+    };
+
+    ws.onerror = (err) => {
+      console.error('WS error:', err);
+    };
+
+    return ws;
+  }, [api]);
+
   const value = useMemo(() => ({
     normalizeConversationMessage,
     getConversationMessages,
-  }), [getConversationMessages]);
+    connectToChat,
+  }), [getConversationMessages, connectToChat]);
 
   return value;
 }

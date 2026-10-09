@@ -6,6 +6,7 @@ const config = getDependency('config');
 const logger = getDependency('logger');
 let sessionService;
 let conversationService;
+let technicianService;
 
 const peers = new Map();
 
@@ -17,6 +18,7 @@ export const routes = {
 export function handler(ws) {
   sessionService = getDependency('sessionService');
   conversationService = getDependency('conversationService');
+  technicianService = getDependency('technicianService');
 
   ws.on('message', async (raw) => {
     if (!raw || !raw.length)
@@ -106,21 +108,33 @@ async function handleAuth({msg, ws, conversationUuid}) {
   if (session.expiresAt < new Date())
     throw new WSFatalError(1008, 'La sesión ha expirado');
 
-  if (conversationUuid) {
-    const conversationId = await conversationService.getIdByUuid(conversationUuid);
-    if (conversationId) {
-      session = await sessionService.decorateWithCredentials(session);
-      if (!session)
-        throw new WSFatalError(1008, 'Error al decorar la sesión con credenciales');
+  if (!conversationUuid)
+    throw new WSFatalError(1008, 'Falta el UUID de la conversación');
 
-      if (session.permissions?.find?.(p => p.name === 'conversations.viewChat')) {
-        peers.set(ws, { session, conversationId, errorCount: 0 });
-        return { type: 'auth_success' };
-      }
-    }
-  }
+  const conversationId = await conversationService.getIdByUuid(conversationUuid);
+  if (!conversationId)
+    throw new WSFatalError(1008, 'UUID de conversación inválido');
 
-  throw new WSFatalError(1008, 'Usted no tiene permiso para usar el chat');
+  session = await sessionService.decorateWithCredentials(session);
+  if (!session)
+    throw new WSFatalError(1008, 'Error al decorar la sesión con credenciales');
+
+  const technician = await technicianService.getById(session.userId);
+
+  if (!session.permissions?.find?.(p => p.name === 'conversations.viewChat')
+    && !technician?.id
+  )
+    throw new WSFatalError(1008, 'Usted no tiene permiso para usar el chat');
+
+  const peerData = {
+    session,
+    conversationId,
+    technicianId: technician?.id,
+    errorCount: 0,
+  };
+
+  peers.set(ws, peerData);
+  return { type: 'auth_success' };
 }
 
 async function handleSendMessage({msg, ws}) {
@@ -137,12 +151,16 @@ async function handleSendMessage({msg, ws}) {
   if (!msg.conversationUuid)
     throw new WSError('Conversación no especificada');
 
-  await conversationService.addTechnicianMessage({
+  const message = await conversationService.addTechnicianMessage({
     conversationUuid: msg.conversationUuid,
     technicianId: clientInfo.technicianId,
     receivedAt: new Date(),
     text: msg.text,
   });
-
-  return { type: 'send_message_success' };
+  
+  return {
+    type: 'send_message_success',
+    ref: msg.ref,
+    message: new ConversationMessageDTO(message),
+  };
 }

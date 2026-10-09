@@ -1,7 +1,6 @@
 import { getDependency } from '../dependency.js';
 import ModelService from './model.service.js';
 import { Op } from 'sequelize';
-import { sendMessageToTechnicianId } from '../web-sockets/ia-desk.ws.js';
 
 export default class TechnicianService extends ModelService {
   constructor() {
@@ -114,6 +113,6 @@ export default class TechnicianService extends ModelService {
   }
 
   async sendMessageById(technicianId, message) {
-    await sendMessageToTechnicianId(technicianId, message);
+    console.log(`Sending message to technicianId=${technicianId}:`, message);
   }
 }
