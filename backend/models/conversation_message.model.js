@@ -5,8 +5,6 @@ export default (sequelize) => {
   const ConversationMessage = sequelize.define('ConversationMessage', {
     id: { type: DataTypes.BIGINT, autoIncrement: true, primaryKey: true },
     uuid: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4 },
-    
-    ref: { type: DataTypes.TEXT, allowNull: true },
 
     createdAt: { field: 'created_at', type: DataTypes.DATE, defaultValue: DataTypes.NOW, allowNull: false },
     updatedAt: { field: 'updated_at', type: DataTypes.DATE, allowNull: true },

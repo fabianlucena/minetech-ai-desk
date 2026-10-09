@@ -47,22 +47,10 @@ export default function ConversationMessagesScreen() {
       if (msg.type === 'chat_message') {
         const message = normalizeConversationMessage(msg.message);
         setMessages(messages => {
-          let exists = messages.some(m => m.uuid === message.uuid);
+          const exists = messages.some(m => m.uuid === message.uuid);
           if (exists) {
             return messages.map(m =>
               m.uuid === message.uuid
-                ? {
-                    ...m,
-                    ...message,
-                  }
-                : m
-            );
-          }
-
-          exists = messages.some(m => m.ref === message.ref);
-          if (exists) {
-            return messages.map(m =>
-              m.ref === message.ref
                 ? {
                     ...m,
                     ...message,
@@ -79,7 +67,7 @@ export default function ConversationMessagesScreen() {
       }
     });
 
-    newWs.ref = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    newWs.ref = uuid.v4();
     newWs.onclose = () => {
       console.log('WebSocket connection closed.');
 
@@ -112,8 +100,7 @@ export default function ConversationMessagesScreen() {
         ws.current.close(1000, 'Conexión cerrada por el cliente');
       }
     }
-  // oxlint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [uuid, connectToChat, normalizeConversationMessage]);
 
   const fetchMessages = useCallback(async () => {
     if (!conversationUuid)
@@ -168,7 +155,7 @@ export default function ConversationMessagesScreen() {
 
     try {
       const data = {
-        ref: uuid.v4(),
+        uuid: uuid.v4(),
         isMine: true,
         text: message,
         receivedAt: new Date(),
@@ -178,7 +165,7 @@ export default function ConversationMessagesScreen() {
 
       ws.current.send(JSON.stringify({
         type: 'send_message',
-        ref: data.ref,
+        uuid: data.uuid,
         conversationUuid,
         text: message,
       }));
@@ -235,7 +222,7 @@ export default function ConversationMessagesScreen() {
         ref={flatListRef}
         onLayout={scrollToBottom}
         data={messages}
-        keyExtractor={(item) => item.uuid || item.ref || item.timestamp.toString()}
+        keyExtractor={(item) => item.uuid}
         renderItem={({ item }) => <ConversationMessageCard message={item} />}
         onScroll={handleScroll}
         onContentSizeChange={handleContentSizeChange}

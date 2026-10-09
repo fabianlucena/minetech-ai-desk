@@ -7,6 +7,7 @@ import useConversation from '../services/useConversation';
 import useConversationMessage from '../services/useConversationMessage';
 import { formatRelativeDateTime } from '../utils/datetime.js';
 import { ConnectedIcon, DisconnectedIcon } from '../components/icons/index.jsx';
+import crypto from 'crypto';
 
 function normalizeMessageToShow(msg) {
   msg.id ??= msg.uuid;
@@ -57,7 +58,7 @@ export default function ConversationMessagesPage() {
       }
     });
 
-    newWs.ref = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    newWs.ref = crypto.randomUUID();
     newWs.onclose = () => {
       console.log('WebSocket connection closed.');
 

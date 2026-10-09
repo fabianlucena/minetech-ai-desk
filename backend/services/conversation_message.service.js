@@ -7,6 +7,7 @@ export default class ConversationMessageService extends ModelService {
     super({
       model: getDependency('conversationMessageModel'),
       useCreatedById: false,
+      allowUuidForCreation: true,
     });
   }
 
@@ -26,7 +27,7 @@ export default class ConversationMessageService extends ModelService {
   }
 
   get validPropertiesForCreation() {
-    return ['ref', 'conversationId', 'text', 'media', 'externalMessageId',
+    return ['uuid', 'conversationId', 'text', 'media', 'externalMessageId',
       'senderType', 'senderId', 'receiverType', 'receiverId', 
       'receivedAt', 'sentAt', 'deliveredAt', 'readAt', 'failedAt', 'failureReason',
     ];

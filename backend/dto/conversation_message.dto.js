@@ -6,8 +6,6 @@ export class ConversationMessageDTO {
   constructor(message) {
     this.uuid = message.uuid;
 
-    this.ref = message.ref;
-
     this.conversation = message.conversation ? new ConversationMinDTO(message.conversation) : null;
     this.text = message.text;
     this.media = message.media;

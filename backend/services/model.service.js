@@ -7,6 +7,7 @@ export default class ModelService {
     auditable = true,
     softDelete = true,
     allowIdForCreation = false,
+    allowUuidForCreation = false,
     useCreatedAt = null,
     useCreatedById = null,
   }) {
@@ -15,6 +16,7 @@ export default class ModelService {
     this.auditable = auditable;
     this.softDelete = softDelete;
     this.allowIdForCreation = allowIdForCreation;
+    this.allowUuidForCreation = allowUuidForCreation;
     this.useCreatedAt = useCreatedAt;
     this.useCreatedById = useCreatedById;
   }
@@ -71,7 +73,7 @@ export default class ModelService {
     if (data.id && !this.allowIdForCreation)
       throw new Error('El ID no debe ser proporcionado');
 
-    if (data.uuid)
+    if (data.uuid && !this.allowUuidForCreation)
       throw new Error('El UUID no debe ser proporcionado');
 
     const properties = Object.keys(data);

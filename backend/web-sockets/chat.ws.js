@@ -154,11 +154,11 @@ async function handleSendMessage({msg, ws}) {
     throw new WSError('Conversación no especificada');
 
   const message = await conversationService.addTechnicianMessage({
+    uuid: msg.uuid,
     conversationUuid: msg.conversationUuid,
     technicianId: clientInfo.technicianId,
     receivedAt: new Date(),
     text: msg.text,
-    ref: msg.ref,
   });
   
   return {
