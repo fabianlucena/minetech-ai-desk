@@ -3,9 +3,12 @@ import { useRoute } from '@react-navigation/native';
 import { error } from '../components/Toast';
 import useConversationMessages from '../services/useConversationMessage';
 import { View, FlatList, TextInput } from 'react-native';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
+import { useHeaderHeight } from '@react-navigation/elements';
 import Icon from '../components/Icon';
 import ConversationMessageCard from '../components/ConversationMessageCard';
 import uuid from 'react-native-uuid';
+import Screen from '../components/Screen.jsx';
 
 function normalizeMessageToShow(msg) {
   msg.id ??= msg.uuid;
@@ -17,6 +20,7 @@ function normalizeMessageToShow(msg) {
 }
 
 export default function ConversationMessagesScreen() {
+  const headerHeight = useHeaderHeight();
   const route = useRoute();
   const conversationUuid = route.params?.conversationUuid;
   const { getConversationMessages, normalizeConversationMessage, connectToChat } = useConversationMessages();
@@ -186,50 +190,62 @@ export default function ConversationMessagesScreen() {
     }
   }
 
-  return <View
+  return <Screen
     style={{
-      flex: 1,
+      padding: 0,
       justifyContent: 'end',
       alignItems: 'normal',
-      backgroundColor: '#141414',
     }}
   >
-    <FlatList
-      ref={flatListRef}
-      onLayout={scrollToBottom}
-      data={messages}
-      keyExtractor={(item) => item.ref || item.uuid || item.timestamp.toString()}
-      renderItem={({ item }) => <ConversationMessageCard message={item} />}
-      onScroll={handleScroll}
-      onContentSizeChange={handleContentSizeChange}
-      scrollEventThrottle={16}
-    />
-    <View
+    <KeyboardAvoidingView
+      behavior={'padding'}
       style={{
-        padding: 10,
-        backgroundColor: '#333',
-        borderRadius: 8,
-        margin: 10,
+        flex: 1,
         display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 2,
+        flexDirection: 'column',
+        justifyContent: 'flex-end',
+        alignItems: 'stretch',
+      backgroundColor: '#141414',
       }}
+      keyboardVerticalOffset={headerHeight}
     >
-      <TextInput
+      <FlatList
+        ref={flatListRef}
+        onLayout={scrollToBottom}
+        data={messages}
+        keyExtractor={(item) => item.ref || item.uuid || item.timestamp.toString()}
+        renderItem={({ item }) => <ConversationMessageCard message={item} />}
+        onScroll={handleScroll}
+        onContentSizeChange={handleContentSizeChange}
+        scrollEventThrottle={16}
+      />
+      <View
         style={{
-          color: '#fff',
-          flex: 1,
+          padding: 10,
+          backgroundColor: '#333',
+          borderRadius: 8,
+          margin: 10,
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 2,
         }}
-        value={message}
-        onChangeText={(value) => setMessage(value)}
-        onSubmitEditing={handleSubmit}
-      />
-      <Icon
-        name="send"
-        size={18}
-        onPress={handleSubmit}
-      />
-    </View>
-  </View>;
+      >
+        <TextInput
+          style={{
+            color: '#fff',
+            flex: 1,
+          }}
+          value={message}
+          onChangeText={(value) => setMessage(value)}
+          onSubmitEditing={handleSubmit}
+        />
+        <Icon
+          name="send"
+          size={18}
+          onPress={handleSubmit}
+        />
+      </View>
+    </KeyboardAvoidingView>
+  </Screen>;
 }

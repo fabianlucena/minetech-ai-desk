@@ -15,7 +15,8 @@
         "foregroundImage": "./assets/minetech-logo.png",
         "monochromeImage": "./assets/minetech-logo-mono.png"
       },
-      "package": "com.fabianlucena.minetechiadesk"
+      "package": "com.fabianlucena.minetechiadesk",
+      "softwareKeyboardLayoutMode": "resize"
     },
     "web": {
       "favicon": "./assets/minetech-logo.png"
