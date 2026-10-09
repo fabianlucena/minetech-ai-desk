@@ -16,6 +16,11 @@ function normalizeConversationMessage(msg) {
 export default function useConversationMessages() {
   const api = useApi();
 
+  const getConversationMessages = useCallback(async (uuid, params) => {
+    const messages = await api.getJson(`v1/conversations/${uuid}/messages`, { ...params });
+    return messages.map(normalizeConversationMessage);
+  }, [api]);
+
   const connectToChat = useCallback((uuid, handler) => {
     const ws = new WebSocket(wsUrl + `/chat/${uuid}`);
 
@@ -42,16 +47,11 @@ export default function useConversationMessages() {
     return ws;
   }, [api]);
 
-  const getConversationMessages = useCallback(async (uuid, params) => {
-    const messages = await api.getJson(`v1/conversations/${uuid}/messages`, { ...params });
-    return messages.map(normalizeConversationMessage);
-  }, [api]);
-
   const value = useMemo(() => ({
     normalizeConversationMessage,
     getConversationMessages,
     connectToChat,
-  }), [connectToChat, getConversationMessages]);
+  }), [getConversationMessages, connectToChat]);
 
   return value;
 }
