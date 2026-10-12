@@ -12,7 +12,6 @@ export default function IconButton({
   if (size === 'small') {
     iconSx.fontSize = 16;
     sx = {
-      padding: '4px',
       minWidth: 0,
       width: 16,
       height: 16,

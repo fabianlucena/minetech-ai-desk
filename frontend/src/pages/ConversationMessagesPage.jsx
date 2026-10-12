@@ -152,7 +152,8 @@ export default function ConversationMessagesPage() {
       flexGrow: 1,
       display: 'flex',
       flexDirection: 'column',
-      bgcolor: '#f0f0f0',
+      bgcolor: '#141414',
+      color: '#ccc',
       p: 2,
       margin: 0,
       padding: 0,
@@ -161,30 +162,57 @@ export default function ConversationMessagesPage() {
     <Box
       sx={{
         display: 'flex',
-        justifyContent: 'space-between',
+        flexDirection: 'row',
+        borderBottom: '.025em solid #888',
+        padding: 1,
+        alignItems: 'baseline',
       }}
     >
-      <Box>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          flexGrow: 1,
+        }}
+      >
         <Typography variant="h6" fontWeight={600}>
           Conversación
         </Typography>
-        {conversation?.requester?.displayName && (
+        <Box
+          sx={{ fontSize: '0.875rem', color: '#aaa',
+          }}
+        >
+          {conversation?.requester?.displayName && (
+            <Typography variant="body2" color="text.secondary">
+              Solicitante: {conversation?.requester?.displayName}
+            </Typography>
+          )}
+          {conversation?.client?.name && (
+            <Typography variant="body2" color="text.secondary">
+              Cliente: {conversation?.client?.name}
+            </Typography>
+          )}
           <Typography variant="body2" color="text.secondary">
-            Solicitante: {conversation?.requester?.displayName}
+            {`De: ${formatRelativeDateTime(conversation?.createdAt)} a ${formatRelativeDateTime(conversation?.lastMessageAt)}`}
           </Typography>
-        )}
-        {conversation?.client?.name && (
-          <Typography variant="body2" color="text.secondary">
-            Cliente: {conversation?.client?.name}
-          </Typography>
-        )}
-        <Typography variant="body2" color="text.secondary">
-          {`De: ${formatRelativeDateTime(conversation?.createdAt)} a ${formatRelativeDateTime(conversation?.lastMessageAt)}`}
-        </Typography>
+        </Box>
       </Box>
-      <Box sx={{ marginTop: 1 }}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          gap: 1,
+        }}
+      >
         {ws ? <ConnectedIcon /> : <DisconnectedIcon />}
-        <ReloadButton onClick={handleReload} />
+        <ReloadButton
+          onClick={handleReload}
+          sx={{
+            padding: 0,
+            margin: 0,
+            color: '#aaa',
+          }}
+        />
       </Box>
     </Box>
     <ConversationChat messages={messages} />

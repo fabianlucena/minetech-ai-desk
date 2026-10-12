@@ -20,7 +20,7 @@ export default function MainLayout() {
 
       <Box
         sx={{
-          padding: 1,
+          padding: 0,
           overflow: 'auto',
           flex: 1,
         }}
