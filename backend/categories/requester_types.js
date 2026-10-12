@@ -5,14 +5,9 @@ export const requesterTypes = [
     detail: 'Persona que se comunica por WhatsApp solicitando soporte técnico'
   },
   {
-    value: 'fieldOperator',
-    name: 'Operador de campo',
-    detail: 'Técnico que reporta lecturas, fallas o novedades desde el sitio'
-  },
-  {
-    value: 'technical',
-    name: 'Técnico',
-    detail: 'Personal de soporte que atiende consultas y gestiona tickets'
+    value: 'user',
+    name: 'Usuario',
+    detail: 'Personal interno de Minetech que solicita soporte técnico'
   },
   {
     value: 'system',

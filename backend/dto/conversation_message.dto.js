@@ -25,7 +25,7 @@ export class ConversationMessageDTO {
     if (message.sender) {
       if (message.senderType === 'requester') {
         this.sender = new RequesterMinDTO(message.sender);
-      } else if (message.senderType === 'technician') {
+      } else if (message.senderType === 'user') {
         this.sender = new TechnicianMinDTO(message.sender);
       }
     }
@@ -33,7 +33,7 @@ export class ConversationMessageDTO {
     if (message.receiver) {
       if (message.receiverType === 'requester') {
         this.receiver = new RequesterMinDTO(message.receiver);
-      } else if (message.receiverType === 'technician') {
+      } else if (message.receiverType === 'user') {
         this.receiver = new TechnicianMinDTO(message.receiver);
       }
     }

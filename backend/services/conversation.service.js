@@ -253,36 +253,35 @@ export default class ConversationService extends ModelService {
     return message;
   }
 
-  async addTechnicianMessage(data, options) {
+  async addUserMessage(data, options) {
     data = { ...data };
 
-    let technician;
-    if (data.technician) {
-      technician = data.technician;
-      delete data.technician;
+    let user;
+    if (data.user) {
+      user = data.user;
+      delete data.user;
 
-      if (data.technicianId) {
-        if (technician.id !== data.technicianId)
-          throw new Error('El ID del técnico no coincide con el objeto técnico proporcionado');
+      if (data.userId) {
+        if (user.id !== data.userId)
+          throw new Error('El ID del usuario no coincide con el objeto usuario proporcionado');
 
-        delete data.technicianId;
+        delete data.userId;
       }
 
-      data.senderId = technician.id;
-      delete data.technicianId;
-    } else if (data.technicianId) {
-      technician = await this.technicianService.getById(data.technicianId, options);
-      data.senderId = technician.id;
-      delete data.technicianId;
+      data.senderId = user.id;
+      delete data.userId;
+    } else if (data.userId) {
+      user = await this.userService.getById(data.userId, options);
+      data.senderId = user.id;
+      delete data.userId;
     } else
-      throw new Error('El técnico es obligatorio');
+      throw new Error('El usuario es obligatorio');
 
-    data.senderId = technician.id;
-    data.senderType = 'technician';
+    data.senderId = user.id;
+    data.senderType = 'user';
     const message = await this.addMessage(data, options);
 
-    technician.user ??= await this.userService.getById(technician.id, options);
-    message.sender = technician;
+    message.sender = user;
 
     await this.sendMessageToRequester(
       message,
@@ -311,14 +310,14 @@ export default class ConversationService extends ModelService {
     }
 
     message.receiver = technician;
-    if (message.receiverId !== technician.id || !message.receiverType !== 'technician') {
+    if (message.receiverId !== technician.id || !message.receiverType !== 'user') {
       message.receiverId = technician.id;
-      message.receiverType = 'technician';
+      message.receiverType = 'user';
       await this.conversationMessageService.updateById(
         message.id,
         {
           receiverId: technician.id,
-          receiverType: 'technician',
+          receiverType: 'user',
         },
         options
       );

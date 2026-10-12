@@ -11,6 +11,11 @@ export default class ConversationMessageService extends ModelService {
     });
   }
 
+  get userService() {
+    this._userService ??= getDependency('userService');
+    return this._userService;
+  }
+
   get technicianService() {
     this._technicianService ??= getDependency('technicianService');
     return this._technicianService;
@@ -83,10 +88,10 @@ export default class ConversationMessageService extends ModelService {
       const requester = await this.requesterService.getById(data.receiverId, { session: options.session });
       if (!requester)
         throw new Error('El destinatario no es un cliente válido');
-    } else if (data.receiverType === 'technician') {
-      const technician = await this.technicianService.getById(data.receiverId, { session: options.session });
-      if (!technician)
-        throw new Error('El destinatario no es un técnico válido');
+    } else if (data.receiverType === 'user') {
+      const user = await this.userService.getById(data.receiverId, { session: options.session });
+      if (!user)
+        throw new Error('El destinatario no es un usuario válido');
     } else if (data.receiverType === 'system') {
       if (data.receiverId)
         throw new Error('El destinatario "Sistema" no puede tener ID');
@@ -136,10 +141,10 @@ export default class ConversationMessageService extends ModelService {
       const requester = await this.requesterService.getById(data.senderId, { session: options.session });
       if (!requester)
         throw new Error('El remitente no es un cliente válido');
-    } else if (data.senderType === 'technician') {
-      const technician = await this.technicianService.getById(data.senderId, { session: options.session });
-      if (!technician)
-        throw new Error('El remitente no es un técnico válido');
+    } else if (data.senderType === 'user') {
+      const user = await this.userService.getById(data.senderId, { session: options.session });
+      if (!user)
+        throw new Error('El remitente no es un usuario válido');
     } else if (data.senderType === 'system') {
       if (data.senderId)
         throw new Error('El remitente "Sistema" no puede tener ID');
@@ -166,7 +171,7 @@ export default class ConversationMessageService extends ModelService {
     const messages = await super.getList(options);
     if (options.includeSender || options.includeReceiver) {
       const requesters = {};
-      const technicians = {};
+      const users = {};
       if (options.includeSender && options.includeReceiver) {
         for (const message of messages) {
           if (message.senderId) {
@@ -175,11 +180,11 @@ export default class ConversationMessageService extends ModelService {
                 requesters[message.senderId] = await this.requesterService.getById(message.senderId);
 
               message.sender = requesters[message.senderId];
-            } else if (message.senderType === 'technician') {
-              if (!technicians[message.senderId])
-                technicians[message.senderId] = await this.technicianService.getById(message.senderId, { includeUser: true });
+            } else if (message.senderType === 'user') {
+              if (!users[message.senderId])
+                users[message.senderId] = await this.userService.getById(message.senderId);
 
-              message.sender = technicians[message.senderId];
+              message.sender = users[message.senderId];
             }
           }
 
@@ -189,11 +194,11 @@ export default class ConversationMessageService extends ModelService {
                 requesters[message.receiverId] = await this.requesterService.getById(message.receiverId);
 
               message.receiver = requesters[message.receiverId];
-            } else if (message.receiverType === 'technician') {
-              if (!technicians[message.receiverId])
-                technicians[message.receiverId] = await this.technicianService.getById(message.receiverId, { includeUser: true });
+            } else if (message.receiverType === 'user') {
+              if (!users[message.receiverId])
+                users[message.receiverId] = await this.userService.getById(message.receiverId);
 
-              message.receiver = technicians[message.receiverId];
+              message.receiver = users[message.receiverId];
             }
           }
         }
@@ -205,11 +210,11 @@ export default class ConversationMessageService extends ModelService {
                 requesters[message.senderId] = await this.requesterService.getById(message.senderId);
 
               message.sender = requesters[message.senderId];
-            } else if (message.senderType === 'technician') {
-              if (!technicians[message.senderId])
-                technicians[message.senderId] = await this.technicianService.getById(message.senderId, { includeUser: true });
+            } else if (message.senderType === 'user') {
+              if (!users[message.senderId])
+                users[message.senderId] = await this.userService.getById(message.senderId);
 
-              message.sender = technicians[message.senderId];
+              message.sender = users[message.senderId];
             }
           }
         }
@@ -221,11 +226,11 @@ export default class ConversationMessageService extends ModelService {
                 requesters[message.receiverId] = await this.requesterService.getById(message.receiverId);
               
               message.receiver = requesters[message.receiverId];
-            } else if (message.receiverType === 'technician') {
-              if (!technicians[message.receiverId])
-                technicians[message.receiverId] = await this.technicianService.getById(message.receiverId, { includeUser: true });
+            } else if (message.receiverType === 'user') {
+              if (!users[message.receiverId])
+                users[message.receiverId] = await this.userService.getById(message.receiverId);
 
-              message.receiver = technicians[message.receiverId];
+              message.receiver = users[message.receiverId];
             }
           }
         }
