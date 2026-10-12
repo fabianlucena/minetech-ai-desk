@@ -286,7 +286,6 @@ export default function ConversationMessagesScreen() {
         <Text style={globalStyles.conversation.titleItem}>
           {`De: ${formatRelativeDateTime(conversation?.createdAt)} a ${formatRelativeDateTime(conversation?.lastMessageAt)}`}
         </Text>
-
       </View>
       <FlatList
         ref={flatListRef}
