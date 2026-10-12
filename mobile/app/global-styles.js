@@ -126,6 +126,12 @@ export default {
           alignSelf: 'flex-end',
           backgroundColor: '#143',
         },
+        user: {
+          backgroundColor: '#114433',
+        },
+        ia: {
+          backgroundColor: '#1b465f',
+        },
         text: {
           color: '#fff',
           fontSize: 14,

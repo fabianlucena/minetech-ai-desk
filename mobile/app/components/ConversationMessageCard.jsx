@@ -9,7 +9,10 @@ export default function ConversationCard({
 }) {
   const style = {
     ...globalStyles.conversation.message.card,
-    ...message.isMine ? globalStyles.conversation.message.card.mine : {},
+    ...message.isMine ? globalStyles.conversation.message.card.mine :
+      message.senderType === 'user' ? globalStyles.conversation.message.card.user : 
+      message.senderType === 'ia' ? globalStyles.conversation.message.card.ia :
+      {},
   };
 
   if (message.type === 'dateSeparator') {

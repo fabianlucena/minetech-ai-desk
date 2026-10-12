@@ -7,6 +7,7 @@ export default function MessageBubble({
   timestamp,
   ...status
 }) {
+  console.log(status.senderType);
   return <Box
     sx={{
       display: 'flex',
@@ -17,12 +18,13 @@ export default function MessageBubble({
     <Box
       sx={{
         maxWidth: '70%',
-        bgcolor: isMine ? '#DCF8C6' : '#FFFFFF',
-        color: '#000',
+        bgcolor: isMine ? '#114433' : 
+          status.senderType === 'user' ? '#114433' : 
+          status.senderType === 'ia' ? '#1b465f' : '#2A2A2A',
+        color: '#EEE',
         p: 1.2,
         borderRadius: 2,
         boxShadow: 1,
-        border: '1px solid #e0e0e0',
       }}
     >
       <Typography variant="body2">{text}</Typography>
