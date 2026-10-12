@@ -2,7 +2,7 @@ import { Box, Typography } from '@mui/material';
 import MessageStatusIcon from './icons/MessageStatusIcon';
 
 export default function MessageBubble({
-  message,
+  text,
   isMine,
   timestamp,
   ...status
@@ -25,7 +25,7 @@ export default function MessageBubble({
         border: '1px solid #e0e0e0',
       }}
     >
-      <Typography variant="body2">{message}</Typography>
+      <Typography variant="body2">{text}</Typography>
       <Typography
         variant="caption"
         sx={{ display: 'block', textAlign: 'right', opacity: 0.6 }}

@@ -2,31 +2,38 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
 import useToast from '../contexts/useToast';
-import Chat from '../components/ConversationChat.jsx';
+import ConversationChat from '../components/ConversationChat.jsx';
 import { ReloadButton } from '../components/buttons';
 import useConversation from '../services/useConversation';
 import useConversationMessage from '../services/useConversationMessage';
 import { formatRelativeDateTime } from '../utils/datetime.js';
 import { ConnectedIcon, DisconnectedIcon } from '../components/icons/index.jsx';
-
-function normalizeMessageToShow(msg) {
-  msg.id ??= msg.uuid;
-  msg.timestamp ??= msg.receivedAt;
-  msg.message ??= msg.text;
-  msg.isMine ??= msg.senderType !== 'requester';
-
-  return msg;
-}
+import useUser from '../contexts/useUser.jsx';
 
 export default function ConversationMessagesPage() {
   const { uuid } = useParams();
   const { addError } = useToast();
+  const user = useUser();
   const { getConversation } = useConversation();
   const { getConversationMessages, connectToChat, normalizeConversationMessage } = useConversationMessage();
   const [conversation, setConversation] = useState(null);
   const [messages, setMessages] = useState([]);
   const ws = useRef(null);
   const wsTimeout = useRef(1500);
+
+  const normalizeChatMessage = useCallback((msg) => {
+    msg.id ??= msg.uuid;
+    msg.message ??= msg.text;
+    msg.isMine ??= msg.senderType === 'user' && msg.sender?.uuid === user?.uuid;
+
+    return msg;
+  }, [user]);
+
+  const normalizeMessage = useCallback((msg) => {
+    const normalizedMsg = normalizeConversationMessage(msg);
+    normalizedMsg.isMine = normalizedMsg.senderType === 'user' && normalizedMsg.sender?.uuid === user?.uuid;
+    return normalizedMsg;
+  }, [normalizeConversationMessage, user]);
 
   const connect = useCallback(() => {
     console.log('Connecting to chat...');
@@ -53,7 +60,7 @@ export default function ConversationMessagesPage() {
 
           return [
             ...messages,
-            normalizeMessageToShow(message),
+            normalizeChatMessage(message),
           ].sort((a, b) => a.timestamp - b.timestamp);
         });
       } else if (msg.type === 'error') {
@@ -75,7 +82,7 @@ export default function ConversationMessagesPage() {
     };
 
     ws.current = newWs;
-  }, [uuid, connectToChat, normalizeConversationMessage]);
+  }, [uuid, connectToChat, normalizeConversationMessage, addError, normalizeChatMessage]);
 
   useEffect(() => {
     wsTimeout.current = 1500;
@@ -114,10 +121,10 @@ export default function ConversationMessagesPage() {
   const fetchMessages = useCallback(async () => {
     const messages = await getConversationMessages(uuid);
     setMessages(messages
-      .map(normalizeMessageToShow)
+      .map(normalizeMessage)
       .sort((a, b) => a.receivedAt.getTime() - b.receivedAt.getTime())
     );
-  }, [uuid, getConversationMessages]);
+  }, [uuid, getConversationMessages, normalizeMessage]);
 
   useEffect(() => {
     fetchMessages();
@@ -178,6 +185,6 @@ export default function ConversationMessagesPage() {
         <ReloadButton onClick={handleReload} />
       </Box>
     </Box>
-    <Chat messages={messages} />
+    <ConversationChat messages={messages} />
   </Box>;
 }
