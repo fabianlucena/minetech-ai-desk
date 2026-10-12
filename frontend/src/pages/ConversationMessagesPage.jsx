@@ -75,7 +75,7 @@ export default function ConversationMessagesPage() {
     };
 
     ws.current = newWs;
-  }, [uuid, connectToChat, normalizeConversationMessage]);
+  }, [uuid, connectToChat, normalizeConversationMessage, addError]);
 
   useEffect(() => {
     wsTimeout.current = 1500;

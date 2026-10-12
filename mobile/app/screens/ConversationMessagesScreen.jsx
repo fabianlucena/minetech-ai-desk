@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRoute } from '@react-navigation/native';
 import { error } from '../components/Toast';
 import useConversationMessages from '../services/useConversationMessage';
-import { View, FlatList, TextInput } from 'react-native';
+import { View, FlatList, TextInput, Text } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { useHeaderHeight } from '@react-navigation/elements';
 import Icon from '../components/Icon';
@@ -23,13 +23,31 @@ export default function ConversationMessagesScreen() {
   const headerHeight = useHeaderHeight();
   const route = useRoute();
   const conversationUuid = route.params?.conversationUuid;
+  const { getConversation } = useConversation();
   const { getConversationMessages, normalizeConversationMessage, connectToChat } = useConversationMessages();
+  const [conversation, setConversation] = useState(null);
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState('');
   const flatListRef = useRef(null);
   const [isAtBottom, setIsAtBottom] = useState(true);
   const ws = useRef(null);
   const wsTimeout = useRef(1500);
+
+  useEffect(() => {
+    async function fetchConversation() {
+      try {
+        const conversationData = await getConversation(conversationUuid);
+        setConversation(conversationData);
+      } catch (error) {
+        console.error('Error al obtener la conversación:', error);
+        setConversation(null);
+      }
+    }
+
+    if (conversationUuid) {
+      fetchConversation();
+    }
+  }, [conversationUuid, getConversation]);
 
   const normalizeMessage = useCallback((msg) => {
     const normalizedMsg = normalizeConversationMessage(msg);
@@ -246,6 +264,36 @@ export default function ConversationMessagesScreen() {
       }}
       keyboardVerticalOffset={headerHeight}
     >
+      <View
+        style={{
+          padding: 5,
+          borderBottomWidth: 1,
+          borderBottomColor: '#333',
+          backgroundColor: '#222',
+        }}
+      >
+        {conversation?.requester?.displayName && <Text
+          style={{
+            color: '#fff',
+            fontSize: 18,
+            fontWeight: 'bold',
+            padding: 10,
+          }}
+        >
+          Solicitante: {conversation?.requester?.displayName}
+        </Text>}
+
+        {conversation?.client?.name && (
+          <Text variant="body2" color="text.secondary">
+            Cliente: {conversation?.client?.name}
+          </Text>
+        )}
+
+        <Text variant="body2" color="text.secondary">
+          {`De: ${formatRelativeDateTime(conversation?.createdAt)} a ${formatRelativeDateTime(conversation?.lastMessageAt)}`}
+        </Text>
+
+      </View>
       <FlatList
         ref={flatListRef}
         onLayout={scrollToBottom}
