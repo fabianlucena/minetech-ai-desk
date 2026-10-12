@@ -310,7 +310,7 @@ export default class ConversationService extends ModelService {
     }
 
     message.receiver = technician;
-    if (message.receiverId !== technician.id || !message.receiverType !== 'user') {
+    if (message.receiverId !== technician.id || message.receiverType !== 'user') {
       message.receiverId = technician.id;
       message.receiverType = 'user';
       await this.conversationMessageService.updateById(
