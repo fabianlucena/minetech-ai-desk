@@ -24,8 +24,21 @@ export default function MessageBubble({
         p: 1.2,
         borderRadius: 2,
         boxShadow: 1,
+        minWidth: '20%',
       }}
     >
+      {!isMine && <Typography
+        variant="caption"
+        sx={{
+          fontWeight: 900,
+          size: 8,
+          display: 'block',
+          color: '#aaa',
+          mb: 0.5,
+        }}
+      >
+        {status.sender?.displayName || status.senderType === 'ia' && 'Minetech IA' || 'Desconocido'}
+      </Typography>}
       <Typography variant="body2">{text}</Typography>
       <Typography
         variant="caption"
