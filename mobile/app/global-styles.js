@@ -117,6 +117,7 @@ export default {
         borderRadius: 8,
         marginHorizontal: 10,
         marginVertical: 3,
+        minWidth: '20%',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'start',
@@ -125,6 +126,18 @@ export default {
         mine: {
           alignSelf: 'flex-end',
           backgroundColor: '#143',
+        },
+        user: {
+          backgroundColor: '#114433',
+        },
+        ia: {
+          backgroundColor: '#1b465f',
+        },
+        sender: {
+          fontWeight: 900,
+          fontSize: 12,
+          color: '#888',
+          marginBottom: 2,
         },
         text: {
           color: '#fff',

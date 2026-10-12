@@ -46,26 +46,28 @@ export async function startWhatsappWebhookServer(req, res) {
 export async function processIncomingWhatsApp(req, res) {
   logger.debug(JSON.stringify(req.body));
 
-  const receivedSignature = req.headers['x-hub-signature-256'];
-  if (!receivedSignature) {
-    logger.error('❌ Missing signature in WhatsApp webhook request');
-    return res.sendStatus(400);
-  }
+  if (!config.whatsapp.skipSignatureVerification) {
+    const receivedSignature = req.headers['x-hub-signature-256'];
+    if (!receivedSignature) {
+      logger.error('❌ Missing signature in WhatsApp webhook request');
+      return res.sendStatus(400);
+    }
 
-  const body = req.rawBody ?? Buffer.from(JSON.stringify(req.body));
-  const digest = crypto
-    .createHmac('sha256', config.whatsapp.appSecret)
-    .update(body)
-    .digest('hex');
+    const body = req.rawBody ?? Buffer.from(JSON.stringify(req.body));
+    const digest = crypto
+      .createHmac('sha256', config.whatsapp.appSecret)
+      .update(body)
+      .digest('hex');
 
-  const expectedSignature = `sha256=${digest}`;
-  const receivedBuf = Buffer.from(receivedSignature);
-  const expectedBuf = Buffer.from(expectedSignature);
+    const expectedSignature = `sha256=${digest}`;
+    const receivedBuf = Buffer.from(receivedSignature);
+    const expectedBuf = Buffer.from(expectedSignature);
 
-  if (!crypto.timingSafeEqual(receivedBuf, expectedBuf)) {
-    logger.error(`❌ Invalid signature in WhatsApp webhook request`);
-    // console.log(`❌ Invalid signature in WhatsApp webhook request, expected: ${expectedSignature} vs received: ${receivedSignature}`);
-    return res.sendStatus(403);
+    if (!crypto.timingSafeEqual(receivedBuf, expectedBuf)) {
+      logger.error(`❌ Invalid signature in WhatsApp webhook request`);
+      // console.log(`❌ Invalid signature in WhatsApp webhook request, expected: ${expectedSignature} vs received: ${receivedSignature}`);
+      return res.sendStatus(403);
+    }
   }
 
   // Meta demands respond quickly
