@@ -44,6 +44,7 @@ export default function ConversationMessagesPage() {
     const newWs = connectToChat(uuid, (msg) => {
       if (msg.type === 'chat_message') {
         const message = normalizeConversationMessage(msg.message);
+        message.timestamp = message.receivedAt;
         setMessages(messages => {
           const exists = messages.some(m => m.uuid === message.uuid);
 
@@ -61,7 +62,7 @@ export default function ConversationMessagesPage() {
           return [
             ...messages,
             normalizeChatMessage(message),
-          ].sort((a, b) => a.timestamp - b.timestamp);
+          ].sort((a, b) => (a.receivedAt ?? a.timestamp) - (b.receivedAt ?? b.timestamp));
         });
       } else if (msg.type === 'error') {
         addError(`Error del servidor: ${msg.message}`);
