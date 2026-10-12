@@ -18,7 +18,6 @@ export default function ConversationChat({
     sx={{
       overflowY: 'auto',
       p: 2,
-      bgcolor: '#141414',
       flexGrow: 1,
     }}
   >

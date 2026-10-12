@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRoute } from '@react-navigation/native';
 import { error } from '../components/Toast';
+import useConversation from '../services/useConversation';
 import useConversationMessages from '../services/useConversationMessage';
-import { View, FlatList, TextInput } from 'react-native';
+import { View, FlatList, TextInput, Text } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { useHeaderHeight } from '@react-navigation/elements';
 import Icon from '../components/Icon';
@@ -10,13 +11,17 @@ import ConversationMessageCard from '../components/ConversationMessageCard';
 import uuid from 'react-native-uuid';
 import Screen from '../components/Screen.jsx';
 import useUser from '../contexts/useUser.jsx';
+import { formatRelativeDateTime } from '../utils/datetime.js';
+import globalStyles from '../global-styles';
 
 export default function ConversationMessagesScreen() {
   const headerHeight = useHeaderHeight();
   const route = useRoute();
   const user = useUser();
   const conversationUuid = route.params?.conversationUuid;
+  const { getConversation } = useConversation();
   const { getConversationMessages, normalizeConversationMessage, connectToChat } = useConversationMessages();
+  const [conversation, setConversation] = useState(null);
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState('');
   const flatListRef = useRef(null);
@@ -32,6 +37,22 @@ export default function ConversationMessagesScreen() {
 
     return msg;
   }, [user]);
+
+  useEffect(() => {
+    async function fetchConversation() {
+      try {
+        const conversationData = await getConversation(conversationUuid, { includeRequester: true, includeClient: true });
+        setConversation(conversationData);
+      } catch (error) {
+        console.error('Error al obtener la conversación:', error);
+        setConversation(null);
+      }
+    }
+
+    if (conversationUuid) {
+      fetchConversation();
+    }
+  }, [conversationUuid, getConversation]);
 
   const normalizeMessage = useCallback((msg) => {
     const normalizedMsg = normalizeConversationMessage(msg);
@@ -249,6 +270,23 @@ export default function ConversationMessagesScreen() {
       }}
       keyboardVerticalOffset={headerHeight}
     >
+      <View style={globalStyles.conversation.title}>
+        <Text style={globalStyles.conversation.titleText} >
+          Conversación
+        </Text>
+
+        {conversation?.requester?.displayName && <Text style={globalStyles.conversation.titleItem}>
+          Solicitante: {conversation?.requester?.displayName}
+        </Text>}
+
+        {conversation?.client?.name && <Text style={globalStyles.conversation.titleItem}>
+          Cliente: {conversation?.client?.name}
+        </Text>}
+
+        <Text style={globalStyles.conversation.titleItem}>
+          {`De: ${formatRelativeDateTime(conversation?.createdAt)} a ${formatRelativeDateTime(conversation?.lastMessageAt)}`}
+        </Text>
+      </View>
       <FlatList
         ref={flatListRef}
         onLayout={scrollToBottom}

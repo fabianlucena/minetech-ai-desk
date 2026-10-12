@@ -110,6 +110,22 @@ export default {
         fontSize: 12,
       },
     },
+    title: {
+      padding: 5,
+      borderBottomWidth: 1,
+      borderBottomColor: '#444',
+      backgroundColor: '#1a1a1a',
+    },
+    titleText: {
+      color: '#ccc',
+      fontSize: 18,
+      fontWeight: 'bold',
+    },
+    titleItem: {
+      color: '#888',
+      fontSize: 12,
+      fontWeight: 'normal',
+    },
     message: {
       card: {
         paddingHorizontal: 10,
