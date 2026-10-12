@@ -281,6 +281,8 @@ export default function ConversationMessagesScreen() {
           name="send"
           size={18}
           onPress={handleSubmit}
+          disabled={!message.trim()}
+          accessibilityState={{ disabled: !message.trim() }}
           style={{
             opacity: message.trim() ? 1 : 0.5,
           }}
