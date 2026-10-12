@@ -277,4 +277,14 @@ export default class ConversationMessageService extends ModelService {
       options
     );
   }
+
+  async getPendingMessages(options) {
+    return await this.getList({
+      ...options,
+      where: {
+        ...options?.where,
+        deliveredAt: null,
+      },
+    });
+  }
 }

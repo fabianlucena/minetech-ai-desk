@@ -2,6 +2,7 @@ import { getDependency } from '../dependency.js';
 import ModelService from './model.service.js';
 import { sendMessageToConversationId } from '../web-sockets/chat.ws.js';
 import { ConversationMessageDTO } from '../dto/conversation_message.dto.js';
+import { sendWhatsAppMessage } from '../controllers/whatsapp.controller.js';
 
 const logger = getDependency('logger');
 
@@ -370,7 +371,7 @@ export default class ConversationService extends ModelService {
     }
 
     const requesterId = conversation.requesterId;
-    if (message.receiverId !== requesterId || !message.receiverType !== 'requester') {
+    if (message.receiverId !== requesterId || message.receiverType !== 'requester') {
       message.receiverId = requesterId;
       message.receiverType = 'requester';
       await this.conversationMessageService.updateById(
@@ -383,8 +384,18 @@ export default class ConversationService extends ModelService {
       );
     }
 
-    if (!message.receiver)
+    if (!message.receiver) {
       message.receiver = await this.requesterService.getById(requesterId, options);
+      if (!message.receiver) {
+        logger.error('Requester not found');
+        return;
+      }
+    }
+
+    if (!message.receiver.phone) {
+      logger.error('Requester has no phone number');
+      return;
+    }
 
     const messageToSend = new ConversationMessageDTO(message);
 
@@ -409,5 +420,35 @@ export default class ConversationService extends ModelService {
     }
 
     await this.conversationMessageService.updateStatus(message, status, options);
+
+    this.sendPendingMessages();
+  }
+
+  async sendPendingMessages() {
+    const pendingMessages = await this.conversationMessageService.getPendingMessages({
+      includeReceiver: true,
+      where: { receiverType: 'requester' }
+    });
+
+    for (const message of pendingMessages) {
+      this.sendPendingMessage(message);
+    }
+  }
+
+  async sendPendingMessage(message) {
+    let status;
+    try {
+      await sendWhatsAppMessage({
+        to: message.receiver.phone,
+        payload: message.payload || message.text || message.body || message.content,
+      });
+
+      status = { deliveredAt: new Date() };
+    } catch (error) {
+      status = { failedAt: new Date(), failureReason: error.message };
+      logger.error('Error sending pending message to requester', error);
+    }
+
+    await this.conversationMessageService.updateStatus(message, status);
   }
 }
