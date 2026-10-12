@@ -1,6 +1,6 @@
 import { ConversationMinDTO } from './conversation.dto.js';
 import { RequesterMinDTO } from './requester.dto.js';
-import { TechnicianMinDTO } from './technician.dto.js';
+import { UserMinDTO } from './user.dto.js';
 
 export class ConversationMessageDTO {
   constructor(message) {
@@ -25,16 +25,16 @@ export class ConversationMessageDTO {
     if (message.sender) {
       if (message.senderType === 'requester') {
         this.sender = new RequesterMinDTO(message.sender);
-      } else if (message.senderType === 'technician') {
-        this.sender = new TechnicianMinDTO(message.sender);
+      } else if (message.senderType === 'user') {
+        this.sender = new UserMinDTO(message.sender);
       }
     }
 
     if (message.receiver) {
       if (message.receiverType === 'requester') {
         this.receiver = new RequesterMinDTO(message.receiver);
-      } else if (message.receiverType === 'technician') {
-        this.receiver = new TechnicianMinDTO(message.receiver);
+      } else if (message.receiverType === 'user') {
+        this.receiver = new UserMinDTO(message.receiver);
       }
     }
   }

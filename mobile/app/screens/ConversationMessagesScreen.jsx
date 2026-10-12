@@ -67,7 +67,7 @@ export default function ConversationMessagesScreen() {
       } else if (msg.type === 'error') {
         error(`Error del servidor: ${msg.message}`);
       } else if (msg.type === 'send_message_error') {
-        error(`Error al enviar el mensaje: ${message}`);
+        error(`Error al enviar el mensaje: ${msg.message}`);
         setMessages(messages => {
           const exists = messages.some(m => m.uuid === msg.messageUuid);
           if (!exists)

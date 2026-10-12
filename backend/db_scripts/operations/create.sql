@@ -426,7 +426,7 @@ insert into auth.permissions (
     ('requesters.create'),('requesters.delete'),('requesters.update'),('requesters.list'),('requesters.read'),('requesters.restore'),('requesters.ban'),('requesters.unban'),
     ('shifts.create'),('shifts.delete'),('shifts.update'),('shifts.list'),('shifts.read'),('shifts.restore'),
     ('settings.create'),('settings.delete'),('settings.update'),('settings.list'),('settings.read'),('settings.restore'),
-    ('conversations.list'),('conversations.read'),('conversations.delete'),('conversations.restore'),('conversations.close'),('conversations.viewChat'),
+    ('conversations.list'),('conversations.read'),('conversations.delete'),('conversations.restore'),('conversations.close'),('conversations.viewChat'),('conversations.chat'),
     ('conversationMessages.list'),('conversationMessages.read')
   ) as p(name)
   join auth.users system on system.username = 'system'
@@ -456,7 +456,7 @@ insert into auth.permissions_x_roles (
   from auth.permissions p
   join auth.users system on system.username = 'system'
   join auth.roles r on r.name = 'technician'
-  where p.name in('conversations.list', 'conversationMessages.read')
+  where p.name in('conversations.list', 'conversationMessages.read', 'conversations.chat')
 on conflict (permission_id, role_id) do nothing;
 
 ---------------------------------------------------------------------------

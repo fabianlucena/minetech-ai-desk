@@ -5,9 +5,9 @@ export const senderTypes = [
     detail: 'Persona que llama desde la empresa cliente solicitando asistencia técnica'
   },
   {
-    value: 'technician',
-    name: 'Técnico',
-    detail: 'Técnico de MineTech que atiende el ticket'
+    value: 'user',
+    name: 'Usuario',
+    detail: 'Usuario de MineTech que atiende el ticket'
   },
   {
     value: 'system',
