@@ -7,7 +7,6 @@ const config = getDependency('config');
 const logger = getDependency('logger');
 let sessionService;
 let conversationService;
-let technicianService;
 
 const peers = new Map();
 
@@ -19,7 +18,6 @@ export const routes = {
 export function handler(ws) {
   sessionService = getDependency('sessionService');
   conversationService = getDependency('conversationService');
-  technicianService = getDependency('technicianService');
 
   ws.on('message', async (raw) => {
     if (!raw || !raw.length)
@@ -121,17 +119,12 @@ async function handleAuth({msg, ws, conversationUuid}) {
   if (!session)
     throw new WSFatalError(1008, 'Error al decorar la sesión con credenciales');
 
-  const technician = await technicianService.getById(session.userId);
-
-  if (!session.permissions?.find?.(p => p.name === 'conversations.viewChat')
-    && !technician?.id
-  )
-    throw new WSFatalError(1008, 'Usted no tiene permiso para usar el chat');
+  if (!session.permissions?.find?.(p => p.name === 'conversations.chat' || p.name === 'conversations.viewChat'))
+    throw new WSFatalError(1008, 'Usted no tiene permiso para ver el chat');
 
   const peerData = {
     session,
     conversationId,
-    technicianId: technician?.id,
     errorCount: 0,
   };
 
@@ -141,23 +134,26 @@ async function handleAuth({msg, ws, conversationUuid}) {
 
 async function handleSendMessage({msg, ws}) {
   if (!peers.has(ws))
-    throw new WSError('Técnico no autenticado');
+    throw new WSError('El usuario conectado no está autenticado');
 
   const clientInfo = peers.get(ws);
   if (!clientInfo.session)
-    throw new WSError('Técnico no autenticado');
+    throw new WSError('El usuario conectado no está autenticado');
 
-  if (!clientInfo.technicianId)
-    throw new WSError('El cliente conectado no es un técnico');
+  if (!clientInfo.session.userId)
+    throw new WSError('El usuario conectado no está identificado');
+
+  if (!clientInfo.session.permissions?.find?.(p => p.name === 'conversations.chat'))
+    throw new WSError('Usted no tiene permiso para usar el chat');
 
   if (!msg.conversationUuid)
     throw new WSError('Conversación no especificada');
 
   try {
-    const message = await conversationService.addTechnicianMessage({
+    const message = await conversationService.addUserMessage({
       uuid: msg.uuid,
       conversationUuid: msg.conversationUuid,
-      technicianId: clientInfo.technicianId,
+      userId: clientInfo.session.userId,
       receivedAt: new Date(),
       text: msg.text,
     });
