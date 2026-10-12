@@ -27,6 +27,7 @@ export default function ConversationMessagesScreen() {
   const normalizeChatMessage = useCallback((msg) => {
     msg.id ??= msg.uuid;
     msg.message ??= msg.text;
+    msg.timestamp ??= msg.receivedAt;
     msg.isMine ??= msg.senderType === 'user' && msg.sender?.uuid === user?.uuid;
 
     return msg;
@@ -34,9 +35,10 @@ export default function ConversationMessagesScreen() {
 
   const normalizeMessage = useCallback((msg) => {
     const normalizedMsg = normalizeConversationMessage(msg);
+    normalizedMsg.timestamp ??= normalizedMsg.receivedAt;
     normalizedMsg.isMine = normalizedMsg.senderType === 'user' && normalizedMsg.sender?.uuid === user?.uuid;
     return normalizedMsg;
-  }, [normalizeConversationMessage]);
+  }, [normalizeConversationMessage, user]);
 
   const connect = useCallback(() => {
     console.log('Conectando al chat...');

@@ -136,9 +136,8 @@ export default {
         sender: {
           fontWeight: 900,
           fontSize: 12,
-          display: 'block',
           color: '#888',
-          mb: 0.5,
+          marginBottom: 2,
         },
         text: {
           color: '#fff',
