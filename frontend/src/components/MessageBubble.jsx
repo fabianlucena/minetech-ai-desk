@@ -7,7 +7,6 @@ export default function MessageBubble({
   timestamp,
   ...status
 }) {
-  console.log(status.senderType);
   return <Box
     sx={{
       display: 'flex',
