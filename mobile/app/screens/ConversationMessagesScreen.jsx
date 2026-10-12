@@ -172,6 +172,10 @@ export default function ConversationMessagesScreen() {
   }
 
   function handleSubmit() {
+    if (!message.trim()) {
+      return;
+    }
+
     if (!ws.current) {
       error('No hay conexión con el servidor. Intenta de nuevo más tarde.');
       return;
@@ -277,6 +281,11 @@ export default function ConversationMessagesScreen() {
           name="send"
           size={18}
           onPress={handleSubmit}
+          disabled={!message.trim()}
+          accessibilityState={{ disabled: !message.trim() }}
+          style={{
+            opacity: message.trim() ? 1 : 0.5,
+          }}
         />
       </View>
     </KeyboardAvoidingView>
