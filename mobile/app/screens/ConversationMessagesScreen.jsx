@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRoute } from '@react-navigation/native';
 import { error } from '../components/Toast';
+import useConversation from '../services/useConversation';
 import useConversationMessages from '../services/useConversationMessage';
 import { View, FlatList, TextInput, Text } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
@@ -10,6 +11,8 @@ import ConversationMessageCard from '../components/ConversationMessageCard';
 import uuid from 'react-native-uuid';
 import Screen from '../components/Screen.jsx';
 import useUser from '../contexts/useUser.jsx';
+import { formatRelativeDateTime } from '../utils/datetime.js';
+import globalStyles from '../global-styles';
 
 export default function ConversationMessagesScreen() {
   const headerHeight = useHeaderHeight();
@@ -38,7 +41,7 @@ export default function ConversationMessagesScreen() {
   useEffect(() => {
     async function fetchConversation() {
       try {
-        const conversationData = await getConversation(conversationUuid);
+        const conversationData = await getConversation(conversationUuid, { includeRequester: true, includeClient: true });
         setConversation(conversationData);
       } catch (error) {
         console.error('Error al obtener la conversación:', error);
@@ -267,32 +270,20 @@ export default function ConversationMessagesScreen() {
       }}
       keyboardVerticalOffset={headerHeight}
     >
-      <View
-        style={{
-          padding: 5,
-          borderBottomWidth: 1,
-          borderBottomColor: '#333',
-          backgroundColor: '#222',
-        }}
-      >
-        {conversation?.requester?.displayName && <Text
-          style={{
-            color: '#fff',
-            fontSize: 18,
-            fontWeight: 'bold',
-            padding: 10,
-          }}
-        >
+      <View style={globalStyles.conversation.title}>
+        <Text style={globalStyles.conversation.titleText} >
+          Conversación
+        </Text>
+
+        {conversation?.requester?.displayName && <Text style={globalStyles.conversation.titleItem}>
           Solicitante: {conversation?.requester?.displayName}
         </Text>}
 
-        {conversation?.client?.name && (
-          <Text variant="body2" color="text.secondary">
-            Cliente: {conversation?.client?.name}
-          </Text>
-        )}
+        {conversation?.client?.name && <Text style={globalStyles.conversation.titleItem}>
+          Cliente: {conversation?.client?.name}
+        </Text>}
 
-        <Text variant="body2" color="text.secondary">
+        <Text style={globalStyles.conversation.titleItem}>
           {`De: ${formatRelativeDateTime(conversation?.createdAt)} a ${formatRelativeDateTime(conversation?.lastMessageAt)}`}
         </Text>
 
