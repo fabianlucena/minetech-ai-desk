@@ -8,8 +8,8 @@ export default function DateSeparator({
     <Box
       sx={{
         display: 'inline-block',
-        bgcolor: '#E1F3FB',
-        color: '#555',
+        bgcolor: '#2A2A2A',
+        color: '#888888',
         px: 2,
         py: 0.5,
         borderRadius: 2,

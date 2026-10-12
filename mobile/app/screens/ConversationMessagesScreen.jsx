@@ -9,19 +9,12 @@ import Icon from '../components/Icon';
 import ConversationMessageCard from '../components/ConversationMessageCard';
 import uuid from 'react-native-uuid';
 import Screen from '../components/Screen.jsx';
-
-function normalizeMessageToShow(msg) {
-  msg.id ??= msg.uuid;
-  msg.timestamp ??= msg.receivedAt;
-  msg.message ??= msg.text;
-  msg.isMine ??= msg.senderType !== 'requester';
-
-  return msg;
-}
+import useUser from '../contexts/useUser.jsx';
 
 export default function ConversationMessagesScreen() {
   const headerHeight = useHeaderHeight();
   const route = useRoute();
+  const user = useUser();
   const conversationUuid = route.params?.conversationUuid;
   const { getConversation } = useConversation();
   const { getConversationMessages, normalizeConversationMessage, connectToChat } = useConversationMessages();
@@ -32,6 +25,15 @@ export default function ConversationMessagesScreen() {
   const [isAtBottom, setIsAtBottom] = useState(true);
   const ws = useRef(null);
   const wsTimeout = useRef(1500);
+
+  const normalizeChatMessage = useCallback((msg) => {
+    msg.id ??= msg.uuid;
+    msg.message ??= msg.text;
+    msg.timestamp ??= msg.receivedAt;
+    msg.isMine ??= msg.senderType === 'user' && msg.sender?.uuid === user?.uuid;
+
+    return msg;
+  }, [user]);
 
   useEffect(() => {
     async function fetchConversation() {
@@ -51,9 +53,10 @@ export default function ConversationMessagesScreen() {
 
   const normalizeMessage = useCallback((msg) => {
     const normalizedMsg = normalizeConversationMessage(msg);
-    normalizedMsg.isMine = normalizedMsg.senderType !== 'requester';
+    normalizedMsg.timestamp ??= normalizedMsg.receivedAt;
+    normalizedMsg.isMine = normalizedMsg.senderType === 'user' && normalizedMsg.sender?.uuid === user?.uuid;
     return normalizedMsg;
-  }, [normalizeConversationMessage]);
+  }, [normalizeConversationMessage, user]);
 
   const connect = useCallback(() => {
     console.log('Conectando al chat...');
@@ -79,7 +82,7 @@ export default function ConversationMessagesScreen() {
 
           return [
             ...messages,
-            normalizeMessageToShow(message),
+            normalizeChatMessage(message),
           ].sort((a, b) => a.timestamp - b.timestamp);
         });
       } else if (msg.type === 'error') {

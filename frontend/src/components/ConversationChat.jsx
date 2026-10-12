@@ -2,14 +2,13 @@ import { useEffect, useRef } from 'react';
 import { Box } from '@mui/material';
 import React from 'react';
 import MessageBubble from './MessageBubble.jsx';
-import DateSeparator from './ChatDateSeparator.jsx';
+import ChatDateSeparator from './ChatDateSeparator.jsx';
 import { formatTime } from '../utils/datetime.js';
 
 export default function ConversationChat({
   messages,
 }) {
   const bottomRef = useRef(null);
-  let lastDate = null;
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -19,21 +18,23 @@ export default function ConversationChat({
     sx={{
       overflowY: 'auto',
       p: 2,
-      bgcolor: '#9c9993',
+      bgcolor: '#141414',
       flexGrow: 1,
     }}
   >
-    {messages.map((msg) => {
-      const msgDate = new Date(msg.timestamp).toDateString();
-      const showSeparator = msgDate !== lastDate;
-      lastDate = msgDate;
-
-      return <React.Fragment key={msg.id}>
-        {showSeparator && <DateSeparator date={msg.timestamp} />}
+    {messages.map((msg, index) => {
+      const currentDate = new Date(msg.receivedAt || msg.timestamp).toDateString();
+      const prevDate = index > 0
+        ? new Date(messages[index - 1].receivedAt || messages[index - 1].timestamp).toDateString()
+        : null;
+      const showDateSeparator = currentDate !== prevDate;
+      
+      return <React.Fragment key={msg.uuid}>
+        {showDateSeparator && <ChatDateSeparator date={msg.receivedAt || msg.timestamp} />}
 
         <MessageBubble
           {...msg}
-          timestamp={formatTime(msg.timestamp)}
+          timestamp={formatTime(msg.receivedAt || msg.timestamp)}
         />
       </React.Fragment>
     })}

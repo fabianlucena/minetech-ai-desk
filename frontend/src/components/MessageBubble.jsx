@@ -2,7 +2,7 @@ import { Box, Typography } from '@mui/material';
 import MessageStatusIcon from './icons/MessageStatusIcon';
 
 export default function MessageBubble({
-  message,
+  text,
   isMine,
   timestamp,
   ...status
@@ -17,15 +17,29 @@ export default function MessageBubble({
     <Box
       sx={{
         maxWidth: '70%',
-        bgcolor: isMine ? '#DCF8C6' : '#FFFFFF',
-        color: '#000',
+        bgcolor: isMine ? '#114433' : 
+          status.senderType === 'user' ? '#114433' : 
+          status.senderType === 'ia' ? '#1b465f' : '#2A2A2A',
+        color: '#EEE',
         p: 1.2,
         borderRadius: 2,
         boxShadow: 1,
-        border: '1px solid #e0e0e0',
+        minWidth: '20%',
       }}
     >
-      <Typography variant="body2">{message}</Typography>
+      {!isMine && <Typography
+        variant="caption"
+        sx={{
+          fontWeight: 900,
+          size: 8,
+          display: 'block',
+          color: '#aaa',
+          mb: 0.5,
+        }}
+      >
+        {status.sender?.displayName || status.senderType === 'ia' && 'Minetech IA' || 'Desconocido'}
+      </Typography>}
+      <Typography variant="body2">{text}</Typography>
       <Typography
         variant="caption"
         sx={{ display: 'block', textAlign: 'right', opacity: 0.6 }}

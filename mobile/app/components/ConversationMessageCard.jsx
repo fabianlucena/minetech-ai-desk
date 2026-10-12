@@ -9,13 +9,17 @@ export default function ConversationCard({
 }) {
   const style = {
     ...globalStyles.conversation.message.card,
-    ...message.isMine ? globalStyles.conversation.message.card.mine : {},
+    ...message.isMine ? globalStyles.conversation.message.card.mine :
+      message.senderType === 'user' ? globalStyles.conversation.message.card.user : 
+      message.senderType === 'ia' ? globalStyles.conversation.message.card.ia :
+      {},
   };
 
   if (message.type === 'dateSeparator') {
     return <View
       style={{
         ...style,
+        minWidth: 'auto',
         alignSelf: 'center',
         paddingHorizontal: 12,
         paddingVertical: 6,
@@ -36,6 +40,12 @@ export default function ConversationCard({
   return <View
     style={style}
   >
+    {!message.isMine && <Text
+      variant="caption"
+      style={globalStyles.conversation.message.card.sender}
+    >
+      {message.sender?.displayName || message.senderType === 'ia' && 'Minetech IA' || 'Desconocido'}
+    </Text>}
     <Text style={globalStyles.conversation.message.card.text} >
       {message.text}
     </Text>
