@@ -177,22 +177,18 @@ export async function executeWhatsAppQueue() {
     return;
   }
 
-  let status;
   const message = messageQueue.shift();
   try {
     await sendWhatsAppMessage({
       to: message.receiver.phone,
       payload: message.payload || message.text || message.body || message.content,
     });
-    status = { deliveredAt: new Date() };
+    await conversationMessageService.updateStatus(message, { deliveredAt: new Date() });
   }
   catch (error) {
-    status = { failedAt: new Date(), failureReason: error.message };
-    console.log(logger);
     logger.error('Error sending pending message to requester', error);
+    await conversationMessageService.updateStatus(message, { failedAt: new Date(), failureReason: error.message });
   }
-
-  await conversationMessageService.updateStatus(message, status);
 
   await executeWhatsAppQueue();
 }
