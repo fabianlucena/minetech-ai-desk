@@ -4,11 +4,7 @@ import ModelService from './model.service.js';
 export default class RequesterService extends ModelService {
   constructor() {
     super({ model: getDependency('requesterModel') });
-  }
-
-  get whatsappService() {
-    this._whatsappService ??= getDependency('whatsappService');
-    return this._whatsappService;
+    this.whatsappController = getDependency('whatsappController');
   }
 
   getModelOptions(options) {
@@ -118,10 +114,6 @@ export default class RequesterService extends ModelService {
     if (!requester)
       throw new Error('Solicitante no encontrado');
 
-    return await this.sendMessage(requester, message);
-  }
-
-  async sendMessage(requester, payload) {
-    return await this.whatsappService.sendMessage({ to: requester.phone, payload });
+    this.whatsappController.enqueueWhatsAppMessage(message);
   }
 }

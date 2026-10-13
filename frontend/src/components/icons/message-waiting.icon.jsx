@@ -9,7 +9,7 @@ export default function MessageWaitingIcon({
   props = {
     ...props,
     sx: {
-      color: grey[800],
+      color: grey[400],
       ...props?.sx,
     }
   };

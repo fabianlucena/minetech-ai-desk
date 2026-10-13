@@ -1,34 +1,56 @@
 import { getDependency } from '../dependency.js';
 import crypto from 'crypto';
 
-const config = getDependency('config');
-const logger = getDependency('logger');
+let config;
+let logger;
+let messageUrl;
+let whatsappAutorization;
+let conversationMessageService;
+const messageQueue = [];
 
-if (!config.whatsapp) {
-  logger.error('❌ Missing WhatsApp configuration');
-  process.exit(1);
+export async function init() {
+  config = getDependency('config');
+  logger = getDependency('logger');
+  conversationMessageService = getDependency('conversationMessageService');
+
+  if (!config.whatsapp) {
+    logger.error('❌ Missing WhatsApp configuration');
+    process.exit(1);
+  }
+
+  if (!config.whatsapp.messageUrl || !config.whatsapp.token) {
+    logger.error('❌ WhatsApp configuration is incomplete (missing messageUrl/token)');
+    logger.error(JSON.stringify({
+      ...config.whatsapp,
+      token: config.whatsapp.token ? '***' : '',
+    }, null, 2));
+    process.exit(1);
+  }
+
+  const whatsappPhoneId = config.whatsapp.phoneId || '';
+  messageUrl = config.whatsapp.messageUrl
+    .replace('{baseUrl}', config.whatsapp.baseUrl)
+    .replace('{phoneId}', whatsappPhoneId)
+    || '';
+  whatsappAutorization = `Bearer ${config.whatsapp.token}`;
+
+  logger.info('    Whatsapp configuration:');
+  logger.info(`      messageUrl=${messageUrl}`);
+  logger.info(`      phoneId=${whatsappPhoneId}`);
+  logger.info(`      token=${whatsappAutorization ? '***' : 'MISSING'}`);
+  logger.info(`      cargando mensajes pendientes...`);
+
+  const pendingMessages = await conversationMessageService.getPendingMessages({
+    includeReceiver: true,
+    where: { receiverType: 'requester' }
+  });
+
+  messageQueue.push(...pendingMessages);
+
+  logger.info(`      ${pendingMessages.length} mensajes pendientes cargados`);
+
+  startWhatsAppQueue();
 }
-
-if (!config.whatsapp.messageUrl || !config.whatsapp.token) {
-  logger.error('❌ WhatsApp configuration is incomplete (missing messageUrl/token)');
-  logger.error(JSON.stringify({
-    ...config.whatsapp,
-    token: config.whatsapp.token ? '***' : '',
-  }, null, 2));
-  process.exit(1);
-}
-
-const whatsappPhoneId = config.whatsapp.phoneId || '';
-const messageUrl = config.whatsapp.messageUrl
-  .replace('{baseUrl}', config.whatsapp.baseUrl)
-  .replace('{phoneId}', whatsappPhoneId)
-  || '';
-const whatsappAutorization = `Bearer ${config.whatsapp.token}`;
-
-logger.info('    Whatsapp configuration:');
-logger.info(`      messageUrl=${messageUrl}`);
-logger.info(`      phoneId=${whatsappPhoneId}`);
-logger.info(`      token=${whatsappAutorization ? '***' : 'MISSING'}`);
 
 export async function startWhatsappWebhookServer(req, res) {
   const mode = req.query['hub.mode'];
@@ -129,4 +151,44 @@ export async function sendWhatsAppMessage({ to, payload }) {
     const errBody = await res.text().catch(() => null);
     logger.error(`❌ WhatsApp API error sending message to ${to}: HTTP ${res.status}${errBody ? ` - ${errBody}` : ''}`);
   }
+}
+
+export async function enqueueWhatsAppMessage(message) {
+  messageQueue.push(message);
+  startWhatsAppQueue();
+}
+
+let isQueueRunning = false;
+
+export async function startWhatsAppQueue() {
+  if (isQueueRunning || messageQueue.length === 0)
+    return;
+
+  isQueueRunning = true;
+  try {
+    await executeWhatsAppQueue();
+  } finally {
+    isQueueRunning = false;
+  }
+}
+
+export async function executeWhatsAppQueue() {
+  if (messageQueue.length === 0) {
+    return;
+  }
+
+  const message = messageQueue.shift();
+  try {
+    await sendWhatsAppMessage({
+      to: message.receiver.phone,
+      payload: message.payload || message.text || message.body || message.content,
+    });
+    await conversationMessageService.updateStatus(message, { deliveredAt: new Date() });
+  }
+  catch (error) {
+    logger.error('Error sending pending message to requester', error);
+    await conversationMessageService.updateStatus(message, { failedAt: new Date(), failureReason: error.message });
+  }
+
+  await executeWhatsAppQueue();
 }

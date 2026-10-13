@@ -370,7 +370,7 @@ export default class ConversationService extends ModelService {
     }
 
     const requesterId = conversation.requesterId;
-    if (message.receiverId !== requesterId || !message.receiverType !== 'requester') {
+    if (message.receiverId !== requesterId || message.receiverType !== 'requester') {
       message.receiverId = requesterId;
       message.receiverType = 'requester';
       await this.conversationMessageService.updateById(
@@ -383,8 +383,18 @@ export default class ConversationService extends ModelService {
       );
     }
 
-    if (!message.receiver)
+    if (!message.receiver) {
       message.receiver = await this.requesterService.getById(requesterId, options);
+      if (!message.receiver) {
+        logger.error('Requester not found');
+        return;
+      }
+    }
+
+    if (!message.receiver.phone) {
+      logger.error('Requester has no phone number');
+      return;
+    }
 
     const messageToSend = new ConversationMessageDTO(message);
 
@@ -394,20 +404,21 @@ export default class ConversationService extends ModelService {
       options
     );
 
-    let status;
+    await this.conversationMessageService.updateStatus(message, { sentAt: new Date() }, options);
+
     try {
       await this.requesterService.sendMessageById(
         requesterId,
-        messageToSend,
+        message,
         options
       );
-
-      status = { sentAt: new Date() };
     } catch (error) {
-      status = { failedAt: new Date(), failureReason: error.message };
+      await this.conversationMessageService.updateStatus(
+        message,
+        { failedAt: new Date(), failureReason: error.message },
+        options
+      );
       logger.error('Error sending message to requester', error);
     }
-
-    await this.conversationMessageService.updateStatus(message, status, options);
   }
 }

@@ -9,6 +9,8 @@ import { toCamelCase } from '../utils/string.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+const controllers = [];
+
 async function run() {
   try {
     logger.info('🎛️  Configurando controladores');
@@ -24,10 +26,13 @@ async function run() {
       const fullPath = path.join(__dirname, file);
       const fileUrl = pathToFileURL(fullPath).href;
       const controller = await import(fileUrl);
+      controllers.push(controller);
       addDependency(controllerName, () => controller);
     }
 
     logger.info('🎛️  Controladores configurados OK ✔️');
+
+    return controllers;
   } catch (error) {
     logger.error('❌ Error al configurar controladores:', error);
     process.exit(1);
@@ -35,3 +40,11 @@ async function run() {
 }
 
 await run();
+
+export async function init() {
+  for (const controller of controllers) {
+    if (typeof controller.init === 'function') {
+      await controller.init();
+    }
+  }
+}
