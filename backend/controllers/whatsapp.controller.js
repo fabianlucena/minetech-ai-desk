@@ -161,17 +161,15 @@ export async function enqueueWhatsAppMessage(message) {
 let isQueueRunning = false;
 
 export async function startWhatsAppQueue() {
-  if (isQueueRunning)
+  if (isQueueRunning || messageQueue.length === 0)
     return;
-  
+
   isQueueRunning = true;
-
-  if (messageQueue.length === 0) {
-    return;
+  try {
+    await executeWhatsAppQueue();
+  } finally {
+    isQueueRunning = false;
   }
-
-  await executeWhatsAppQueue();
-  isQueueRunning = false;
 }
 
 export async function executeWhatsAppQueue() {
