@@ -10,9 +10,11 @@ import checkAuthorizationTokenMiddleware from './middlewares/check_authorization
 
 await import('./models/index.js');
 await import('./services/index.js');
-await import('./controllers/index.js');
+const { init: initControllers } = await import('./controllers/index.js');
 const routes = (await import('./routes/index.js')).default;
 const index = path.resolve(config.webPath, 'index.html');
+
+await initControllers();
 
 try {
   const app = express();
