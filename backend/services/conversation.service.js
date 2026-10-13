@@ -13,8 +13,6 @@ export default class ConversationService extends ModelService {
       auditable: false,
       useCreatedAt: true,
     });
-
-    this.whatsappController = getDependency('whatsappController');
   }
 
   get conversationMessageService() {
@@ -406,22 +404,21 @@ export default class ConversationService extends ModelService {
       options
     );
 
-    let status;
+    await this.conversationMessageService.updateStatus(message, { sentAt: new Date() }, options);
+
     try {
       await this.requesterService.sendMessageById(
         requesterId,
-        messageToSend,
+        message,
         options
       );
-
-      status = { sentAt: new Date() };
     } catch (error) {
-      status = { failedAt: new Date(), failureReason: error.message };
+      await this.conversationMessageService.updateStatus(
+        message,
+        { failedAt: new Date(), failureReason: error.message },
+        options
+      );
       logger.error('Error sending message to requester', error);
     }
-
-    await this.conversationMessageService.updateStatus(message, status, options);
-
-    this.whatsappController.enqueueWhatsAppMessage(message);
   }
 }
