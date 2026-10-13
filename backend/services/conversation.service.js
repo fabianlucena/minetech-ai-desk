@@ -2,7 +2,6 @@ import { getDependency } from '../dependency.js';
 import ModelService from './model.service.js';
 import { sendMessageToConversationId } from '../web-sockets/chat.ws.js';
 import { ConversationMessageDTO } from '../dto/conversation_message.dto.js';
-import { sendWhatsAppMessage } from '../controllers/whatsapp.controller.js';
 
 const logger = getDependency('logger');
 
@@ -14,6 +13,8 @@ export default class ConversationService extends ModelService {
       auditable: false,
       useCreatedAt: true,
     });
+
+    this.whatsappController = getDependency('whatsappController');
   }
 
   get conversationMessageService() {
@@ -421,34 +422,6 @@ export default class ConversationService extends ModelService {
 
     await this.conversationMessageService.updateStatus(message, status, options);
 
-    this.sendPendingMessages();
-  }
-
-  async sendPendingMessages() {
-    const pendingMessages = await this.conversationMessageService.getPendingMessages({
-      includeReceiver: true,
-      where: { receiverType: 'requester' }
-    });
-
-    for (const message of pendingMessages) {
-      this.sendPendingMessage(message);
-    }
-  }
-
-  async sendPendingMessage(message) {
-    let status;
-    try {
-      await sendWhatsAppMessage({
-        to: message.receiver.phone,
-        payload: message.payload || message.text || message.body || message.content,
-      });
-
-      status = { deliveredAt: new Date() };
-    } catch (error) {
-      status = { failedAt: new Date(), failureReason: error.message };
-      logger.error('Error sending pending message to requester', error);
-    }
-
-    await this.conversationMessageService.updateStatus(message, status);
+    this.whatsappController.enqueueWhatsAppMessage(message);
   }
 }
