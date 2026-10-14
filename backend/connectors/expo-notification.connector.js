@@ -1,6 +1,11 @@
 import logger from '../logger.js';
 
 export async function sendMessage({ token, message, deactivateDevice }) {
+  let body = message.text;
+  if (message.sender?.displayName) {
+    body = `${message.sender.displayName}: ${body}`;
+  }
+
   const response = await fetch(
     'https://exp.host/--/api/v2/push/send',
     {
@@ -11,8 +16,8 @@ export async function sendMessage({ token, message, deactivateDevice }) {
       body: JSON.stringify({
         to: token,
         title: 'Nuevo ticket',
-        body: message.text,
-        data: message.data || {},
+        body: body,
+        data: message,
       }),
     }
   );

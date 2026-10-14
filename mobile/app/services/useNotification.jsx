@@ -41,11 +41,26 @@ export default function useNotification() {
       if (!token)
         throw new Error('No se pudo obtener el token de notificación push');
 
+      Notifications.setNotificationHandler({
+        handleNotification: async () => ({
+          shouldShowBanner: true,
+          shouldShowList: true,
+          shouldPlaySound: true,
+          shouldSetBadge: true,
+        }),
+      });
+
+      Notifications.addNotificationReceivedListener(
+        notification => {
+          console.log('Push recibida', notification.request.content.data);
+        }
+      );
+
       await registerDevice({ type: 'expo', token: token.data });
 
       return token.data;
     } catch (error) {
-      console.log('Error al registrar el token de notificación push:', error);
+      console.error('Error al registrar el token de notificación push:', error);
       return null;
     }
   }, [registerDevice]);
