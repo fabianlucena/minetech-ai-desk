@@ -1,5 +1,4 @@
 import { DataTypes } from 'sequelize';
-import { senderTypeValues } from '../categories/sender_types.js';
 
 export default (sequelize) => {
   const TechnicianDevice = sequelize.define('TechnicianDevice', {
@@ -10,7 +9,7 @@ export default (sequelize) => {
     technicianId: { field: 'technician_id', type: DataTypes.BIGINT, allowNull: false },
     deviceId: { field: 'device_id', type: DataTypes.STRING, allowNull: false },
     token: { field: 'token', type: DataTypes.STRING, allowNull: false },
-    type: { field: 'type', type: DataTypes.ENUM(...senderTypeValues), allowNull: false },
+    type: { field: 'type', type: DataTypes.STRING, allowNull: false },
 
     createdAt: { field: 'created_at', type: DataTypes.DATE, defaultValue: DataTypes.NOW, allowNull: false },
     createdById: { field: 'created_by_id', type: DataTypes.BIGINT, allowNull: true },
