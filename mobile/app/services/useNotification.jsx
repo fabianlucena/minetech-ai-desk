@@ -21,6 +21,13 @@ export default function useNotification() {
       return null;
     }
 
+     if (Device.osName === 'Android') {
+       await Notifications.setNotificationChannelAsync('default', {
+         name: 'default',
+         importance: Notifications.AndroidImportance.MAX,
+       });
+     }
+
     const { status: existingStatus } =
       await Notifications.getPermissionsAsync();
 
