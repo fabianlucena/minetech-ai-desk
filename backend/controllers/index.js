@@ -13,7 +13,7 @@ const controllers = [];
 
 async function run() {
   try {
-    logger.info('🎛️  Configurando controladores');
+    logger.info('🎛️  Setting up controllers');
 
     const files = fs.readdirSync(__dirname)
       .filter(file => file.endsWith('.controller.js') && file !== 'index.js');
@@ -30,11 +30,11 @@ async function run() {
       addDependency(controllerName, () => controller);
     }
 
-    logger.info('🎛️  Controladores configurados OK ✔️');
+    logger.info('🎛️  Controllers set up OK ✔️');
 
     return controllers;
   } catch (error) {
-    logger.error('❌ Error al configurar controladores:', error);
+    logger.error('❌ Error setting up controllers:', error);
     process.exit(1);
   }
 }

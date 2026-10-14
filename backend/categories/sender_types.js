@@ -17,7 +17,7 @@ export const senderTypes = [
   {
     value: 'system',
     name: 'Sistema',
-    detail: 'Respuesta automática generada por MineTech AI Desk'
+    detail: 'Respuesta automática generada por MineTech IA Desk'
   },
 ];
 

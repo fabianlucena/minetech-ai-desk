@@ -10,6 +10,7 @@ export default class ModelService {
     allowUuidForCreation = false,
     useCreatedAt = null,
     useCreatedById = null,
+    isActivable = false,
   }) {
     this.model = model;
     this.traceable = traceable;
@@ -19,6 +20,7 @@ export default class ModelService {
     this.allowUuidForCreation = allowUuidForCreation;
     this.useCreatedAt = useCreatedAt;
     this.useCreatedById = useCreatedById;
+    this.isActivable = isActivable;
   }
 
   async getSystemUserId() {
@@ -58,6 +60,9 @@ export default class ModelService {
 
     if (options.includeDeleted !== undefined)
       delete options.includeDeleted;
+
+    if (this.isActivable && !options.includeInactive)
+      options.where = { isActive: true, ...options.where };
 
     return options;
   }

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "188025484104",
+    "project_id": "minetech-iadesk",
+    "storage_bucket": "minetech-iadesk.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:188025484104:android:dd46f7c6b7bbe5d927b97d",
+        "android_client_info": {
+          "package_name": "com.minetech.iadesk"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCGUOn_llvLKj-ZDiewOZY-HBqx9epzy2U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

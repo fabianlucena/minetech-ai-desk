@@ -1,6 +1,7 @@
 import { getDependency } from '../dependency.js';
 import ModelService from './model.service.js';
 import { Op } from 'sequelize';
+import logger from '../logger.js';
 
 export default class TechnicianService extends ModelService {
   constructor() {
@@ -18,6 +19,16 @@ export default class TechnicianService extends ModelService {
   get userService() {
     this._userService ??= getDependency('userService');
     return this._userService;
+  }
+
+  get technicianDeviceService() {
+    this._technicianDeviceService ??= getDependency('technicianDeviceService');
+    return this._technicianDeviceService;
+  }
+
+  get expoNotificationAdapter() {
+    this._expoNotificationAdapter ??= getDependency('expoNotificationAdapter');
+    return this._expoNotificationAdapter;
   }
 
   getModelOptions(options) {
@@ -113,6 +124,39 @@ export default class TechnicianService extends ModelService {
   }
 
   async sendMessageById(technicianId, message) {
-    console.log(`Sending message to technicianId=${technicianId}:`, message);
+    logger.debug(`Sending message to technicianId=${technicianId}:`, message);
+
+    const devices = await this.technicianDeviceService.getByTechnicianId(technicianId);
+    for (const device of devices) {
+      try {
+        if (device.type === 'expo') {
+          await this.expoNotificationAdapter.sendMessage({
+            token: device.token,
+            message,
+            deactivateDevice: async () => await this.technicianDeviceService.deactivateById(device.id)
+          });
+        } else {
+          throw new Error(`Tipo de dispositivo no soportado: ${device.type}`);
+        }
+      } catch (error) {
+        logger.error(`Error sending message to deviceId=${device.id}:`, error);
+      }
+    }
+  }
+
+  async deviceRegister(data) {
+    if (!data.session)
+      throw new Error('La sesión es obligatoria');
+
+    const technician = await this.getById(data.session.userId);
+    if (!technician)
+      throw new Error('El usuario de la sesión no es un técnico');
+
+    await this.technicianDeviceService.register({
+      token: data.token,
+      type: data.type,
+      technicianId: technician.id,
+      deviceId: data.session.deviceId,
+    });
   }
 }

@@ -769,3 +769,42 @@ create table if not exists ia_desk.tickets(
     constraint uk_ia_desk_tickets_deleted_by_id foreign key (deleted_by_id)
       references auth.users(id) on delete restrict
 );
+
+-- Table technician_devices
+create table if not exists ia_desk.technician_devices(
+    id bigint generated always as identity primary key,
+    uuid uuid not null default gen_random_uuid(),
+
+    is_active boolean not null default true,
+    technician_id bigint not null,
+    device_id bigint not null,
+    token text not null,
+    type text not null,
+
+    created_at timestamp not null default now(),
+    created_by_id bigint not null,
+
+    updated_at timestamp not null default now(),
+    updated_by_id bigint not null,
+
+    deleted_at timestamp null,
+    deleted_by_id bigint null,
+    
+    constraint uk_ia_desk_technician_devices_uuid unique (uuid),
+    constraint uk_ia_desk_technician_devices_token unique (token),
+    
+    constraint uk_ia_desk_technician_devices_technician_id foreign key (technician_id)
+      referencesia_desk.technicians(id) on delete restrict,
+    
+    constraint uk_ia_desk_technician_devices_device_id foreign key (device_id)
+      references auth.devices(id) on delete restrict,
+    
+    constraint uk_ia_desk_technician_devices_created_by_id foreign key (created_by_id)
+      references auth.users(id) on delete restrict,
+    
+    constraint uk_ia_desk_technician_devices_updated_by_id foreign key (updated_by_id)
+      references auth.users(id) on delete restrict,
+    
+    constraint uk_ia_desk_technician_devices_deleted_by_id foreign key (deleted_by_id)
+      references auth.users(id) on delete restrict
+);

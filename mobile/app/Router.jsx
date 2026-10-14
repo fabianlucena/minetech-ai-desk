@@ -12,6 +12,7 @@ import ConversationsScreen from './screens/ConversationsScreen';
 import LoginScreen from './screens/LoginScreen';
 import TicketsScreen from './screens/TicketsScreen';
 import ConversationMessagesScreen from './screens/ConversationMessagesScreen';
+import useNotification from './services/useNotification';
 
 const Drawer = createDrawerNavigator();
 
@@ -21,6 +22,8 @@ export default function Router() {
   const { logout } = useLogin();
   const user = session.user;
   const permissions = session.permissions || [];
+
+  useNotification();
 
   async function logoutHandler() {
     try {
