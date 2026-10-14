@@ -26,9 +26,9 @@ export default class TechnicianService extends ModelService {
     return this._technicianDeviceService;
   }
 
-  get expoNotificationConnector() {
-    this._expoNotificationConnector ??= getDependency('expoNotificationConnector');
-    return this._expoNotificationConnector;
+  get expoNotificationAdapter() {
+    this._expoNotificationAdapter ??= getDependency('expoNotificationAdapter');
+    return this._expoNotificationAdapter;
   }
 
   getModelOptions(options) {
@@ -130,7 +130,7 @@ export default class TechnicianService extends ModelService {
     for (const device of devices) {
       try {
         if (device.type === 'expo') {
-          await this.expoNotificationConnector.sendMessage({
+          await this.expoNotificationAdapter.sendMessage({
             token: device.token,
             message,
             deactivateDevice: async () => await this.technicianDeviceService.deactivateById(device.id)
