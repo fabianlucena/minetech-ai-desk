@@ -17,7 +17,10 @@ export async function sendMessage({ token, message, deactivateDevice }) {
         to: token,
         title: 'Nuevo ticket',
         body: body,
-        data: message,
+        data: {
+          messageUuid: message.uuid,
+          conversationUuid: message.conversation.uuid,
+        },
       }),
     }
   );
