@@ -793,6 +793,12 @@ create table if not exists ia_desk.technician_devices(
     constraint uk_ia_desk_technician_devices_uuid unique (uuid),
     constraint uk_ia_desk_technician_devices_token unique (token),
     
+    constraint uk_ia_desk_technician_devices_technician_id foreign key (technician_id)
+      referencesia_desk.technicians(id) on delete restrict,
+    
+    constraint uk_ia_desk_technician_devices_device_id foreign key (device_id)
+      references auth.devices(id) on delete restrict,
+    
     constraint uk_ia_desk_technician_devices_created_by_id foreign key (created_by_id)
       references auth.users(id) on delete restrict,
     
