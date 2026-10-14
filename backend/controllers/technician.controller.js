@@ -69,8 +69,8 @@ export async function getUsers(req, res) {
 export async function deviceRegister(req, res) {
   const technicianService = getDependency('technicianService');
   await technicianService.deviceRegister({
-    session: req.session,
     ...req.body,
+    session: req.session,
   });
   res.status(204).end();
 }
