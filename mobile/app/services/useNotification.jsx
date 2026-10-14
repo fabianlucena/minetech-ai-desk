@@ -13,7 +13,7 @@ export default function useNotification() {
     if (api?.authorization) {
       registerForPushNotifications();
     }
-  }, [api?.authorization]);
+  }, [registerDevice]);
 
   const registerForPushNotifications = useCallback(async () => {
     if (!Device.isDevice) {
@@ -48,7 +48,7 @@ export default function useNotification() {
       console.log('Error al registrar el token de notificación push:', error);
       return null;
     }
-  }, []);
+  }, [registerDevice]);
 
   const value = useMemo(() => ({
     registerForPushNotifications,
