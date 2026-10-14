@@ -20,7 +20,7 @@ async function run() {
 
     for (const file of files) {
       const adapterName = toCamelCase(file.replace('.adapter.js', ''))
-        + 'adapter';
+        + 'Adapter';
 
       logger.info(`    ${adapterName} -> ${file}`);
       const fullPath = path.join(__dirname, file);
