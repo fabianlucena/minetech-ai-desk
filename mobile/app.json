@@ -10,13 +10,14 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.minetech.iadesk",
+      "softwareKeyboardLayoutMode": "resize",
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "backgroundColor": "#FFFFFF",
         "foregroundImage": "./assets/minetech-logo.png",
         "monochromeImage": "./assets/minetech-logo-mono.png"
-      },
-      "package": "com.minetech.iadesk",
-      "softwareKeyboardLayoutMode": "resize"
+      }
     },
     "web": {
       "favicon": "./assets/minetech-logo.png"
@@ -35,7 +36,20 @@
             "backgroundColor": "#BE9B23"
           }
         }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/minetech-logo.png",
+          "color": "#BE9B23"
+        }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "3dc24fbe-5de9-495c-876a-70a2505e8640"
+      }
+    },
+    "owner": "fabianlucena"
   }
 }

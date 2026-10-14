@@ -65,3 +65,12 @@ export async function getUsers(req, res) {
   });
   res.json(users.map(u => new TechnicianUserDTO(u)));
 }
+
+export async function deviceRegister(req, res) {
+  const technicianService = getDependency('technicianService');
+  await technicianService.deviceRegister({
+    session: req.session,
+    ...req.body,
+  });
+  res.status(204).end();
+}
