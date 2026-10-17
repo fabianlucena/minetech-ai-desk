@@ -2,4 +2,4 @@
 
 Limpiar proyecto android
 
-```npx expo run:android --clear```
+```expo prebuild --clean```
