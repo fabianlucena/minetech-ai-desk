@@ -40,7 +40,7 @@
       [
         "expo-notifications",
         {
-          "icon": "./assets/minetech-logo.png",
+          "icon": "./assets/minetech-logo-notification-mono.png",
           "color": "#BE9B23"
         }
       ]
