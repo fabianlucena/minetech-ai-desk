@@ -15,12 +15,14 @@ export default class ConversationService extends ModelService {
     });
   }
 
+  #conversationMessageService;
   get conversationMessageService() {
-    return this._conversationMessageService ??= getDependency('conversationMessageService');
+    return this.#conversationMessageService ??= getDependency('conversationMessageService');
   }
 
+  #requesterService;
   get requesterService() {
-    return this._requesterService ??= getDependency('requesterService');
+    return this.#requesterService ??= getDependency('requesterService');
   }
 
   get technicianService() {
@@ -217,7 +219,14 @@ export default class ConversationService extends ModelService {
 
     data.senderId = requester.id;
     data.senderType = 'requester';
-    const message = await this.addMessage(data, options);
+    const message = await this.addMessage(
+      data,
+      {
+        ...options,
+        includeConversation: true,
+        includeClient: true,
+      },
+    );
 
     if (requester.bannedAt) {
       logger.warn(`❌ Ignoring message from banned requester ${requester.phone} (${requester.displayName})`);
