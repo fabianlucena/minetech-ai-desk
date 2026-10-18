@@ -134,6 +134,9 @@ export default class ClientService extends ModelService {
     if (!client)
       throw new Error('Cliente no encontrado');
 
+    if (!client.isActive || client.status !== 'active')
+      return false;
+
     return client.accessCode === accessCode;
   }
 }
