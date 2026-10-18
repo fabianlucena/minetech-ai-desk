@@ -588,7 +588,7 @@ create table if not exists ia_desk.requesters(
     ban_reason text null,
     authenticated_at timestamp null,
     auth_state varchar(64) null,
-    failed_auth_attempts ont null,
+    failed_auth_attempts int null,
     last_failed_auth_attempt_at timestamp null,
     authentication_expires_at timestamp null,
 
