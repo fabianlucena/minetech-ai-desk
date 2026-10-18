@@ -139,7 +139,7 @@ export default class RequesterService extends ModelService {
   }
 
   async getFailedAuthBlockedTime() {
-    return await this.settingService.getValue('failedAuthBlockedTime', 3600);
+    return await this.settingService.getValueTimePeriod('failedAuthBlockedTime', '1:00:00');
   }
 
   async getMaxFailedAuthAttempts() {
@@ -147,7 +147,7 @@ export default class RequesterService extends ModelService {
   }
 
   async getAuthenticationExpirationDays() {
-    return await this.settingService.getValue('authenticationExpirationDays', 60);
+    return await this.settingService.getValueTimePeriod('authenticationExpirationDays', '60 00:00:00');
   }
 
   async replyMessageBySystem(message, replyTo, options) {

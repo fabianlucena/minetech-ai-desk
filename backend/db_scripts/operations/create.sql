@@ -497,9 +497,9 @@ create table if not exists ia_desk.settings(
 
 insert into ia_desk.settings (created_by_id,updated_by_id,"key","description",value)
 	values 
-    (1,1,'failedAuthBlockedTime','Tiempo de bloqueo (en segundos) para un solicitante que falló en la autentificación','3600'::jsonb),
+    (1,1,'failedAuthBlockedTime','Tiempo de bloqueo (hh:mm:ss) para un solicitante que falló en la autentificación','"1:00:00"'::jsonb),
     (1,1,'maxFailedAuthAttempts','Número máximo de intentos de autentificación permitidos al solicitante, antes de bloquearlo','3'::jsonb),
-    (1,1,'authenticationExpirationDays','Tiempo en días en que un solicitante puede realizar consultas antes de solicitar su authentificación nuevamente','60'::jsonb)
+    (1,1,'authenticationExpirationDays','Tiempo (dd hh:mm:ss) en que un solicitante puede realizar consultas antes de solicitar su authentificación nuevamente','"60 00:00:00"'::jsonb)
 on conflict ("key") do nothing;
 
 -- Table technicians
