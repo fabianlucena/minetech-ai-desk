@@ -100,6 +100,9 @@ export default class SettingService extends ModelService {
       return this.#timePeriodMillisecondsCache[key];
 
     const strValue = await this.getValue(key, defaultValue, options);
+    if (!strValue)
+      return null;
+
     let value = timePeriod2Milliseconds(strValue);
     if (!value)
       value = timePeriod2Milliseconds(defaultValue);
