@@ -300,6 +300,9 @@ export default class ModelService {
   }
 
   async deleteByWhere(where, options) {
+    if (!where || typeof where !== 'object')
+      throw new Error('La cláusula where del objeto a eliminar es obligatoria y debe ser un objeto');
+
     return await this.delete({ ...options, where: { ...options?.where, ...where } });
   }
 
