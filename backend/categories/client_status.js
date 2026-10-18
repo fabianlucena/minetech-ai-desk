@@ -27,3 +27,6 @@ export const clientStatus = [
 ];
 
 export const clientStatusValues = clientStatus.map(s => s.value);
+export function clientStatusName(value) {
+  return clientStatus.find(s => s.value === value)?.name;
+}
