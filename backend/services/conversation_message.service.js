@@ -11,6 +11,16 @@ export default class ConversationMessageService extends ModelService {
     });
   }
 
+  #conversationModel = null;
+  get conversationModel() {
+    return this.#conversationModel ??= getDependency('conversationModel');
+  }
+
+  #clientModel = null;
+  get clientModel() {
+    return this.#clientModel ??= getDependency('clientModel');
+  }
+
   get userService() {
     this._userService ??= getDependency('userService');
     return this._userService;
@@ -165,6 +175,36 @@ export default class ConversationMessageService extends ModelService {
     data = await this.validateReceiver(data, options);
 
     return await super.validateForUpdate(data, options);
+  }
+
+  getModelOptions(options) {
+    options = super.getModelOptions(options);
+
+    if (options.includeConversation || options.includeClient) {
+      const includeConversation = {
+        model: this.conversationModel,
+        as: 'conversation',
+      };
+
+      if (options.includeClient) {
+        includeConversation.include = [
+          {
+            model: this.clientModel,
+            as: 'client'
+          }
+        ];
+
+        delete options.includeClient;
+      }
+
+      options.include = options.include || [];
+      options.include.push(includeConversation);
+
+      if (options.includeConversation)
+        delete options.includeConversation;
+    }
+
+    return options;
   }
 
   async getList(options) {
