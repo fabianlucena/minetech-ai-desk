@@ -302,7 +302,7 @@ export default class RequesterService extends ModelService {
             message,
             options
           );
-          await this.updateAuthStateById(requester.id, {
+          await this.updateById(requester.id, {
             authState: 'locked',
             lastFailedAuthAttemptAt: new Date(),
           }, options);
