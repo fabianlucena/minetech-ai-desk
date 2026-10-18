@@ -495,6 +495,13 @@ create table if not exists ia_desk.settings(
       references auth.users(id) on delete restrict
 );
 
+insert into ia_desk.settings (created_by_id,updated_by_id,"key","description",value)
+	values 
+    (1,1,'failedAuthBlockedTime','Tiempo de bloqueo (hh:mm:ss) para un solicitante que falló en la autentificación','"1:00:00"'::jsonb),
+    (1,1,'maxFailedAuthAttempts','Número máximo de intentos de autentificación permitidos al solicitante, antes de bloquearlo','3'::jsonb),
+    (1,1,'authenticationExpirationDays','Tiempo (dd hh:mm:ss) en que un solicitante puede realizar consultas antes de solicitar su authentificación nuevamente','"60 00:00:00"'::jsonb)
+on conflict ("key") do nothing;
+
 -- Table technicians
 create table if not exists ia_desk.technicians(
     id bigint primary key,
@@ -579,6 +586,11 @@ create table if not exists ia_desk.requesters(
     banned_at timestamp null,
     banned_by_id bigint null,
     ban_reason text null,
+    authenticated_at timestamp null,
+    auth_state varchar(64) null,
+    failed_auth_attempts int null,
+    last_failed_auth_attempt_at timestamp null,
+    authentication_expires_at timestamp null,
 
     created_at timestamp not null default now(),
     created_by_id bigint not null,
@@ -697,6 +709,7 @@ create table if not exists ia_desk.conversation_messages(
     read_at timestamp null,
     failed_at timestamp null,
     failure_reason text null,
+    reply_to_id bigint NULL,
 
     updated_at timestamp null,
     updated_by_id bigint null,
@@ -712,7 +725,10 @@ create table if not exists ia_desk.conversation_messages(
       references auth.users(id) on delete restrict,
 
     constraint uk_ia_desk_conversation_messages_deleted_by_id foreign key (deleted_by_id)
-      references auth.users(id) on delete restrict
+      references auth.users(id) on delete restrict,
+
+    constraint uk_ia_desk_conversation_messages_reply_to_id foreign key (reply_to_id)
+      references  ia_desk.conversation_messages(id)
 );
 
 -- Table tickets
@@ -794,7 +810,7 @@ create table if not exists ia_desk.technician_devices(
     constraint uk_ia_desk_technician_devices_token unique (token),
     
     constraint uk_ia_desk_technician_devices_technician_id foreign key (technician_id)
-      referencesia_desk.technicians(id) on delete restrict,
+      references ia_desk.technicians(id) on delete restrict,
     
     constraint uk_ia_desk_technician_devices_device_id foreign key (device_id)
       references auth.devices(id) on delete restrict,

@@ -16,23 +16,15 @@ export default class ConversationService extends ModelService {
   }
 
   get conversationMessageService() {
-    this._conversationMessageService ??= getDependency('conversationMessageService');
-    return this._conversationMessageService;
+    return this._conversationMessageService ??= getDependency('conversationMessageService');
   }
 
   get requesterService() {
-    this._requesterService ??= getDependency('requesterService');
-    return this._requesterService;  
+    return this._requesterService ??= getDependency('requesterService');
   }
 
   get technicianService() {
-    this._technicianService ??= getDependency('technicianService');
-    return this._technicianService;
-  }
-
-  get userService() {
-    this._userService ??= getDependency('userService');
-    return this._userService;
+    return this._technicianService ??= getDependency('technicianService');
   }
 
   getModelOptions(options) {
@@ -234,6 +226,8 @@ export default class ConversationService extends ModelService {
 
     message.sender = requester;
 
+    options.notify = await this.requesterService.checkState(message, options);
+
     // Ejecutar motor RAG
     /* const aiResponse = await ragEngine(text);
 
@@ -291,6 +285,34 @@ export default class ConversationService extends ModelService {
     return message;
   }
 
+  async addSystemMessage(data, options) {
+    data = { ...data };
+
+    data.senderId = null;
+    data.senderType = 'system';
+    const message = await this.addMessage(data, options);
+
+    await this.sendMessageToRequester(
+      message,
+      options
+    );
+
+    return message;
+  }
+
+  async replyMessageBySystem(message, replyTo, options) {
+    if (typeof message === 'string') {
+      message = { text: message };
+    } else {
+      message = { ...message };
+    }
+
+    message.conversationId = replyTo.conversationId;
+    message.replyToId = replyTo.id;
+
+    return await this.addSystemMessage(message, options);
+  }
+
   async sendMessageToTechnician(message, options) {
     let conversation = message.conversation;
     if (!conversation) {
@@ -330,21 +352,23 @@ export default class ConversationService extends ModelService {
       messageToSend,
     );
 
-    let status;
-    try {
-      await this.technicianService.sendMessageById(
-        technician.id,
-        messageToSend,
-        options,
-      );
+    if (options.notify !== false) {
+      let status;
+      try {
+        await this.technicianService.sendMessageById(
+          technician.id,
+          messageToSend,
+          options,
+        );
 
-      status = { sentAt: new Date() };
-    } catch (error) {
-      status = { failedAt: new Date(), failureReason: error.message };
-      logger.error('Error sending message to technician', error);
+        status = { sentAt: new Date() };
+      } catch (error) {
+        status = { failedAt: new Date(), failureReason: error.message };
+        logger.error('Error sending message to technician', error);
+      }
+
+      await this.conversationMessageService.updateStatus(message, status, options);
     }
-
-    await this.conversationMessageService.updateStatus(message, status, options);
   }
 
   async sendMessageToRequester(message, options) {

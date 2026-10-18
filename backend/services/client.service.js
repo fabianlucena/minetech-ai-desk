@@ -122,4 +122,21 @@ export default class ClientService extends ModelService {
     const globalOptions = { session: options?.session };
     return await this.updateById(client.id, data, globalOptions);
   }
+
+  async validateAccessCode(clientId, accessCode, options) {
+    if (!clientId)
+      throw new Error('El ID del cliente es obligatorio');
+
+    if (!accessCode)
+      throw new Error('El código de acceso es obligatorio');
+
+    const client = await this.getById(clientId, options);
+    if (!client)
+      throw new Error('Cliente no encontrado');
+
+    if (!client.isActive || client.status !== 'active')
+      return false;
+
+    return client.accessCode === accessCode;
+  }
 }

@@ -28,7 +28,7 @@ export const ticketStatus = [
     value: 'cancelado',
     name: 'Cancelado',
     detail: 'El ticket se cerró sin resolución (duplicado, error, fuera de alcance)'
-  }
+  },
 ];
 
 export const ticketStatusValues = ticketStatus.map(s => s.value);

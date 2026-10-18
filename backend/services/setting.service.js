@@ -1,7 +1,11 @@
 import { getDependency } from '../dependency.js';
 import ModelService from './model.service.js';
+import { timePeriod2Milliseconds } from '../utils/time.js';
 
 export default class SettingService extends ModelService {
+  #cache = {};
+  #timePeriodMillisecondsCache = {};
+
   constructor() {
     super({ model: getDependency('settingModel') });
   }
@@ -57,5 +61,54 @@ export default class SettingService extends ModelService {
     }
 
     return await super.validateForUpdate(data, options);
+  }
+
+  async update(data, options = {}) {
+    const result = await super.update(data, options);
+    this.#cache = {};
+    this.#timePeriodMillisecondsCache = {};
+    return result;
+  }
+
+  async delete(options = {}) {
+    const result = await super.delete(options);
+    this.#cache = {};
+    this.#timePeriodMillisecondsCache = {};
+    return result;
+  }
+
+  async getValue(key, defaultValue, options = {}) {
+    if (!key)
+      throw new Error('La clave es obligatoria');
+
+    if (key in this.#cache)
+      return this.#cache[key];
+
+    const setting = await this.getByKey(key, options);
+    const value = setting ? setting.value : defaultValue;
+
+    this.#cache[key] = value;
+
+    return value;
+  }
+
+  async getValueTimePeriodMilliseconds(key, defaultValue, options = {}) {
+    if (!key)
+      throw new Error('La clave es obligatoria');
+
+    if (key in this.#timePeriodMillisecondsCache)
+      return this.#timePeriodMillisecondsCache[key];
+
+    const strValue = await this.getValue(key, defaultValue, options);
+    if (!strValue)
+      return null;
+
+    let value = timePeriod2Milliseconds(strValue);
+    if (!value)
+      value = timePeriod2Milliseconds(defaultValue);
+
+    this.#timePeriodMillisecondsCache[key] = value;
+
+    return value;
   }
 }

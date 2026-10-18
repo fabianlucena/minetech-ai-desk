@@ -23,10 +23,19 @@ export default class ModelService {
     this.isActivable = isActivable;
   }
 
+  _settingService = null;
+  get settingService() {
+    return this._settingService ??= getDependency('settingService');
+  }
+
+  _userService = null;
+  get userService() {
+    return this._userService ??= getDependency('userService');
+  }
+
   async getSystemUserId() {
     if (!this.systemUserId) {
-      const userService = getDependency('userService');
-      const systemUser = await userService.getFirstOrDefault({
+      const systemUser = await this.userService.getFirstOrDefault({
         attributes: ['id'],
         where: { username: 'system' },
       });
@@ -85,7 +94,7 @@ export default class ModelService {
     const validProperties = this.validPropertiesForCreation;
     for (const prop of properties) {
       if (!validProperties.includes(prop))
-        throw new Error(`Propiedad no válida: ${prop}`);
+        throw new Error(`La propiedad "${prop}" no es válida para crear el objeto "${this.model.name}"`);
     }
 
     return data;
@@ -221,7 +230,7 @@ export default class ModelService {
     const validProperties = this.validPropertiesForUpdate;
     for (const prop of properties) {
       if (!validProperties.includes(prop))
-        throw new Error(`Propiedad no válida: ${prop}`);
+        throw new Error(`La propiedad "${prop}" no es válida para actualizar el objeto "${this.model.name}"`);
     }
 
     return data;
@@ -273,9 +282,9 @@ export default class ModelService {
     return await this.updateById(id, data, globalOptions);
   }
 
-  async deleteByWhere(where, options) {
-    if (!where || typeof where !== 'object')
-      throw new Error('La cláusula where del objeto a eliminar es obligatoria y debe ser un objeto');
+  async delete(options) {
+    if (!options?.where || typeof options.where !== 'object')
+      throw new Error('La cláusula options.where del objeto a eliminar es obligatoria y debe ser un objeto');
 
     options = this.getModelOptions(options);
 
@@ -284,10 +293,17 @@ export default class ModelService {
         deletedAt: new Date(),
         deletedById: await this.getCurrentUserId(options),
       };
-      return await this.model.update(data, { ...options, where: { ...where, ...options?.where } });
+      return await this.model.update(data, options);
     } else {
-      return await this.model.destroy({ ...options, where: { ...where, ...options?.where } });
+      return await this.model.destroy(options);
     }
+  }
+
+  async deleteByWhere(where, options) {
+    if (!where || typeof where !== 'object')
+      throw new Error('La cláusula where del objeto a eliminar es obligatoria y debe ser un objeto');
+
+    return await this.delete({ ...options, where: { ...options?.where, ...where } });
   }
 
   async deleteById(id, options) {

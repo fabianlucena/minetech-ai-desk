@@ -7,6 +7,21 @@ export default class WhatsappService {
   constructor() {
   }
 
+  _requesterService = null;
+  get requesterService() {
+    return this._requesterService ??= getDependency('requesterService');
+  }
+
+  _conversationService = null;
+  get conversationService() {
+    return this._conversationService ??= getDependency('conversationService');
+  }
+
+  _settingService = null;
+  get settingService() {
+    return this._settingService ??= getDependency('settingService');
+  }
+
   async startWebhookServer({ mode, token, challenge }) {
     logger.info('Checking WhatsApp webhook...');
   
@@ -73,17 +88,15 @@ export default class WhatsappService {
       }
     }
 
-    const requesterService = getDependency('requesterService');
-    const conversationService = getDependency('conversationService');
-
     for (const from in fromList) {
-      const requester = await requesterService.getByPhoneOrCreate(
+      const requester = await this.requesterService.getByPhoneOrCreate(
         from,
         () => ({ displayName: allContacts.find(c => c.wa_id === from)?.profile?.name || 'Cliente' }),
         options
       );
 
-      const conversation = await conversationService.getOpenByRequesterIdOrCreate(requester.id, {}, options);
+      const conversation = await this.conversationService.getOpenByRequesterIdOrCreate(requester.id, {}, options);
+
       const messages = fromList[from];
       for (const message of messages) {
         const type = message.type;
@@ -93,7 +106,7 @@ export default class WhatsappService {
         if (type === 'text')
           text = message.text.body;
 
-        logger.info(`📩 Mensaje received from ${from}: ${text || '[media]'}`);
+        logger.debug(`📩 Mensaje received from ${from}: ${text || '[media]'}`);
 
         if (type === 'image')
           mediaId = message.image.id;
@@ -105,7 +118,7 @@ export default class WhatsappService {
         if (mediaId)
           media = await this.downloadMedia(mediaId);
 
-        await conversationService.addRequesterMessage({
+        await this.conversationService.addRequesterMessage({
           conversation,
           text,
           media,

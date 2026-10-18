@@ -37,9 +37,14 @@ export default function MessageBubble({
           mb: 0.5,
         }}
       >
-        {status.sender?.displayName || status.senderType === 'ia' && 'Minetech IA' || 'Desconocido'}
+        {status.sender?.displayName || status.senderType === 'ia' && 'Minetech IA' || status.senderType === 'system' && 'Minetech IA' || 'Desconocido'}
       </Typography>}
-      <Typography variant="body2">{text}</Typography>
+      <Typography
+        variant="body2"
+        sx={{ whiteSpace: 'pre-wrap' }}
+      >
+        {text}
+      </Typography>
       <Typography
         variant="caption"
         sx={{ display: 'block', textAlign: 'right', opacity: 0.6 }}

@@ -1,5 +1,6 @@
 import { DataTypes } from 'sequelize';
 import { requesterTypeValues } from '../categories/requester_types.js';
+import { authStatusValues } from '../categories/auth_state.js';
 
 export default (sequelize) => {
   const Requester = sequelize.define('Requester', {
@@ -19,6 +20,11 @@ export default (sequelize) => {
     bannedAt: { field: 'banned_at', type: DataTypes.DATE, allowNull: true },
     bannedById: { field: 'banned_by_id', type: DataTypes.BIGINT, allowNull: true },
     banReason: { field: 'ban_reason', type: DataTypes.TEXT, allowNull: true },
+    authenticatedAt: { field: 'authenticated_at', type: DataTypes.DATE, allowNull: true },
+    authState: { field: 'auth_state', type: DataTypes.ENUM(...authStatusValues), allowNull: false, defaultValue: 'waiting_client_code' },
+    failedAuthAttempts : { field: 'failed_auth_attempts', type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
+    lastFailedAuthAttemptAt: { field: 'last_failed_auth_attempt_at', type: DataTypes.DATE, allowNull: true },
+    authenticatedExpiresAt: { field: 'authentication_expires_at', type: DataTypes.DATE, allowNull: true },
   }, {
     tableName: 'requesters',
     schema: 'ia_desk',
