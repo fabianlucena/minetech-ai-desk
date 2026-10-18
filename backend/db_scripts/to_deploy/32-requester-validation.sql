@@ -11,8 +11,8 @@ begin
     end if;
 end $$;
 
-alter table ia_desk.requesters add column if not exists authenticated_at time without time zone null;
-alter table ia_desk.requesters add column if not exists auth_state varchar(32) null;
+alter table ia_desk.requesters add column if not exists authenticated_at timestamp null;
+alter table ia_desk.requesters add column if not exists auth_state varchar(64) null;
 alter table ia_desk.requesters add column if not exists failed_auth_attempts int null;
 alter table ia_desk.requesters add column if not exists last_failed_auth_attempt_at timestamp null;
 alter table ia_desk.requesters add column if not exists authentication_expires_at timestamp null;
