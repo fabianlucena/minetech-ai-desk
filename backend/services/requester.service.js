@@ -138,16 +138,16 @@ export default class RequesterService extends ModelService {
     return await this.updateById(requesterId, { authState }, options);
   }
 
-  async getFailedAuthBlockedTime() {
-    return await this.settingService.getValueTimePeriod('failedAuthBlockedTime', '1:00:00');
+  async getFailedAuthBlockedMilliseconds() {
+    return await this.settingService.getValueTimePeriodMilliseconds('failedAuthBlockedTime', '1:00:00');
   }
 
   async getMaxFailedAuthAttempts() {
     return await this.settingService.getValue('maxFailedAuthAttempts', 3);
   }
 
-  async getAuthenticationExpirationDays() {
-    return await this.settingService.getValueTimePeriod('authenticationExpirationDays', '60 00:00:00');
+  async getAuthenticationExpirationMilliseconds() {
+    return await this.settingService.getValueTimePeriodMilliseconds('authenticationExpirationDays', '60 00:00:00');
   }
 
   async replyMessageBySystem(message, replyTo, options) {
@@ -188,8 +188,8 @@ export default class RequesterService extends ModelService {
         this.updateById(requester.id, { lastFailedAuthAttemptAt: requester.lastFailedAuthAttemptAt }, options);
       }
 
-      const failedAuthBlockedTime = await this.getFailedAuthBlockedTime();
-      const lockedUntil = new Date(requester.lastFailedAuthAttemptAt.getTime() + failedAuthBlockedTime * 1000);
+      const failedAuthBlockedMilliseconds = await this.getFailedAuthBlockedMilliseconds();
+      const lockedUntil = new Date(requester.lastFailedAuthAttemptAt.getTime() + failedAuthBlockedMilliseconds);
       if (new Date() < lockedUntil) {
         await this.replyMessageBySystem(
           `Lo sentimos, no puedes enviar mensajes porque tu cuenta está temporalmente bloqueada hasta ${lockedUntil.toLocaleString()}.`,
@@ -235,8 +235,8 @@ export default class RequesterService extends ModelService {
         const failedAuthAttempts = (requester.failedAuthAttempts || 0) + 1;
         if (failedAuthAttempts >= maxFailedAuthAttempts) {
           logger.warn(`⚠️ El solicitante ha excedido el número máximo de intentos fallidos de código de cliente (requesterId=${requester.id}, phone=${requester.phone})`);
-          const failedAuthBlockedTime = await this.getFailedAuthBlockedTime();
-          const waitUntil = new Date(Date.now() + failedAuthBlockedTime * 1000).toLocaleString();
+          const failedAuthBlockedMilliseconds = await this.getFailedAuthBlockedMilliseconds();
+          const waitUntil = new Date(Date.now() + failedAuthBlockedMilliseconds).toLocaleString();
           await this.replyMessageBySystem(
             `Se ha excedido el número máximo de intentos fallidos. Su cuenta ha sido temporalmente bloqueada, debes esperar hasta ${waitUntil} antes de intentarlo nuevamente.`,
             message,
@@ -295,8 +295,8 @@ export default class RequesterService extends ModelService {
         const failedAuthAttempts = (requester.failedAuthAttempts || 0) + 1;
         if (failedAuthAttempts >= maxFailedAuthAttempts) {
           logger.warn(`⚠️ El solicitante ha excedido el número máximo de intentos fallidos de código de acceso (requesterId=${requester.id}, phone=${requester.phone})`);
-          const failedAuthBlockedTime = await this.getFailedAuthBlockedTime();
-          const waitUntil = new Date(Date.now() + failedAuthBlockedTime * 1000).toLocaleString();
+          const failedAuthBlockedMilliseconds = await this.getFailedAuthBlockedMilliseconds();
+          const waitUntil = new Date(Date.now() + failedAuthBlockedMilliseconds).toLocaleString();
           await this.replyMessageBySystem(
             `Se ha excedido el número máximo de intentos fallidos. Su cuenta ha sido temporalmente bloqueada, debes esperar hasta ${waitUntil} antes de intentarlo nuevamente.`,
             message,
@@ -321,7 +321,7 @@ export default class RequesterService extends ModelService {
         return false;
       }
 
-      const authenticationExpirationDays = await this.getAuthenticationExpirationDays();
+      const authenticationExpirationMilliseconds = await this.getAuthenticationExpirationMilliseconds();
       await this.replyMessageBySystem(
         'Código de acceso válido.\nAhora puedes enviar tus consultas.',
         message,
@@ -330,7 +330,7 @@ export default class RequesterService extends ModelService {
       await this.updateById(requester.id, {
         authState: 'authenticated',
         authenticatedAt: new Date(),
-        authenticatedExpiresAt: new Date(Date.now() + authenticationExpirationDays * 24 * 60 * 60 * 1000),
+        authenticatedExpiresAt: new Date(Date.now() + authenticationExpirationMilliseconds),
         failedAuthAttempts: 0,
         lastFailedAuthAttemptAt: null,
       }, options);

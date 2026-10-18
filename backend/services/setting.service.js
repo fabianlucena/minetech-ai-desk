@@ -4,7 +4,7 @@ import { timePeriod2Milliseconds } from '../utils/time.js';
 
 export default class SettingService extends ModelService {
   #cache = {};
-  #timePeriodCache = {};
+  #timePeriodMillisecondsCache = {};
 
   constructor() {
     super({ model: getDependency('settingModel') });
@@ -65,13 +65,13 @@ export default class SettingService extends ModelService {
 
   async update(data, options = {}) {
     this.#cache = {};
-    this.#timePeriodCache = {};
+    this.#timePeriodMillisecondsCache = {};
     return await super.update(data, options);
   }
 
   async delete(options = {}) {
     this.#cache = {};
-    this.#timePeriodCache = {};
+    this.#timePeriodMillisecondsCache = {};
     return await super.delete(options);
   }
 
@@ -90,19 +90,19 @@ export default class SettingService extends ModelService {
     return value;
   }
 
-  async getValueTimePeriod(key, defaultValue, options = {}) {
+  async getValueTimePeriodMilliseconds(key, defaultValue, options = {}) {
     if (!key)
       throw new Error('La clave es obligatoria');
 
-    if (key in this.#timePeriodCache)
-      return this.#timePeriodCache[key];
+    if (key in this.#timePeriodMillisecondsCache)
+      return this.#timePeriodMillisecondsCache[key];
 
     const strValue = await this.getValue(key, defaultValue, options);
     let value = timePeriod2Milliseconds(strValue.trim());
     if (!value)
       value = timePeriod2Milliseconds(defaultValue);
 
-    this.#timePeriodCache[key] = value;
+    this.#timePeriodMillisecondsCache[key] = value;
 
     return value;
   }
