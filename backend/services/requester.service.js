@@ -218,6 +218,16 @@ export default class RequesterService extends ModelService {
 
     if (requester.authState === 'waiting_client_code') {
       const clientCode = message?.text?.trim();
+      if (!clientCode) {
+        logger.warn(`⚠️ Se recibió un código de cliente inválido (requesterId=${requester.id}, phone=${requester.phone}, code=${clientCode})`);
+        await this.replyMessageBySystem(
+          'Por favor, ingrese su código de cliente en un mensaje de texto.',
+          message,
+          options
+        );
+        return false;
+      }
+
       const client = await this.clientService.getByCode(clientCode, options);
       if (!client) {
         logger.warn(`⚠️ Se recibió un código de cliente inválido (requesterId=${requester.id}, phone=${requester.phone}, code=${clientCode})`);
@@ -232,7 +242,10 @@ export default class RequesterService extends ModelService {
             message,
             options
           );
-          await this.updateAuthStateById(requester.id, 'locked', options);
+          await this.updateById(requester.id, {
+            authState: 'locked',
+            lastFailedAuthAttemptAt: new Date(),
+          }, options);
           return false;
         }
 
@@ -265,9 +278,19 @@ export default class RequesterService extends ModelService {
 
     if (requester.authState === 'waiting_access_code') {
       const accessCode = message.text?.trim();
+      if (!accessCode) {
+        logger.warn(`⚠️ Se recibió un código de acceso inválido (requesterId=${requester.id}, phone=${requester.phone}`);
+        await this.replyMessageBySystem(
+          'Por favor, ingrese su código de acceso en un mensaje de texto.',
+          message,
+          options
+        );
+        return false;
+      }
+
       const isValidAccessCode = await this.clientService.validateAccessCode(requester.clientId, accessCode);
       if (!isValidAccessCode) {
-        logger.warn(`⚠️ Se recibió un código de acceso inválido (requesterId=${requester.id}, phone=${requester.phone}, code=${accessCode})`);
+        logger.warn(`⚠️ Se recibió un código de acceso inválido (requesterId=${requester.id}, phone=${requester.phone}`);
         const maxFailedAuthAttempts = await this.getMaxFailedAuthAttempts();
         const failedAuthAttempts = (requester.failedAuthAttempts || 0) + 1;
         if (failedAuthAttempts >= maxFailedAuthAttempts) {
@@ -279,7 +302,10 @@ export default class RequesterService extends ModelService {
             message,
             options
           );
-          await this.updateAuthStateById(requester.id, 'locked', options);
+          await this.updateAuthStateById(requester.id, {
+            authState: 'locked',
+            lastFailedAuthAttemptAt: new Date(),
+          }, options);
           return false;
         }
 
