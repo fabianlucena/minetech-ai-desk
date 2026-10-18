@@ -115,7 +115,7 @@ export default class ModelService {
     }
 
     const result = await this.model.create(data, options);
-    return result.get({ plain: true });
+    return await this.getById(result.id, options);
   }
 
   async bulkCreate(dataList, options) {

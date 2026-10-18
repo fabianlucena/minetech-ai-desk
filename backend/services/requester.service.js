@@ -1,5 +1,6 @@
 import { getDependency } from '../dependency.js';
 import ModelService from './model.service.js';
+import { clientStatusName } from '../categories/client_status.js';
 
 const logger = getDependency('logger');
 
@@ -9,14 +10,14 @@ export default class RequesterService extends ModelService {
     this.whatsappController = getDependency('whatsappController');
   }
 
-  _conversationService = null;
+  #conversationService = null;
   get conversationService() {
-    return this._conversationService ??= getDependency('conversationService');
+    return this.#conversationService ??= getDependency('conversationService');
   }
   
-  _clientService = null;
+  #clientService = null;
   get clientService() {
-    return this._clientService ??= getDependency('clientService');
+    return this.#clientService ??= getDependency('clientService');
   }
 
   getModelOptions(options) {
@@ -178,6 +179,19 @@ export default class RequesterService extends ModelService {
         return false;
       }
 
+      const client = message.conversation?.client;
+      if (!client || !client.isActive || client.status !== 'active') {
+        logger.warn(`⚠️ Se recibió un mensaje de un solicitante cuyo cliente no está habilitado (requesterId=${requester.id}, phone=${requester.phone}, clientId=${client?.id})`);
+        await this.replyMessageBySystem(
+          'El cliente no está habilitado para recibir soporte.',
+          message,
+          options
+        );
+        await this.conversationService.closeById(message.conversationId, options);
+        await this.updateAuthStateById(requester.id, 'initiating', options);
+        return false;
+      }
+
       return true;
     }
     
@@ -229,7 +243,7 @@ export default class RequesterService extends ModelService {
       }
 
       const client = await this.clientService.getByCode(clientCode, options);
-      if (!client) {
+      if (!client || !client.isActive || client.status !== 'active') {
         logger.warn(`⚠️ Se recibió un código de cliente inválido (requesterId=${requester.id}, phone=${requester.phone}, code=${clientCode})`);
         const maxFailedAuthAttempts = await this.getMaxFailedAuthAttempts();
         const failedAuthAttempts = (requester.failedAuthAttempts || 0) + 1;
@@ -249,8 +263,19 @@ export default class RequesterService extends ModelService {
           return false;
         }
 
+        let messageText;
+        if (!client) {
+          messageText = `El código de cliente ingresado no es válido. Por favor, inténtalo de nuevo, quedan ${maxFailedAuthAttempts - failedAuthAttempts} intentos.`;
+        } else if (!client.isActive) {
+          messageText = `El cliente asociado al código ingresado no está habilitado para recibir soporte. Por favor, inténtalo de nuevo, quedan ${maxFailedAuthAttempts - failedAuthAttempts} intentos.`;
+        } else if (client.status !== 'active') {
+          messageText = `El cliente asociado al código ingresado se encuentra en estado "${clientStatusName(client.status)}" y no puede recibir soporte. Por favor, inténtalo de nuevo, quedan ${maxFailedAuthAttempts - failedAuthAttempts} intentos.`;
+        } else {
+          messageText = `El código de cliente ingresado no es válido. Por favor, inténtalo de nuevo, quedan ${maxFailedAuthAttempts - failedAuthAttempts} intentos.`;
+        }
+
         await this.replyMessageBySystem(
-          `El código de cliente ingresado no es válido. Por favor, inténtalo de nuevo, quedan ${maxFailedAuthAttempts - failedAuthAttempts} intentos.`,
+          messageText,
           message,
           options
         );
@@ -271,6 +296,10 @@ export default class RequesterService extends ModelService {
         clientId: client.id,
         failedAuthAttempts: 0,
         lastFailedAuthAttemptAt: null,
+      }, options);
+
+      await this.conversationService.updateById(message.conversation.id, {
+        clientId: client.id,
       }, options);
 
       return false;

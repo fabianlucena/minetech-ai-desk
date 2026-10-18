@@ -6,12 +6,6 @@ export default (sequelize) => {
     id: { type: DataTypes.BIGINT, autoIncrement: true, primaryKey: true },
     uuid: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4 },
 
-    createdAt: { field: 'created_at', type: DataTypes.DATE, defaultValue: DataTypes.NOW, allowNull: false },
-    updatedAt: { field: 'updated_at', type: DataTypes.DATE, allowNull: true },
-    updatedById: { field: 'updated_by_id', type: DataTypes.BIGINT, allowNull: true },
-    deletedAt: { field: 'deleted_at', type: DataTypes.DATE, allowNull: true },
-    deletedById: { field: 'deleted_by_id', type: DataTypes.BIGINT, allowNull: true },
-
     conversationId: { field: 'conversation_id', type: DataTypes.BIGINT, allowNull: false },
     text: { field: 'text', type: DataTypes.TEXT, allowNull: true },
     media: { field: 'media', type: DataTypes.BLOB('long'), allowNull: true },
@@ -30,6 +24,12 @@ export default (sequelize) => {
     failureReason: { field: 'failure_reason', type: DataTypes.TEXT, allowNull: true },
 
     replyToId: { field: 'reply_to_id', type: DataTypes.BIGINT, allowNull: true },
+    
+    createdAt: { field: 'created_at', type: DataTypes.DATE, defaultValue: DataTypes.NOW, allowNull: false },
+    updatedAt: { field: 'updated_at', type: DataTypes.DATE, allowNull: true },
+    updatedById: { field: 'updated_by_id', type: DataTypes.BIGINT, allowNull: true },
+    deletedAt: { field: 'deleted_at', type: DataTypes.DATE, allowNull: true },
+    deletedById: { field: 'deleted_by_id', type: DataTypes.BIGINT, allowNull: true },
   }, {
     tableName: 'conversation_messages',
     schema: 'ia_desk',
