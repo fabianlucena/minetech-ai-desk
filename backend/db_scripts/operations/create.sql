@@ -590,7 +590,7 @@ create table if not exists ia_desk.requesters(
     auth_state varchar(64) null,
     failed_auth_attempts ont null,
     last_failed_auth_attempt_at timestamp null,
-    authentication_expires_at 
+    authentication_expires_at timestamp null,
 
     created_at timestamp not null default now(),
     created_by_id bigint not null,
