@@ -25,8 +25,14 @@ export default class ConversationService extends ModelService {
     return this.#requesterService ??= getDependency('requesterService');
   }
 
+  #technicianService;
   get technicianService() {
-    return this._technicianService ??= getDependency('technicianService');
+    return this.#technicianService ??= getDependency('technicianService');
+  }
+
+  #ticketService;
+  get ticketService() {
+    return this.#ticketService ??= getDependency('ticketService');
   }
 
   getModelOptions(options) {

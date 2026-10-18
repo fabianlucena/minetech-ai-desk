@@ -7,19 +7,19 @@ export default class WhatsappService {
   constructor() {
   }
 
-  _requesterService = null;
+  #requesterService = null;
   get requesterService() {
-    return this._requesterService ??= getDependency('requesterService');
+    return this.#requesterService ??= getDependency('requesterService');
   }
 
-  _conversationService = null;
+  #conversationService = null;
   get conversationService() {
-    return this._conversationService ??= getDependency('conversationService');
+    return this.#conversationService ??= getDependency('conversationService');
   }
 
-  _settingService = null;
+  #settingService = null;
   get settingService() {
-    return this._settingService ??= getDependency('settingService');
+    return this.#settingService ??= getDependency('settingService');
   }
 
   async startWebhookServer({ mode, token, challenge }) {
