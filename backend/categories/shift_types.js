@@ -8,7 +8,7 @@ export const shiftTypes = [
     value: 'backup',
     name: 'Reserva',
     detail: 'Técnico de apoyo que cubre al principal si no está disponible'
-  }
+  },
 ];
 
 export const shiftTypeValues = shiftTypes.map(s => s.value);

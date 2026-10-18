@@ -8,7 +8,6 @@ export default class SessionService extends ModelService {
       model: getDependency('sessionModel'),
       softDelete: false,
     });
-    this.userService = getDependency('userService');
     this.deviceService = getDependency('deviceService');
     this.roleXUserService = getDependency('roleXUserService');
     this.permissionXRoleService = getDependency('permissionXRoleService');

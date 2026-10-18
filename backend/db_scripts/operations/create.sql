@@ -495,6 +495,13 @@ create table if not exists ia_desk.settings(
       references auth.users(id) on delete restrict
 );
 
+insert into ia_desk.settings (created_by_id,updated_by_id,"key","description",value)
+	values 
+    (1,1,'failedAuthBlockedTime','Tiempo de bloqueo (en segundos) para un solicitante que falló en la autentificación','3600'::jsonb),
+    (1,1,'maxFailedAuthAttempts','Número máximo de intentos de autentificación permitidos al solicitante, antes de bloquearlo','3'::jsonb),
+    (1,1,'authenticationExpirationDays','Tiempo en días en que un solicitante puede realizar consultas antes de solicitar su authentificación nuevamente','60'::jsonb)
+on conflict ("key") do nothing;
+
 -- Table technicians
 create table if not exists ia_desk.technicians(
     id bigint primary key,
@@ -697,6 +704,7 @@ create table if not exists ia_desk.conversation_messages(
     read_at timestamp null,
     failed_at timestamp null,
     failure_reason text null,
+    reply_to_id bigint NULL;
 
     updated_at timestamp null,
     updated_by_id bigint null,
@@ -713,6 +721,9 @@ create table if not exists ia_desk.conversation_messages(
 
     constraint uk_ia_desk_conversation_messages_deleted_by_id foreign key (deleted_by_id)
       references auth.users(id) on delete restrict
+
+    constraint uk_ia_desk_conversation_messages_reply_to_id foreign key (reply_to_id)
+      references  ia_desk.conversation_messages(id);
 );
 
 -- Table tickets

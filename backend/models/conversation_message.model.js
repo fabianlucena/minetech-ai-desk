@@ -28,6 +28,8 @@ export default (sequelize) => {
     readAt: { field: 'read_at', type: DataTypes.DATE, allowNull: true },
     failedAt: { field: 'failed_at', type: DataTypes.DATE, allowNull: true },
     failureReason: { field: 'failure_reason', type: DataTypes.TEXT, allowNull: true },
+
+    replyToId: { field: 'reply_to_id', type: DataTypes.BIGINT, allowNull: true },
   }, {
     tableName: 'conversation_messages',
     schema: 'ia_desk',
@@ -36,6 +38,11 @@ export default (sequelize) => {
 
   ConversationMessage.associate = (models) => {
     ConversationMessage.belongsTo(models.User, {
+      foreignKey: 'updatedById',
+      as: 'updatedBy',
+    });
+
+    ConversationMessage.belongsTo(models.User, {
       foreignKey: 'deletedById',
       as: 'deletedBy',
     });
@@ -43,6 +50,11 @@ export default (sequelize) => {
     ConversationMessage.belongsTo(models.Conversation, {
       foreignKey: 'conversationId',
       as: 'conversation',
+    });
+
+    ConversationMessage.belongsTo(models.ConversationMessage, {
+      foreignKey: 'replyToId',
+      as: 'replyTo',
     });
   };
 

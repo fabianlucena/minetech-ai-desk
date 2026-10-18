@@ -4,7 +4,6 @@ import { Error403 } from '../errors/error403.js';
 
 export default class LoginService {
   constructor() {
-    this.userService = getDependency('userService');
     this.userPasswordService = getDependency('userPasswordService');
     this.passwordService = getDependency('passwordService');
     this.deviceService = getDependency('deviceService');

@@ -58,4 +58,12 @@ export default class SettingService extends ModelService {
 
     return await super.validateForUpdate(data, options);
   }
+
+  async getValue(key, defaultValue, options = {}) {
+    const setting = await this.getByKey(key, options);
+    if (!setting)
+      return defaultValue;
+
+    return setting.value;
+  }
 }

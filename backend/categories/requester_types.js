@@ -13,7 +13,7 @@ export const requesterTypes = [
     value: 'system',
     name: 'Sistema',
     detail: 'Mensajes automáticos generados por MineTech (RAG, notificaciones, auditoría)'
-  }
+  },
 ];
 
 export const requesterTypeValues = requesterTypes.map(s => s.value);

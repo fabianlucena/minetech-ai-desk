@@ -23,7 +23,7 @@ export const clientStatus = [
     value: 'blocked',
     name: 'Bloqueado',
     detail: 'Bloqueo manual por seguridad, fraude o abuso'
-  }
+  },
 ];
 
 export const clientStatusValues = clientStatus.map(s => s.value);

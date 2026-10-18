@@ -1,10 +1,22 @@
 import { getDependency } from '../dependency.js';
 import ModelService from './model.service.js';
 
+const logger = getDependency('logger');
+
 export default class RequesterService extends ModelService {
   constructor() {
     super({ model: getDependency('requesterModel') });
     this.whatsappController = getDependency('whatsappController');
+  }
+
+  _conversationService = null;
+  get conversationService() {
+    return this._conversationService ??= getDependency('conversationService');
+  }
+  
+  _clientService = null;
+  get clientService() {
+    return this._clientService ??= getDependency('clientService');
   }
 
   getModelOptions(options) {
@@ -27,7 +39,8 @@ export default class RequesterService extends ModelService {
   }
 
   get validPropertiesForUpdate() {
-    return ['clientId', 'displayName', 'phone', 'email', 'type', 'bannedAt', 'bannedById', 'banReason'];
+    return [
+      'clientId', 'displayName', 'phone', 'email', 'type', 'bannedAt', 'bannedById', 'banReason', 'authState', 'failedAuthAttempts', 'lastFailedAuthAttemptAt', 'authenticatedAt', 'authenticatedExpiresAt'];
   }
 
   async getByDisplayName(displayName) {
@@ -109,11 +122,201 @@ export default class RequesterService extends ModelService {
     }, options);
   }
 
+  async sendMessage(requester, message) {
+    return await this.whatsappController.enqueueWhatsAppMessage(message);
+  }
+
   async sendMessageById(requesterId, message, options) {
     const requester = await this.getById(requesterId, options);
     if (!requester)
       throw new Error('Solicitante no encontrado');
 
-    this.whatsappController.enqueueWhatsAppMessage(message);
+    await this.sendMessage(requester, message, options);
+  }
+
+  async updateAuthStateById(requesterId, authState, options) {
+    return await this.updateById(requesterId, { authState }, options);
+  }
+
+  async getFailedAuthBlockedTime() {
+    return await this.settingService.getValue('failedAuthBlockedTime', 3600);
+  }
+
+  async getMaxFailedAuthAttempts() {
+    return await this.settingService.getValue('maxFailedAuthAttempts', 3);
+  }
+
+  async getAuthenticationExpirationDays() {
+    return await this.settingService.getValue('authenticationExpirationDays', 60);
+  }
+
+  async replyMessageBySystem(message, replyTo, options) {
+    await this.conversationService.replyMessageBySystem(message, replyTo, options);
+  }
+
+  async checkState(message, options) {
+    const requester = message.sender;
+    if (requester.bannedAt) {
+      logger.warn(`⚠️ Se recibió un mensaje de un solicitante bloqueado (requesterId=${requester.id}, phone=${requester.phone})`);
+      await this.replyMessageBySystem(
+        `Lo sentimos, no puedes enviar mensajes porque tu cuenta está bloqueada. Motivo: ${requester.banReason}`,
+        message,
+        options
+      );
+      return false;
+    }
+
+    if (requester.authState === 'authenticated') {
+      if (!requester.authenticatedExpiresAt || new Date() > requester.authenticatedExpiresAt) {
+        logger.warn(`ℹ️ La autenticación del solicitante ha expirado (requesterId=${requester.id}, phone=${requester.phone})`);
+        await this.replyMessageBySystem(
+          `Su sesión ha expirado. Por favor, ingrese su código de cliente para continuar.`,
+          message,
+          options
+        );
+        await this.updateAuthStateById(requester.id, 'waiting_client_code', options);
+        return false;
+      }
+
+      return true;
+    }
+    
+    if (requester.authState === 'locked') {
+      logger.warn(`⚠️ Se recibió un mensaje de un solicitante bloqueado (requesterId=${requester.id}, phone=${requester.phone})`);
+      if (!requester.lastFailedAuthAttemptAt) {
+        requester.lastFailedAuthAttemptAt = new Date();
+        this.updateById(requester.id, { lastFailedAuthAttemptAt: requester.lastFailedAuthAttemptAt }, options);
+      }
+
+      const failedAuthBlockedTime = await this.getFailedAuthBlockedTime();
+      const lockedUntil = new Date(requester.lastFailedAuthAttemptAt.getTime() + failedAuthBlockedTime * 1000);
+      if (new Date() < lockedUntil) {
+        await this.replyMessageBySystem(
+          `Lo sentimos, no puedes enviar mensajes porque tu cuenta está temporalmente bloqueada hasta ${lockedUntil.toLocaleString()}.`,
+          message,
+          options
+        );
+        return false;
+      }
+
+      await this.updateById(requester.id, {
+        authState: 'waiting_client_code',
+        failedAuthAttempts: 0,
+        lastFailedAuthAttemptAt: null,
+      }, options);
+    }
+
+    if (!requester.authState || requester.authState === 'initiating') {
+      await this.replyMessageBySystem(
+        'Bienvenido a MineTech.\nPor favor, ingrese su código de cliente para continuar.',
+        message,
+        options
+      );
+      await this.updateAuthStateById(requester.id, 'waiting_client_code', options);
+      return false;
+    }
+
+    if (requester.authState === 'waiting_client_code') {
+      const clientCode = message?.text?.trim();
+      const client = await this.clientService.getByCode(clientCode, options);
+      if (!client) {
+        logger.warn(`⚠️ Se recibió un código de cliente inválido (requesterId=${requester.id}, phone=${requester.phone}, code=${clientCode})`);
+        const maxFailedAuthAttempts = await this.getMaxFailedAuthAttempts();
+        const failedAuthAttempts = (requester.failedAuthAttempts || 0) + 1;
+        if (failedAuthAttempts >= maxFailedAuthAttempts) {
+          logger.warn(`⚠️ El solicitante ha excedido el número máximo de intentos fallidos de código de cliente (requesterId=${requester.id}, phone=${requester.phone})`);
+          const failedAuthBlockedTime = await this.getFailedAuthBlockedTime();
+          const waitUntil = new Date(Date.now() + failedAuthBlockedTime * 1000).toLocaleString();
+          await this.replyMessageBySystem(
+            `Se ha excedido el número máximo de intentos fallidos. Su cuenta ha sido temporalmente bloqueada, debes esperar hasta ${waitUntil} antes de intentarlo nuevamente.`,
+            message,
+            options
+          );
+          await this.updateAuthStateById(requester.id, 'locked', options);
+          return false;
+        }
+
+        await this.replyMessageBySystem(
+          `El código de cliente ingresado no es válido. Por favor, inténtalo de nuevo, quedan ${maxFailedAuthAttempts - failedAuthAttempts} intentos.`,
+          message,
+          options
+        );
+        await this.updateById(requester.id, {
+          failedAuthAttempts,
+          lastFailedAuthAttemptAt: new Date(),
+        }, options);
+        return false;
+      }
+
+      await this.replyMessageBySystem(
+        'Código de cliente recibido.\nAhora ingrese su código de acceso.',
+        message,
+        options
+      );
+      await this.updateById(requester.id, {
+        authState: 'waiting_access_code',
+        clientId: client.id,
+        failedAuthAttempts: 0,
+        lastFailedAuthAttemptAt: null,
+      }, options);
+
+      return false;
+    }
+
+    if (requester.authState === 'waiting_access_code') {
+      const accessCode = message.text?.trim();
+      const isValidAccessCode = await this.clientService.validateAccessCode(requester.clientId, accessCode);
+      if (!isValidAccessCode) {
+        logger.warn(`⚠️ Se recibió un código de acceso inválido (requesterId=${requester.id}, phone=${requester.phone}, code=${accessCode})`);
+        const maxFailedAuthAttempts = await this.getMaxFailedAuthAttempts();
+        const failedAuthAttempts = (requester.failedAuthAttempts || 0) + 1;
+        if (failedAuthAttempts >= maxFailedAuthAttempts) {
+          logger.warn(`⚠️ El solicitante ha excedido el número máximo de intentos fallidos de código de acceso (requesterId=${requester.id}, phone=${requester.phone})`);
+          const failedAuthBlockedTime = await this.getFailedAuthBlockedTime();
+          const waitUntil = new Date(Date.now() + failedAuthBlockedTime * 1000).toLocaleString();
+          await this.replyMessageBySystem(
+            `Se ha excedido el número máximo de intentos fallidos. Su cuenta ha sido temporalmente bloqueada, debes esperar hasta ${waitUntil} antes de intentarlo nuevamente.`,
+            message,
+            options
+          );
+          await this.updateAuthStateById(requester.id, 'locked', options);
+          return false;
+        }
+
+        await this.replyMessageBySystem(
+          `El código de acceso ingresado no es válido. Por favor, inténtalo de nuevo, quedan ${maxFailedAuthAttempts - failedAuthAttempts} intentos.`,
+          message,
+          options
+        );
+        await this.updateById(requester.id, {
+          failedAuthAttempts,
+          lastFailedAuthAttemptAt: new Date(),
+        }, options);
+        return false;
+      }
+
+      const authenticationExpirationDays = await this.getAuthenticationExpirationDays();
+      await this.replyMessageBySystem(
+        'Código de acceso válido.\nAhora puedes enviar tus consultas.',
+        message,
+        options
+      );
+      await this.updateById(requester.id, {
+        authState: 'authenticated',
+        authenticatedAt: new Date(),
+        authenticatedExpiresAt: new Date(Date.now() + authenticationExpirationDays * 24 * 60 * 60 * 1000),
+        failedAuthAttempts: 0,
+        lastFailedAuthAttemptAt: null,
+      }, options);
+      return false;
+    }
+
+    await this.replyMessageBySystem(
+      'No entiendo el mensaje.\nPor favor, ingrese su código de cliente para continuar.',
+      message,
+      options
+    );
+    await this.updateAuthStateById(requester.id, 'waiting_client_code', options);     
+    return false;
   }
 }

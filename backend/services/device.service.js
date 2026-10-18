@@ -8,7 +8,6 @@ export default class DeviceService extends ModelService {
       model: getDependency('deviceModel'),
       softDelete: false,
     });
-    this.userService = getDependency('userService');
     this.config = getDependency('config');
   }
 
