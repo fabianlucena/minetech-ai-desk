@@ -2,6 +2,21 @@ export function parseTimePeriod(timePeriod) {
   if (typeof timePeriod === 'object')
     return timePeriod;
 
+  if (typeof timePeriod === 'number') {
+    return {
+      years: 0,
+      months: 0,
+      days: 0,
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+      milliseconds: timePeriod,
+    };
+  }
+
+  if (typeof timePeriod !== 'string')
+    return null;
+
   const match = /(?:(?<years>\d+)\s*\/\s*)?(?:(?<months>\d+)\s*\/\s*)?(?:(?<days>\d+)\s+)?(?<hours>\d*)?(?:\s*:\s*(?<minutes>\d*))?(?:\s*:\s*(?<seconds>\d*)(?:\s*.\s*(?<milliseconds>\d*))?)?/.exec(timePeriod.trim());
   if (!match?.groups)
     return null;
@@ -50,15 +65,6 @@ export function parseTimePeriod(timePeriod) {
     period.seconds = parseInt(timeParts[2], 10) || 0;
   }
 
-  /*const totalDays = days + (months * 30) + (years * 365);
-  const totalHours = (totalDays * 24) + hours;
-  const totalMinutes = (totalHours * 60) + minutes;
-  const totalSeconds = (totalMinutes * 60) + seconds;
-
-  const timeMs = totalSeconds * 1000 + milliseconds;
-  
-  return timeMs;*/
-
   return period;
 }
 
@@ -82,6 +88,6 @@ export function timePeriod2string(period) {
 
 export function addTimePeriod(date, timePeriod) {
   date = new Date(date);
-  date.setTime(date.getTime() + parseTimePeriod(timePeriod));
+  date.setTime(date.getTime() + timePeriod2Milliseconds(timePeriod));
   return date;
 }
