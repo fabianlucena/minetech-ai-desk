@@ -64,15 +64,17 @@ export default class SettingService extends ModelService {
   }
 
   async update(data, options = {}) {
+    const result = await super.update(data, options);
     this.#cache = {};
     this.#timePeriodMillisecondsCache = {};
-    return await super.update(data, options);
+    return result;
   }
 
   async delete(options = {}) {
+    const result = await super.delete(options);
     this.#cache = {};
     this.#timePeriodMillisecondsCache = {};
-    return await super.delete(options);
+    return result;
   }
 
   async getValue(key, defaultValue, options = {}) {

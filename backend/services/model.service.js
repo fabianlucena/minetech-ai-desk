@@ -282,9 +282,9 @@ export default class ModelService {
     return await this.updateById(id, data, globalOptions);
   }
 
-  async deleteByWhere(where, options) {
-    if (!where || typeof where !== 'object')
-      throw new Error('La cláusula where del objeto a eliminar es obligatoria y debe ser un objeto');
+  async delete(options) {
+    if (!options?.where || typeof options.where !== 'object')
+      throw new Error('La cláusula options.where del objeto a eliminar es obligatoria y debe ser un objeto');
 
     options = this.getModelOptions(options);
 
@@ -293,10 +293,14 @@ export default class ModelService {
         deletedAt: new Date(),
         deletedById: await this.getCurrentUserId(options),
       };
-      return await this.model.update(data, { ...options, where: { ...where, ...options?.where } });
+      return await this.model.update(data, options);
     } else {
-      return await this.model.destroy({ ...options, where: { ...where, ...options?.where } });
+      return await this.model.destroy(options);
     }
+  }
+
+  async deleteByWhere(where, options) {
+    return await this.delete({ ...options, where: { ...options?.where, ...where } });
   }
 
   async deleteById(id, options) {
