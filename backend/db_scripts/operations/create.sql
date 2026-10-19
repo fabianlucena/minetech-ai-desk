@@ -547,6 +547,7 @@ create table if not exists ia_desk.clients(
     access_code varchar(64) not null,
     is_active boolean not null,
     status varchar(64) not null,
+    next_ticket_number int default 1 not null,
 
     created_at timestamp not null default now(),
     created_by_id bigint not null,
