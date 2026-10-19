@@ -1,7 +1,7 @@
 import useGlobal from './contexts/useGlobal.jsx';
 import { AboutIcon, ClientIcon, ConversationIcon, DashboardIcon, HomeIcon, 
   LoginIcon, LogoutIcon, RequesterIcon, SettingsIcon, ShiftIcon, TechnicianIcon, 
-  UsersIcon
+  TicketIcon, UsersIcon
 } from './components/icons/index.jsx';
 import MainLayout from './layouts/MainLayout.jsx';
 import SimpleLayout from './layouts/SimpleLayout.jsx';
@@ -25,6 +25,7 @@ import ConversationMessagesPage from './pages/ConversationMessagesPage.jsx';
 import ShiftsPage from './pages/ShiftsPage.jsx';
 import SettingsPage from './pages/SettingsPage.jsx';
 import SettingPage from './pages/SettingPage.jsx';
+import TicketsPage from './pages/TicketsPage.jsx';
 
 export const allRoutes = [
   {
@@ -116,6 +117,14 @@ export const allRoutes = [
         path: '/clients/:uuid/edit',
         element: <ClientPage />,
         condition: ({ permissions }) => permissions.includes('clients.update'),
+      },
+      {
+        path: '/tickets',
+        label: 'Tickets',
+        icon: <TicketIcon />,
+        menuItemOrder: 3,
+        element: <TicketsPage />,
+        condition: ({ permissions }) => permissions.includes('tickets.list'),
       },
       {
         path: '/requesters',

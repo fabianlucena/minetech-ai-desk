@@ -11,6 +11,26 @@ export default class TicketService extends ModelService {
     return this.#clientService ??= getDependency('clientService');
   }
 
+  #clientModel;
+  get clientModel() {
+    return this.#clientModel ??= getDependency('clientModel');
+  }
+
+  #requesterModel;
+  get requesterModel() {
+    return this.#requesterModel ??= getDependency('requesterModel');
+  }
+
+  #technicianModel;
+  get technicianModel() {
+    return this.#technicianModel ??= getDependency('technicianModel');
+  }
+
+  #userModel;
+  get userModel() {
+    return this.#userModel ??= getDependency('userModel');
+  }
+
   get validPropertiesForCreation() {
     return ['code', 'conversationId', 'clientId', 'requesterId', 'technicianId', 'shiftId', 'status', 'parentTicketId', 'resolvedAt'];
   }
@@ -37,6 +57,51 @@ export default class TicketService extends ModelService {
       throw new Error('El estado del ticket es obligatorio');
 
     return await super.validateForCreation(data, options);
+  }
+
+  getModelOptions(options) {
+    options = super.getModelOptions(options);
+
+    if (options.includeClient) {
+      options.include = options.include || [];
+      options.include.push({
+        model: this.clientModel,
+        as: 'client'
+      });
+      delete options.includeClient;
+    }
+
+    if (options.includeRequester) {
+      options.include = options.include || [];
+      options.include.push({
+        model: this.requesterModel,
+        as: 'requester'
+      });
+      delete options.includeRequester;
+    }
+
+    if (options.includeTechnician || options.includeTechnicianName) {
+      let include;
+      if (options.includeTechnicianName) {
+        include = [{
+          model: this.userModel,
+          as: 'user',
+        }];
+        delete options.includeTechnicianName;
+      }
+
+      options.include = options.include || [];
+      options.include.push({
+        model: this.technicianModel,
+        as: 'technician',
+        include,
+      });
+
+      if (options.includeTechnician)
+        delete options.includeTechnician;
+    }
+    
+    return options;
   }
 
   async getByConversationId(conversationId, options) {

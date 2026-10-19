@@ -96,6 +96,7 @@ export default function TechniciansPage() {
   }
 
   useEffect(() => {
+    // oxlint-disable-next-line react/set-state-in-effect
     load();
   }, [load]);
 
