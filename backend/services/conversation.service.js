@@ -249,7 +249,7 @@ export default class ConversationService extends ModelService {
       logger.error('There is no on-duty technician to handle the incoming message');
       return;
     }
-    message.receiver = technician;
+    message.technician = technician;
 
     if (isMessage) {
       let ticket = await this.ticketService.getByConversationId(message.conversationId, options);
@@ -360,7 +360,7 @@ export default class ConversationService extends ModelService {
       return;
     }
 
-    message.receiver = technician;
+    const technician = message.technician;
     if (message.receiverId !== technician.id || message.receiverType !== 'user') {
       message.receiverId = technician.id;
       message.receiverType = 'user';

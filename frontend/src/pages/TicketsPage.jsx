@@ -15,7 +15,13 @@ export default function TicketsPage() {
       {
         field: 'code',
         headerName: 'Código',
-        flex: 1,
+        width: 120,
+      },
+      {
+        field: 'createdAt',
+        headerName: 'Fecha',
+        renderCell: ({ value }) => formatDate(value) || 'N/D',
+        width: 120,
       },
       {
         field: 'client',
@@ -87,7 +93,7 @@ export default function TicketsPage() {
   }, [load]);
 
   return <Grid
-    title="Técnicos"
+    title="Tickets"
     columns={columns}
     rows={data}
     onReload={() => load()}
