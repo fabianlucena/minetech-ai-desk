@@ -65,7 +65,7 @@ export default function HomePage() {
         <Button
           variant="contained"
           size="large"
-          href="/minetech-ai-desk.apk"
+          href="/minetech-ia-desk.apk"
           download
         >
           Descargar la app móvil
