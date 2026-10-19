@@ -244,13 +244,22 @@ export default class ConversationService extends ModelService {
     const isMessage = await this.requesterService.checkState(message, options);
     options.notify = isMessage;
 
+    const technician = await this.technicianService.getOnDuty();
+    if (!technician) {
+      logger.error('There is no on-duty technician to handle the incoming message');
+      return;
+    }
+    message.receiver = technician;
+
     if (isMessage) {
       let ticket = await this.ticketService.getByConversationId(message.conversationId, options);
       if (!ticket) {
         ticket = await this.ticketService.createFromConversation(
           message.conversation,
-          { technicianId: message.technicianId }
+          { technicianId: technician.id }
         );
+      } else if (ticket.technicianId !== technician.id) {
+        await this.ticketService.updateById(ticket.id, { technicianId: technician.id }, options);
       }
     }
 
@@ -348,12 +357,6 @@ export default class ConversationService extends ModelService {
 
     if (!conversation) {
       logger.error('Conversation not found');
-      return;
-    }
-
-    const technician = await this.technicianService.getOnDuty();
-    if (!technician) {
-      logger.error('There is no on-duty technician to handle the incoming message');
       return;
     }
 

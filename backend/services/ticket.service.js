@@ -80,7 +80,7 @@ export default class TicketService extends ModelService {
       clientId: conversation.clientId,
       requesterId: conversation.requesterId,
       technicianId: data.technicianId,
-      shiftId: data.technicianId,
+      shiftId: data.shiftId,
       status: 'open',
       parentTicketId: data.parentTicketId,
     }, options);
