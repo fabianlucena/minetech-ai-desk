@@ -241,7 +241,27 @@ export default class ConversationService extends ModelService {
 
     message.sender = requester;
 
-    options.notify = await this.requesterService.checkState(message, options);
+    const isMessage = await this.requesterService.checkState(message, options);
+    options.notify = isMessage;
+
+    const technician = await this.technicianService.getOnDuty();
+    if (!technician) {
+      logger.error('There is no on-duty technician to handle the incoming message');
+      return;
+    }
+    message.technician = technician;
+
+    if (isMessage) {
+      let ticket = await this.ticketService.getByConversationId(message.conversationId, options);
+      if (!ticket) {
+        ticket = await this.ticketService.createFromConversation(
+          message.conversation,
+          { technicianId: technician.id }
+        );
+      } else if (ticket.technicianId !== technician.id) {
+        await this.ticketService.updateById(ticket.id, { technicianId: technician.id }, options);
+      }
+    }
 
     // Ejecutar motor RAG
     /* const aiResponse = await ragEngine(text);
@@ -340,13 +360,7 @@ export default class ConversationService extends ModelService {
       return;
     }
 
-    const technician = await this.technicianService.getOnDuty();
-    if (!technician) {
-      logger.error('There is no on-duty technician to handle the incoming message');
-      return;
-    }
-
-    message.receiver = technician;
+    const technician = message.technician;
     if (message.receiverId !== technician.id || message.receiverType !== 'user') {
       message.receiverId = technician.id;
       message.receiverType = 'user';

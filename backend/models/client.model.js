@@ -16,6 +16,7 @@ export default (sequelize) => {
     accessCode: { field: 'access_code', type: DataTypes.STRING, allowNull: false, unique: true },
     isActive: { field: 'is_active', type: DataTypes.BOOLEAN, defaultValue: true },
     status: { field: 'status', type: DataTypes.ENUM(...clientStatusValues), allowNull: false },
+    nextTicketNumber: { field: 'next_ticket_number', type: DataTypes.INTEGER, defaultValue: 1, allowNull: false },
   }, {
     tableName: 'clients',
     schema: 'ia_desk',

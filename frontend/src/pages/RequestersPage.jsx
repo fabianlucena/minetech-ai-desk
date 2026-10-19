@@ -38,7 +38,7 @@ export default function RequestersPage() {
         field: 'client.name',
         headerName: 'Cliente',
         flex: 1,
-        renderCell: ({row}) => row.client?.name || 'N/A',
+        renderCell: ({row}) => row.client?.name || 'N/D',
       },
       {
         field: 'bannedAt',
@@ -73,6 +73,7 @@ export default function RequestersPage() {
   }, [includeDeleted, addError, getRequesters]);
 
   useEffect(() => {
+    // oxlint-disable-next-line react/set-state-in-effect
     load();
   }, [load]);
 

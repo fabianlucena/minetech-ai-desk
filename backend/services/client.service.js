@@ -35,7 +35,11 @@ export default class ClientService extends ModelService {
   }
 
   get validPropertiesForCreation() {
-    return ['name', 'code', 'accessCode', 'isActive', 'status'];
+    return ['name', 'code', 'accessCode', 'isActive', 'status', 'nextTicketNumber'];
+  }
+
+  get validPropertiesForUpdate() {
+    return ['name', 'code', 'accessCode', 'isActive', 'status', 'nextTicketNumber'];
   }
 
   async validateForCreation(data, options) {
@@ -67,10 +71,6 @@ export default class ClientService extends ModelService {
       return 'El código de acceso del cliente ya existe';
 
     return await super.validateForCreation(data, options);
-  }
-
-  get validPropertiesForUpdate() {
-    return ['name', 'code', 'accessCode', 'isActive', 'status'];
   }
 
   async validateForUpdate(data, options) {

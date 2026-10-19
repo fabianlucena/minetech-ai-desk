@@ -427,7 +427,8 @@ insert into auth.permissions (
     ('shifts.create'),('shifts.delete'),('shifts.update'),('shifts.list'),('shifts.read'),('shifts.restore'),
     ('settings.create'),('settings.delete'),('settings.update'),('settings.list'),('settings.read'),('settings.restore'),
     ('conversations.list'),('conversations.read'),('conversations.delete'),('conversations.restore'),('conversations.close'),('conversations.viewChat'),('conversations.chat'),
-    ('conversationMessages.list'),('conversationMessages.read')
+    ('conversationMessages.list'),('conversationMessages.read'),
+    ('tickets.create'),('tickets.delete'),('tickets.update'),('tickets.list'),('tickets.read'),('tickets.restore')
   ) as p(name)
   join auth.users system on system.username = 'system'
 on conflict (name) do nothing;
@@ -547,6 +548,7 @@ create table if not exists ia_desk.clients(
     access_code varchar(64) not null,
     is_active boolean not null,
     status varchar(64) not null,
+    next_ticket_number int default 1 not null,
 
     created_at timestamp not null default now(),
     created_by_id bigint not null,
