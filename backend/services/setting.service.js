@@ -63,17 +63,29 @@ export default class SettingService extends ModelService {
     return await super.validateForUpdate(data, options);
   }
 
-  async update(data, options = {}) {
-    const result = await super.update(data, options);
+  async clearCache() {
     this.#cache = {};
     this.#timePeriodMillisecondsCache = {};
+  }
+
+  async create(data, options = {}) {
+    const result = await super.create(data, options);
+    if (options?.cache !== false)
+      this.clearCache();
+    return result;
+  }
+
+  async update(data, options = {}) {
+    const result = await super.update(data, options);
+    if (options?.cache !== false)
+      this.clearCache();
     return result;
   }
 
   async delete(options = {}) {
     const result = await super.delete(options);
-    this.#cache = {};
-    this.#timePeriodMillisecondsCache = {};
+    if (options?.cache !== false)
+      this.clearCache();
     return result;
   }
 
@@ -87,7 +99,8 @@ export default class SettingService extends ModelService {
     const setting = await this.getByKey(key, options);
     const value = setting ? setting.value : defaultValue;
 
-    this.#cache[key] = value;
+    if (options?.cache !== false)
+      this.#cache[key] = value;
 
     return value;
   }
@@ -107,7 +120,8 @@ export default class SettingService extends ModelService {
     if (!value)
       value = timePeriod2Milliseconds(defaultValue);
 
-    this.#timePeriodMillisecondsCache[key] = value;
+    if (options?.cache !== false)
+      this.#timePeriodMillisecondsCache[key] = value;
 
     return value;
   }
