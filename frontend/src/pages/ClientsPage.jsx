@@ -41,12 +41,18 @@ export default function ClientsPage() {
         field: 'isActive',
         headerName: 'Activo',
         renderCell: ({value}) => value ? '✔️' : '❌',
+        width: 60,
       },
       {
         field: 'status',
         headerName: 'Estado',
         renderCell: ({value}) => getStatusNameByValue(value),
-        flex: 1,
+        width: 70,
+      },
+      {
+        field: 'nextTicketNumber',
+        headerName: 'Ticket',
+        width: 60,
       },
       {
         field: 'deletedAt',
@@ -107,7 +113,10 @@ export default function ClientsPage() {
     }
   }
 
+  // oxlint-disable-next-line react/set-state-in-effect
   useEffect(() => { loadStatus(); }, [loadStatus]);
+
+  // oxlint-disable-next-line react/set-state-in-effect
   useEffect(() => { load(); }, [load]);
 
   return <Grid

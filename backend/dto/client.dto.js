@@ -13,6 +13,7 @@ export class ClientDTO {
     this.accessCode = client.accessCode;
     this.isActive = client.isActive;
     this.status = client.status;
+    this.nextTicketNumber = client.nextTicketNumber;
     this.createdAt = client.createdAt;
     this.updatedAt = client.updatedAt;
     this.deletedAt = client.deletedAt;
