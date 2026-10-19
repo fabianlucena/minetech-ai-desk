@@ -48,7 +48,7 @@ try {
 
   logger.info('🛢️  BDD y modelos configurados OK ✔️');
 } catch (error) {
-  logger.error('❌ Error de conexión:', error);
+  logger.error('❌ Error de conexión a la BDD:', error);
   process.exit(1);
 }
 
