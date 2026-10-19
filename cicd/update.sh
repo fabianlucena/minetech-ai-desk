@@ -2,11 +2,15 @@ sudo su - deploy
 cd /opt/minetech-ai-desk
 git fetch --all --prune
 git checkout dev
+git restore .
 git pull origin dev
 
 cd /opt/minetech-ai-desk/frontend
 npm i
 npm run build
+
+cd /opt/minetech-ai-desk/backend/db_scripts/to_deploy
+psql -h localhost -U minetech_ai_desk -d minetech_ai_desk -f {script.sql}
 
 cd /opt/minetech-ai-desk/backend
 npm i
