@@ -62,6 +62,14 @@ export default function HomePage() {
         {!user && <Button variant="contained" size="large" onClick={() => navigate("/login")}>
           Ingresar al sistema
         </Button>}
+        <Button
+          variant="contained"
+          size="large"
+          href="/minetech-ai-desk.apk"
+          download
+        >
+          Descargar la app móvil
+        </Button>
       </Box>
 
       {/* Créditos */}
