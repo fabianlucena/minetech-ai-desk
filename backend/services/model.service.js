@@ -23,14 +23,14 @@ export default class ModelService {
     this.isActivable = isActivable;
   }
 
-  _settingService = null;
+  #settingService = null;
   get settingService() {
-    return this._settingService ??= getDependency('settingService');
+    return this.#settingService ??= getDependency('settingService');
   }
 
-  _userService = null;
+  #userService = null;
   get userService() {
-    return this._userService ??= getDependency('userService');
+    return this.#userService ??= getDependency('userService');
   }
 
   async getSystemUserId() {
