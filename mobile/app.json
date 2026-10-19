@@ -11,6 +11,7 @@
     },
     "android": {
       "package": "com.minetech.iadesk",
+      "versionCode": 1,
       "softwareKeyboardLayoutMode": "resize",
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
