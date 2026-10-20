@@ -10,14 +10,14 @@ export const senderTypes = [
     detail: 'Usuario de MineTech que atiende el ticket'
   },
   {
-    value: 'ia',
-    name: 'Minetech IA',
+    value: 'ai',
+    name: 'Minetech AI',
     detail: 'Inteligencia artificial de MineTech'
   },
   {
     value: 'system',
     name: 'Sistema',
-    detail: 'Respuesta automática generada por MineTech IA Desk'
+    detail: 'Respuesta automática generada por MineTech AI Desk'
   },
 ];
 

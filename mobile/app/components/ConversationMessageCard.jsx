@@ -44,7 +44,7 @@ export default function ConversationCard({
       variant="caption"
       style={globalStyles.conversation.message.card.sender}
     >
-      {message.sender?.displayName || message.senderType === 'ia' && 'Minetech IA' || 'Desconocido'}
+      {message.sender?.displayName || message.senderType === 'ai' && 'Minetech AI' || 'Desconocido'}
     </Text>}
     <Text style={globalStyles.conversation.message.card.text} >
       {message.text}

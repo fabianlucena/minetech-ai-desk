@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Minetech IA Desk",
-    "slug": "minetech-iadesk",
+    "name": "Minetech AI Desk",
+    "slug": "minetech-ai-desk",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/minetech-logo.png",
