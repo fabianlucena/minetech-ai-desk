@@ -65,7 +65,7 @@ export default function HomePage() {
         <Button
           variant="contained"
           size="large"
-          href="/minetech-ia-desk.apk"
+          href="/minetech-ai-desk.apk"
           download
         >
           Descargar la app móvil
@@ -78,7 +78,7 @@ export default function HomePage() {
         color="text.secondary"
         sx={{ mt: 6 }}
       >
-        Minetech IA Desk es propiedad de{" "} 
+        Minetech AI Desk es propiedad de{" "} 
         <a href="https://www.minetech.com.ar" target="_blank" rel="noopener noreferrer">
           MineTech
         </a>

@@ -37,7 +37,7 @@ export default function MessageBubble({
           mb: 0.5,
         }}
       >
-        {status.sender?.displayName || status.senderType === 'ia' && 'Minetech IA' || status.senderType === 'system' && 'Minetech IA' || 'Desconocido'}
+        {status.sender?.displayName || status.senderType === 'ai' && 'Minetech AI' || status.senderType === 'system' && 'Minetech AI' || 'Desconocido'}
       </Typography>}
       <Typography
         variant="body2"
