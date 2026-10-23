@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
 import { Box, Typography } from '@mui/material';
@@ -33,6 +33,35 @@ export default function Grid({
     title: 'Confirmar',
     content: '',
   });
+  const [newRows, setNewRows] = useState(new Set());
+  const previousIdsRef  = useRef(new Set());
+
+  useEffect(() => {
+    const currentIds = new Set(
+      rows.map(row => row[columnIdName])
+    );
+
+    const addedIds = [...currentIds].filter(
+      id => !previousIdsRef.current.has(id)
+    );
+
+    if (previousIdsRef.current.size > 0) {
+      setNewRows(new Set(addedIds));
+    }
+
+    previousIdsRef.current = currentIds;
+  }, [rows, columnIdName]);
+
+  useEffect(() => {
+    if (newRows.size === 0)
+      return;
+
+    const timer = setTimeout(() => {
+      setNewRows(new Set());
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [newRows]);
 
   const handleDelete = useCallback((row) => {
     if (!onDelete)
@@ -148,6 +177,9 @@ export default function Grid({
               : 'row-odd';
         }
 
+        if (newRows.has(params.row[columnIdName]))
+            className += ' row-new';
+
         return className;
       }}
       style={{
@@ -172,6 +204,21 @@ export default function Grid({
           '&:hover': {
             backgroundColor: 'rgba(255, 0, 0, 0.15)',
           },
+        },
+        '& .row-new': {
+          animation: 'highlight-new-row 2s ease-out forwards',
+        },
+
+        '@keyframes highlight-new-row': {
+          '0%':   { backgroundColor: 'transparent' },
+          '5%':   { backgroundColor: '#9cd2f7' },
+          '10%':  { backgroundColor: 'transparent' },
+          '15%':  { backgroundColor: '#9cd2f7' },
+          '20%':  { backgroundColor: 'transparent' },
+          '25%':  { backgroundColor: '#9cd2f7' },
+          '30%':  { backgroundColor: 'transparent' },
+          '35%':  { backgroundColor: '#9cd2f7' },
+          '100%': { backgroundColor: 'transparent' }
         },
         ...sx,
       }}
