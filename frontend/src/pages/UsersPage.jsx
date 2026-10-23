@@ -91,10 +91,7 @@ export default function UsuariosPage() {
     }
   }, [addError, includeDeleted, getUsers]);
 
-  useEffect(() => {
-    const dispose = subscribe('users', load);
-    return dispose;
-  }, [subscribe, load]);
+  useEffect(() => subscribe('users', load), [subscribe, load]);
 
   async function deleteUserHandler({ uuid }) {
     try {
