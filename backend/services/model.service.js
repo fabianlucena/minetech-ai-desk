@@ -11,6 +11,7 @@ export default class ModelService {
     useCreatedAt = null,
     useCreatedById = null,
     isActivable = false,
+    topic,
   }) {
     this.model = model;
     this.traceable = traceable;
@@ -21,6 +22,9 @@ export default class ModelService {
     this.useCreatedAt = useCreatedAt;
     this.useCreatedById = useCreatedById;
     this.isActivable = isActivable;
+    this.topic = topic
+      || this.model.tableName //.substring(0, 1).toLowerCase() + this.model.name.substring(1)
+      || this.constructor.name.substring(0, 1).toLowerCase() + this.constructor.name.substring(1).replace(/Service$/, '');
   }
 
   #settingService = null;
@@ -31,6 +35,19 @@ export default class ModelService {
   #userService = null;
   get userService() {
     return this.#userService ??= getDependency('userService');
+  }
+
+  #dataNotificationService = null;
+  get dataNotificationService() {
+    return this.#dataNotificationService ??= getDependency('dataNotificationService', null);
+  }
+
+  async notifyDataChange(action, data) {
+    this.dataNotificationService?.notify({
+      action,
+      topic: this.topic,
+      ...data,
+    });
   }
 
   async getSystemUserId() {
@@ -114,8 +131,13 @@ export default class ModelService {
       data.updatedById ??= await this.getCurrentUserId(options);
     }
 
-    const result = await this.model.create(data, options);
-    return await this.getById(result.id, options);
+    let result = await this.model.create(data, options);
+    if (result && result.id)
+      result = await this.getById(result.id, options);
+
+    await this.notifyDataChange('create', { uuid: result?.uuid });
+
+    return result;
   }
 
   async bulkCreate(dataList, options) {
@@ -148,7 +170,17 @@ export default class ModelService {
       });
     }
   
-    return await this.model.bulkCreate(dataList, options);
+    const result = await this.model.bulkCreate(dataList, options);
+    
+    const changeData = {};
+    if (options.where?.uuid) {
+      const uuids = result.map(r => r.uuid);
+      if (uuids.length)
+        changeData.uuids = result.map(r => r.uuid);
+    }
+    await this.notifyDataChange('created', changeData);
+
+    return result;
   }
 
   async getFirstOrDefault(options) {
@@ -246,7 +278,14 @@ export default class ModelService {
       data.updatedById ??= await this.getCurrentUserId(options);
     }
 
-    return await this.model.update(data, options);
+    const result = await this.model.update(data, options);
+
+    const changeData = {};
+    if (options.where?.uuid)
+      changeData.uuid = options.where.uuid;
+    await this.notifyDataChange('updated', changeData);
+
+    return result;
   }
 
   async updateByWhere(data, where, options = {}) {
@@ -288,15 +327,20 @@ export default class ModelService {
 
     options = this.getModelOptions(options);
 
+    let result;
     if (this.softDelete) {
       const data = {
         deletedAt: new Date(),
         deletedById: await this.getCurrentUserId(options),
       };
-      return await this.model.update(data, options);
+      result = await this.model.update(data, options);
     } else {
-      return await this.model.destroy(options);
+      result = await this.model.destroy(options);
     }
+
+    this.notifyDataChange('deleted');
+
+    return result;
   }
 
   async deleteByWhere(where, options) {
@@ -343,7 +387,11 @@ export default class ModelService {
       updatedAt: new Date(),
       updatedById: await this.getCurrentUserId(options),
     };
-    return await this.model.update(data, { ...options, where: { ...where, ...options?.where } });
+    const result = await this.model.update(data, { ...options, where: { ...where, ...options?.where } });
+
+    await this.notifyDataChange('updated');
+
+    return result;
   }
 
   async restoreById(id, options) {

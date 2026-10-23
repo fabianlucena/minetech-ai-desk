@@ -9,6 +9,7 @@ import { formatDate } from '../utils/datetime.js';
 import useConversation from '../services/useConversation';
 import SwitchField from '../components/fields/SwitchField.jsx';
 import ConfirmDialog from '../components/dialogs/ConfirmDialog.jsx';
+import useDataNotifications from '../services/useDataNotifications.jsx';
 
 export default function ConversationsPage() {
   const navigate = useNavigate();
@@ -18,6 +19,7 @@ export default function ConversationsPage() {
   const [data, setData] = useState([]);
   const [includeDeleted, setIncludeDeleted] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState({});
+  const { subscribe } = useDataNotifications();
 
   const columns = useMemo(() => {
     const baseColumns = [
@@ -75,6 +77,15 @@ export default function ConversationsPage() {
     }
   }, [includeDeleted, addError, getConversations]);
 
+  useEffect(() => {
+    function reload() {
+      load();
+    }
+    reload();
+  }, [load]);
+
+  useEffect(() => subscribe('conversations', load), [subscribe, load]);
+
   async function deleteConversationHandler({ uuid }) {
     try {
       await deleteConversation(uuid);
@@ -96,8 +107,6 @@ export default function ConversationsPage() {
       console.error('Error al restaurar la conversación:', error);
     }
   }
-
-  useEffect(() => { load(); }, [load]);
 
   async function closeConversationHandler({ uuid }) {
     setConfirmDialog({

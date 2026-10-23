@@ -10,6 +10,7 @@ import { matchRoute } from '../utils/url.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+const init = [];
 const handlers = [];
 try {
   logger.info('🔌  Setting up WebSockets');
@@ -40,6 +41,10 @@ try {
       logger.info(`    ${endPointPath} -> ${file}`);
       handlers.push({ route: endPointPath, handler });
     }
+
+    if (wsConfig.init) {
+      init.push(wsConfig.init);
+    }
   }
 
   logger.info('🔌  WebSockets set up successfully ✔️');
@@ -51,6 +56,15 @@ try {
 const wss = new WebSocketServer({ noServer: true });
 
 export default async function configureWebSocketServer(server) {
+  for (const initFunc of init) {
+    try {
+      await initFunc();
+    } catch (error) {
+      logger.error('❌ Error initializing WebSocket handler:', error);
+      process.exit(1);
+    }
+  }
+  
   server.on('upgrade', async (req, socket, head) => {
     try {
       const { url } = req;

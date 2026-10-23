@@ -1,9 +1,13 @@
 const dependencies = new Map();
 
-export function getDependency(name) {
+export function getDependency(name, defaultValue) {
   let dependency = dependencies.get(name);
-  if (!dependency)
+  if (!dependency) {
+    if (defaultValue !== undefined)
+      return defaultValue;
+    
     throw new Error(`No existe la dependencia con el nombre ${name}`);
+  }
 
   if (typeof dependency === 'function')
     dependency = dependency();
