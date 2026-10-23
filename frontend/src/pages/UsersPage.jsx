@@ -9,12 +9,14 @@ import Chips from '../components/Chips.jsx';
 import useUser from '../services/useUser';
 import { PasswordIcon } from '../components/icons';
 import SwitchField from '../components/fields/SwitchField.jsx';
+import useDataNotifications from '../services/useDataNotifications.jsx';
 
 export default function UsuariosPage() {
   const navigate = useNavigate();
   const { hasPermission } = usePermissions();
   const { addMessage, addError } = useToast();
   const { getUsers, deleteUser, restoreUser } = useUser();
+  const { subscribe } = useDataNotifications();
   const [data, setData] = useState([]);
   const [includeDeleted, setIncludeDeleted] = useState(false);
 
@@ -89,6 +91,11 @@ export default function UsuariosPage() {
     }
   }, [addError, includeDeleted, getUsers]);
 
+  useEffect(() => {
+    const dispose = subscribe('users', load);
+    return dispose;
+  }, [subscribe, load]);
+
   async function deleteUserHandler({ uuid }) {
     try {
       await deleteUser(uuid);
@@ -112,7 +119,8 @@ export default function UsuariosPage() {
   }
 
   useEffect(() => {
-    load();
+    const reload = async () => await load();
+    reload();
   }, [load]);
 
   return <Grid
