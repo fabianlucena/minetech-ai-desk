@@ -92,6 +92,8 @@ export default class SessionService extends ModelService {
     session.user = user;
     session.roles = roles;
     session.permissions = permissions;
+    session.roleNames = roles.map(role => role.name);
+    session.permissionNames = permissions.map(permission => permission.name);
 
     return session;
   }

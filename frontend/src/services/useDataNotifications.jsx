@@ -1,6 +1,7 @@
 import { createContext, useContext, useCallback, useMemo, useEffect, useRef } from 'react';
 import useApi from './useApi.jsx';
 import { wsUrl } from '../config.js';
+import useToast from '../contexts/useToast';
 
 // oxlint-disable-next-line react/only-export-components
 export const DataNotificationsContext = createContext();
@@ -9,6 +10,7 @@ const debounceTime = 350; // milliseconds
 
 export function DataNotificationsProvider({ children }) {
   const api = useApi();
+  const { addError } = useToast();
 
   const wsRef = useRef(null);
   const subscriptionsRef = useRef(new Map());
@@ -91,6 +93,12 @@ export function DataNotificationsProvider({ children }) {
         case 'unsubscribe_success':
           return;
 
+        case 'subscribe_error':
+        case 'unsubscribe_error':
+          console.error('WS Data Notification error:', msg.message);
+          addError(`Error en notificaciones de datos: ${msg.message}`);
+          return;
+
         case 'data_notification':
           break;
 
@@ -147,7 +155,7 @@ export function DataNotificationsProvider({ children }) {
     };
 
     return ws;
-  }, [api.authorizationToken, getTopics]);
+  }, [api.authorizationToken, getTopics, addError]);
 
   useEffect(() => {
     if (!api.authorizationToken)

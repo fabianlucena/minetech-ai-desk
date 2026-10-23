@@ -138,6 +138,12 @@ async function handleSubscribe({ws, topic}) {
   if (!peerData || !peerData.session)
     throw new WSFatalError(1008, 'No se puede suscribir a un tema sin autenticación');
 
+  if (!peerData.session.permissions || 
+    (!peerData.session.permissionNames.includes(topic + '.list')
+      && !peerData.session.permissionNames.includes(topic + '.read'))
+  ) 
+    return { type: 'subscribe_error', message: 'No tiene permisos para suscribirse al tema: ' + topic };
+
   peerData.topics = peerData.topics || new Set();
   peerData.topics.add(topic);
 
