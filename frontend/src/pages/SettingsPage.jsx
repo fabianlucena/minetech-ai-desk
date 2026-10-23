@@ -5,6 +5,7 @@ import usePermissions from '../contexts/usePermissions';
 import { formatDate } from '../utils/datetime.js';
 import useSetting from '../services/useSetting';
 import SwitchField from '../components/fields/SwitchField.jsx';
+import useDataNotifications from '../services/useDataNotifications.jsx';
 
 export default function SettingsPage() {
   const { hasPermission } = usePermissions();
@@ -12,6 +13,7 @@ export default function SettingsPage() {
   const { getSettings, deleteSetting, restoreSetting } = useSetting();
   const [data, setData] = useState([]);
   const [includeDeleted, setIncludeDeleted] = useState(false);
+  const { subscribe } = useDataNotifications();
 
   const columns = useMemo(() => {
     const baseColumns = [
@@ -59,6 +61,15 @@ export default function SettingsPage() {
       console.error('Error al obtener las configuraciones:', error);
     }
   }, [addError, includeDeleted, getSettings]);
+  
+  useEffect(() => {
+    function reload() {
+      load();
+    }
+    reload();
+  }, [load]);
+  
+  useEffect(() => subscribe('settings', load), [subscribe, load]);
 
   async function deleteSettingHandler({ uuid }) {
     try {
@@ -81,10 +92,6 @@ export default function SettingsPage() {
       console.error('Error al restaurar la configuración:', error);
     }
   }
-
-  useEffect(() => {
-    load();
-  }, [load]);
 
   return <Grid
     title="Configuraciones"

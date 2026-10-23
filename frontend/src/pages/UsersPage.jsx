@@ -91,6 +91,13 @@ export default function UsuariosPage() {
     }
   }, [addError, includeDeleted, getUsers]);
 
+  useEffect(() => {
+    function reload() {
+      load();
+    }
+    reload();
+  }, [load]);
+  
   useEffect(() => subscribe('users', load), [subscribe, load]);
 
   async function deleteUserHandler({ uuid }) {
@@ -114,11 +121,6 @@ export default function UsuariosPage() {
       console.error('Error al restaurar el usuario:', error);
     }
   }
-
-  useEffect(() => {
-    const reload = async () => await load();
-    reload();
-  }, [load]);
 
   return <Grid
     title="Usuarios"

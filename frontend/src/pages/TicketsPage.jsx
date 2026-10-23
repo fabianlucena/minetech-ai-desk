@@ -3,12 +3,14 @@ import Grid from '../components/Grid.jsx';
 import { formatDate } from '../utils/datetime.js';
 import useTicket from '../services/useTicket.jsx';
 import { getLighterColor } from '../utils/color.js';
+import useDataNotifications from '../services/useDataNotifications.jsx';
 
 export default function TicketsPage() {
   const { getTickets } = useTicket();
   const [data, setData] = useState([]);
   const [includeDeleted] = useState(false);
   const [rowColors, setRowColors] = useState({});
+  const { subscribe } = useDataNotifications();
 
   const columns = useMemo(() => {
     const baseColumns = [
@@ -88,9 +90,13 @@ export default function TicketsPage() {
   }, [includeDeleted, getTickets]);
 
   useEffect(() => {
-    // oxlint-disable-next-line react/set-state-in-effect
-    load();
+    function reload() {
+      load();
+    }
+    reload();
   }, [load]);
+
+  useEffect(() => subscribe('tickets', load), [subscribe, load]);
 
   return <Grid
     title="Tickets"

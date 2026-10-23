@@ -5,6 +5,7 @@ import usePermissions from '../contexts/usePermissions';
 import { formatDate } from '../utils/datetime.js';
 import useClient from '../services/useClient';
 import SwitchField from '../components/fields/SwitchField.jsx';
+import useDataNotifications from '../services/useDataNotifications.jsx';
 
 export default function ClientsPage() {
   const { hasPermission } = usePermissions();
@@ -14,6 +15,7 @@ export default function ClientsPage() {
   const [includeDeleted, setIncludeDeleted] = useState(false);
   const [showAccessCode, setShowAccessCode] = useState(false);
   const [status, setStatus] = useState([]);
+  const { subscribe } = useDataNotifications();
 
   const getStatusNameByValue = useCallback((value) => {
     return status.find(s => s.value === value)?.name ?? value;
@@ -81,6 +83,15 @@ export default function ClientsPage() {
     }
   }, [includeDeleted, addError, getClients]);
 
+  useEffect(() => {
+    function reload() {
+      load();
+    }
+    reload();
+  }, [load]);
+
+  useEffect(() => subscribe('clients', load), [subscribe, load]);
+
   const loadStatus = useCallback(async () => {
     try {
       const res = await getStatus();
@@ -90,6 +101,13 @@ export default function ClientsPage() {
       console.error('Error al obtener los estados:', error);
     }
   }, [addError, getStatus]);
+
+  useEffect(() => {
+    function reload() {
+      loadStatus();
+    }
+    reload();
+  }, [loadStatus]);
 
   async function deleteClientHandler({ uuid }) {
     try {
@@ -112,12 +130,6 @@ export default function ClientsPage() {
       console.error('Error al restaurar el cliente:', error);
     }
   }
-
-  // oxlint-disable-next-line react/set-state-in-effect
-  useEffect(() => { loadStatus(); }, [loadStatus]);
-
-  // oxlint-disable-next-line react/set-state-in-effect
-  useEffect(() => { load(); }, [load]);
 
   return <Grid
     title="Clientes"

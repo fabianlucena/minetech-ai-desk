@@ -5,6 +5,7 @@ import useShift from '../services/useShift';
 import usePermissions from '../contexts/usePermissions';
 import useToast from '../contexts/useToast';
 import SwitchField from '../components/fields/SwitchField.jsx';
+import useDataNotifications from '../services/useDataNotifications.jsx';
 
 export default function ShiftsPage() {
   const { addMessage, addError } = useToast();
@@ -17,6 +18,7 @@ export default function ShiftsPage() {
   const [openShiftDialog, setOpenShiftDialog] = useState(false);
   const [shiftDialogUuid, setShiftDialogUuid] = useState(null);
   const [shiftDialogStart, setShiftDialogStart] = useState(null);
+  const { subscribe } = useDataNotifications();
 
   const load = useCallback(async () => {
     if (!firstDate || !lastDate)
@@ -34,7 +36,14 @@ export default function ShiftsPage() {
     setShifts(shifts);
   }, [firstDate, lastDate, includeDeleted, getShifts]);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    function reload() {
+      load();
+    }
+    reload();
+  }, [load]);
+  
+  useEffect(() => subscribe('shifts', load), [subscribe, load]);
 
   const events = useMemo(() => {
     return shifts.map(shift => ({

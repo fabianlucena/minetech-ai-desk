@@ -7,6 +7,7 @@ import Chip from '../components/Chip.jsx';
 import useTechnician from '../services/useTechnician';
 import SwitchField from '../components/fields/SwitchField.jsx';
 import { getLighterColor } from '../utils/color.js';
+import useDataNotifications from '../services/useDataNotifications.jsx';
 
 export default function TechniciansPage() {
   const { hasPermission } = usePermissions();
@@ -15,6 +16,7 @@ export default function TechniciansPage() {
   const [data, setData] = useState([]);
   const [includeDeleted, setIncludeDeleted] = useState(false);
   const [rowColors, setRowColors] = useState({});
+  const { subscribe } = useDataNotifications();
 
   const columns = useMemo(() => {
     const baseColumns = [
@@ -73,6 +75,15 @@ export default function TechniciansPage() {
     }
   }, [includeDeleted, addError, getTechnicians]);
 
+  useEffect(() => {
+    function reload() {
+      load();
+    }
+    reload();
+  }, [load]);
+
+  useEffect(() => subscribe('technicians', load), [subscribe, load]);
+
   async function deleteTechnicianHandler({ uuid }) {
     try {
       await deleteTechnician(uuid);
@@ -94,11 +105,6 @@ export default function TechniciansPage() {
       console.error('Error al restaurar el técnico:', error);
     }
   }
-
-  useEffect(() => {
-    // oxlint-disable-next-line react/set-state-in-effect
-    load();
-  }, [load]);
 
   return <Grid
     title="Técnicos"

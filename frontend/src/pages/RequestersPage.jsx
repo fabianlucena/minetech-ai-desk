@@ -9,6 +9,7 @@ import { BanIcon, UnbanIcon } from '../components/icons';
 import { GridActionsCellItem } from '@mui/x-data-grid';
 import ConfirmDialog from '../components/dialogs/ConfirmDialog.jsx';
 import BanRequesterDialog from '../components/BanRequesterDialog.jsx';
+import useDataNotifications from '../services/useDataNotifications.jsx';
 
 export default function RequestersPage() {
   const { hasPermission } = usePermissions();
@@ -17,6 +18,7 @@ export default function RequestersPage() {
   const [data, setData] = useState([]);
   const [includeDeleted, setIncludeDeleted] = useState(false);
   const [banDialog, setBanDialog] = useState({});
+  const { subscribe } = useDataNotifications();
   const [confirmDialog, setConfirmDialog] = useState({
     open: false,
     onClose: () => setConfirmDialog(prev => ({ ...prev, open: false })),
@@ -73,9 +75,13 @@ export default function RequestersPage() {
   }, [includeDeleted, addError, getRequesters]);
 
   useEffect(() => {
-    // oxlint-disable-next-line react/set-state-in-effect
-    load();
+    function reload() {
+      load();
+    }
+    reload();
   }, [load]);
+  
+  useEffect(() => subscribe('requesters', load), [subscribe, load]);
 
   function handleBan(requester) {
     setBanDialog({ open: true, requester });
