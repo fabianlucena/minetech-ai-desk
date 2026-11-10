@@ -12,28 +12,29 @@ function setOauth2AutorizationRequested(value) {
   if (value) {
     setTimeout(() => {
       oauth2AutorizationRequested = false;
-    }, 3000); // Reset after 10 seconds to allow new authorization attempts
+    }, 3000); // Reset after 3 seconds to allow new authorization attempts
   }
 }
 
 export default function OAuth2CallbackPage() {
   const { name, action } = useParams();
-  const { updateSession } = useGlobal();
+  const { updateSession, setPendingNavigation } = useGlobal();
   const { addMessage, addError } = useToast();
   const { setCredentials, clearCredentials } = useLogin();
   const { oAuth2Callback } = useOAuth2Provider();
   const [errorMessage, setErrorMessage] = useState();
   const [errorTitle, setErrorTitle] = useState();
-  const [message, setMessage] = useState('Autorizando...');
+  const [message, setMessage] = useState(oauth2AutorizationRequested ? 
+    'Ya hay una autorización en curso. Espere un momento y vuelva a intentarlo si no se completa.' :
+    'Autorizando...'
+  );
   const navigate = useNavigate();
 
-  // oxlint-disable-next-line react-hooks/exhaustive-deps
-  const goHome = useCallback(() => { navigate('/'); }, []);
+  const goHome = useCallback(() => navigate('/'), [navigate]);
 
   useEffect(() => {
     if (oauth2AutorizationRequested) {
       console.log('OAuth2 authorization already requested, waiting for response...');
-      setMessage('Ya hay una autorización en curso. Espere un momento y vuelva a intentarlo si no se completa.');
       return;
     }
     setOauth2AutorizationRequested(true);
@@ -64,14 +65,15 @@ export default function OAuth2CallbackPage() {
           roles: null,
           permissions: null,
         });
+
         const message = data?.message || data?.error || res?.statusText || error?.message || error?.error || 'Error desconocido';
         setErrorMessage(message); 
         setErrorTitle('Error al autorizar');
-        setMessage('Error al autorizar. Por favor, inténtelo de nuevo.');
+        setMessage('Error al autorizar: ' + message);
         addError('Error al autorizar: ' + message);
+        setPendingNavigation('/error?message=' + encodeURIComponent(message));
       });
-  // oxlint-disable-next-line react-hooks/exhaustive-deps
-  }, [name, action, updateSession, goHome, addMessage, addError]);
+  }, [name, action, updateSession, goHome, addMessage, addError, clearCredentials, navigate, oAuth2Callback, setCredentials, setPendingNavigation]);
 
   return <>
     <ErrorDialog title={errorTitle}>
