@@ -23,12 +23,6 @@ export default function UserPage() {
   const [data, setData] = useState({...defaultData});
   const [unchangedData, setUnchangedData] = useState({...defaultData});
   const [roles, setRoles] = useState([]);
-  
-  const [formConfig, setFormConfig] = useState({
-    title: 'Crear nuevo usuario',
-    description: 'Ingrese los datos del nuevo usuario',
-    disabledMessage: 'Creando usuario...',
-  });
 
   const loadRoles = useCallback(async () => {
     try {
@@ -56,23 +50,13 @@ export default function UserPage() {
   }, [uuid, addError, getUser]);
 
   useEffect(() => {
-    loadRoles();
+    function _loadRoles() { loadRoles(); }
+    function _load() { load(); }
+    
+    _loadRoles();
 
-    if (uuid) {
-      setFormConfig({
-        title: 'Editar usuario',
-        description: 'Modifique los datos del usuario',
-        disabledMessage: 'Actualizando usuario...',
-      });
-
-      load();
-    } else {
-      setFormConfig({
-        title: 'Crear nuevo usuario',
-        description: 'Por favor, ingrese los datos del nuevo usuario',
-        disabledMessage: 'Creando usuario...',
-      });
-    }
+    if (uuid)
+      _load();
   }, [uuid, load, loadRoles]);
 
   async function onSubmit() {
@@ -121,7 +105,16 @@ export default function UserPage() {
     onCancelGoBack={true}
     validationError={getValidationError()}
     unchangedData={JSON.stringify(data) === JSON.stringify(unchangedData)}
-    {...formConfig}
+    {...(uuid ? {
+        title: 'Editar usuario',
+        description: 'Modifique los datos del usuario',
+        disabledMessage: 'Actualizando usuario...',
+      } : {
+        title: 'Crear nuevo usuario',
+        description: 'Por favor, ingrese los datos del nuevo usuario',
+        disabledMessage: 'Creando usuario...',
+      })
+    }
   >
     <SwitchField
       label="Activo"

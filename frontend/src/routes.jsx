@@ -1,34 +1,35 @@
 import { useMemo } from 'react';
-import useGlobal from './contexts/useGlobal.jsx';
+import useGlobal from './contexts/useGlobal';
 import { AboutIcon, ClientIcon, ConversationIcon, DashboardIcon, HomeIcon, 
   LoginIcon, LogoutIcon, RequesterIcon, SettingsIcon, ShiftIcon, TechnicianIcon, 
   TicketIcon, UsersIcon, DocumentsIcon
-} from './components/icons/index.jsx';
-import MainLayout from './layouts/MainLayout.jsx';
-import SimpleLayout from './layouts/SimpleLayout.jsx';
-import HomePage from './pages/HomePage.jsx';
-import OAuth2CallbackPage from './pages/OAuth2CallbackPage.jsx';
-import LoginPage from './pages/LoginPage.jsx';
-import LogoutPage from './pages/LogoutPage.jsx';
-import AboutPage from './pages/AboutPage.jsx';
-import NotFoundPage from './pages/NotFoundPage.jsx';
-import ErrorPage from './pages/ErrorPage.jsx';
-import DashboardPage from './pages/DashboardPage.jsx';
-import UsersPage from './pages/UsersPage.jsx';
-import UserPage from './pages/UserPage.jsx';
-import UserChangePasswordPage from './pages/UserChangePasswordPage.jsx';
-import TechniciansPage from './pages/TechniciansPage.jsx';
-import TechnicianPage from './pages/TechnicianPage.jsx';
-import ClientsPage from './pages/ClientsPage.jsx';
-import ClientPage from './pages/ClientPage.jsx';
-import RequestersPage from './pages/RequestersPage.jsx';
-import ConversationsPage from './pages/ConversationsPage.jsx';
-import ConversationMessagesPage from './pages/ConversationMessagesPage.jsx';
-import ShiftsPage from './pages/ShiftsPage.jsx';
-import SettingsPage from './pages/SettingsPage.jsx';
-import SettingPage from './pages/SettingPage.jsx';
-import TicketsPage from './pages/TicketsPage.jsx';
-import RagDocumentsPage from './pages/RagDocumentsPage.jsx';
+} from './components/icons/index';
+import MainLayout from './layouts/MainLayout';
+import SimpleLayout from './layouts/SimpleLayout';
+import HomePage from './pages/HomePage';
+import OAuth2CallbackPage from './pages/OAuth2CallbackPage';
+import LoginPage from './pages/LoginPage';
+import LogoutPage from './pages/LogoutPage';
+import AboutPage from './pages/AboutPage';
+import NotFoundPage from './pages/NotFoundPage';
+import ErrorPage from './pages/ErrorPage';
+import DashboardPage from './pages/DashboardPage';
+import UsersPage from './pages/UsersPage';
+import UserPage from './pages/UserPage';
+import UserChangePasswordPage from './pages/UserChangePasswordPage';
+import TechniciansPage from './pages/TechniciansPage';
+import TechnicianPage from './pages/TechnicianPage';
+import ClientsPage from './pages/ClientsPage';
+import ClientPage from './pages/ClientPage';
+import RequestersPage from './pages/RequestersPage';
+import ConversationsPage from './pages/ConversationsPage';
+import ConversationMessagesPage from './pages/ConversationMessagesPage';
+import ShiftsPage from './pages/ShiftsPage';
+import SettingsPage from './pages/SettingsPage';
+import SettingPage from './pages/SettingPage';
+import TicketsPage from './pages/TicketsPage';
+import RagDocumentsPage from './pages/RagDocumentsPage';
+import RagDocumentPage from './pages/RagDocumentPage';
 
 export const allRoutes = [
   {
@@ -157,6 +158,16 @@ export const allRoutes = [
         menuItemOrder: 3,
         element: <RagDocumentsPage />,
         condition: ({ permissions }) => permissions.includes('ragDocuments.list'),
+      },
+      {
+        path: '/rag-documents/new',
+        element: <RagDocumentPage />,
+        condition: ({ permissions }) => permissions.includes('ragDocuments.create'),
+      },
+      {
+        path: '/rag-documents/:uuid/edit',
+        element: <RagDocumentPage />,
+        condition: ({ permissions }) => permissions.includes('ragDocuments.update'),
       },
       {
         path: '/settings',

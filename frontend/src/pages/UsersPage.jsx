@@ -20,10 +20,7 @@ export default function UsersPage() {
   const [rows, setRows] = useState([]);
   const [rowCount, setRowCount] = useState(0);
   const [includeDeleted, setIncludeDeleted] = useState(false);
-  const [paginationModel, setPaginationModel] = useState({
-    page: 0,
-    pageSize: 20
-  });
+  const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 20 });
 
   const columns = useMemo(() => {
     const baseColumns = [
@@ -111,7 +108,7 @@ export default function UsersPage() {
   
   useEffect(() => subscribe('users', load), [subscribe, load]);
 
-  async function deleteUserHandler({ uuid }) {
+  const deleteUserHandler = useCallback(async ({ uuid }) => {
     try {
       await deleteUser(uuid);
       addMessage('Usuario eliminado correctamente');
@@ -120,9 +117,9 @@ export default function UsersPage() {
       addError('Error al eliminar el usuario');
       console.error('Error al eliminar el usuario:', error);
     }
-  }
+  }, [deleteUser, addMessage, addError, load]);
 
-  async function restoreUserHandler({ uuid }) {
+  const restoreUserHandler = useCallback(async ({ uuid }) => {
     try {
       await restoreUser(uuid);
       addMessage('Usuario restaurado correctamente');
@@ -131,7 +128,7 @@ export default function UsersPage() {
       addError('Error al restaurar el usuario');
       console.error('Error al restaurar el usuario:', error);
     }
-  }
+  }, [restoreUser, addMessage, addError, load]);
 
   return <Grid
     title="Usuarios"
