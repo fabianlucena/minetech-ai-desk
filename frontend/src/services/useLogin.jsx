@@ -1,47 +1,10 @@
+import { useCallback, useMemo } from 'react';
 import useApi from './useApi';
 
 export default function useLogin() {
   const api = useApi();
 
-  async function login(data, options) {
-    return _login(
-      'v1/login',
-      {
-        ...data,
-        deviceToken: localStorage.getItem('deviceToken'),
-      },
-      options
-    );
-  }
-
-  async function autoLogin(options) {
-    const body = {
-      autoLoginToken: localStorage.getItem('autoLoginToken'),
-      deviceToken: localStorage.getItem('deviceToken'),
-    };
-
-    if (body.autoLoginToken && body.deviceToken)
-      return _login('v1/auto-login', body, options);
-  }
-
-  async function _login(service, body, options) {
-    var res = await api.postJson(service, { ...options, body });
-    await setCredentials(res);
-    return res;
-  }
-
-  async function logout(options) {
-    options = {
-      authorization: api.authorization,
-      ...options,
-    };
-
-    clearCredentials();
-    localStorage.removeItem('autoLoginToken');
-    await api.getJson('v1/logout', options);
-  }
-
-  async function setCredentials(data) {
+  const setCredentials = useCallback((data) => {
     if (data.authorizationToken) {
       api.setAuthorizationToken(data.authorizationToken);
       api.setAutorization('Bearer ' + data.authorizationToken);
@@ -61,20 +24,58 @@ export default function useLogin() {
     }
 
     return data;
-  }
+  }, [api]);
 
-  async function clearCredentials() {
+  const clearCredentials = useCallback(async () => {
     localStorage.removeItem('autoLoginToken');
     api.setAuthorizationToken(null);
     api.setAutorization(null);
     api.setAuthorizationExpireAt(null);
-  }
-  
-  return {
+  }, [api]);
+
+  const _login = useCallback(async (service, body, options) => {
+    var res = await api.postJson(service, { ...options, body });
+    await setCredentials(res);
+    return res;
+  }, [setCredentials, api]);
+
+  const login = useCallback(async (data, options) => {
+    return _login(
+      'v1/login',
+      {
+        ...data,
+        deviceToken: localStorage.getItem('deviceToken'),
+      },
+      options
+    );
+  }, [_login]);
+
+  const autoLogin = useCallback(async (options) => {
+    const body = {
+      autoLoginToken: localStorage.getItem('autoLoginToken'),
+      deviceToken: localStorage.getItem('deviceToken'),
+    };
+
+    if (body.autoLoginToken && body.deviceToken)
+      return _login('v1/auto-login', body, options);
+  }, [_login]);
+
+  const logout = useCallback(async (options) => {
+    options = {
+      authorization: api.authorization,
+      ...options,
+    };
+
+    clearCredentials();
+    localStorage.removeItem('autoLoginToken');
+    await api.getJson('v1/logout', options);
+  }, [api, clearCredentials]);
+
+  return useMemo(() => ({
     login,
     autoLogin,
     logout,
     setCredentials,
     clearCredentials,
-  };
+  }), [autoLogin, clearCredentials, login, logout, setCredentials]);
 }

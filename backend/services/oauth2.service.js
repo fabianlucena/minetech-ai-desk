@@ -69,7 +69,7 @@ export default class OAuth2Service {
         if (!provider.features?.allowSelfRegistration
           || !provider.features.selfRegistrationAllowedDomains.includes('@' + userInfo.email.split('@')[1])
         )
-          throw new Error('Usuario no registrado.');
+          throw new Error('Usuario no registrado, solicite al administrador el alta de usuario.');
 
         var user = await this.registerUser(userInfo, username);
         userId = user.id;

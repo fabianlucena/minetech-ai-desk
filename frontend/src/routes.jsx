@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import useGlobal from './contexts/useGlobal.jsx';
 import { AboutIcon, ClientIcon, ConversationIcon, DashboardIcon, HomeIcon, 
   LoginIcon, LogoutIcon, RequesterIcon, SettingsIcon, ShiftIcon, TechnicianIcon, 
@@ -11,6 +12,7 @@ import LoginPage from './pages/LoginPage.jsx';
 import LogoutPage from './pages/LogoutPage.jsx';
 import AboutPage from './pages/AboutPage.jsx';
 import NotFoundPage from './pages/NotFoundPage.jsx';
+import ErrorPage from './pages/ErrorPage.jsx';
 import DashboardPage from './pages/DashboardPage.jsx';
 import UsersPage from './pages/UsersPage.jsx';
 import UserPage from './pages/UserPage.jsx';
@@ -181,6 +183,10 @@ export const allRoutes = [
         condition: ({ user }) => !!user,
       },
       {
+        path: '/error',
+        element: <ErrorPage />,
+      },
+      {
         path: '*',
         element: <NotFoundPage />,
       },
@@ -226,6 +232,6 @@ export function getFilteredRoutes(routes = allRoutes, global) {
 
 export function useRoutes() {
   const global = useGlobal();
-  const routes = getFilteredRoutes(allRoutes, global);
+  const routes = useMemo(() => getFilteredRoutes(allRoutes, global), [global]);
   return routes;
 }

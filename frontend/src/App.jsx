@@ -8,7 +8,7 @@ import useToast from './contexts/useToast';
 export default function App() {
   const routes = useRoutes();
   const router = createBrowserRouter(routes);
-  const { updateSession, clearSession } = useGlobal();
+  const { updateSession, clearSession, setPendingNavigation, pendingNavigation } = useGlobal();
   const { addInfo, addWarning } = useToast();
   const { autoLogin, clearCredentials } = useLogin();
 
@@ -33,6 +33,13 @@ export default function App() {
   useEffect(() => {
     autoLoginHandler();
   }, [autoLoginHandler]);
+
+  useEffect(() => {
+    if (pendingNavigation) {
+      setPendingNavigation(null);
+      router.navigate(pendingNavigation);
+    }
+  }, [routes, pendingNavigation, setPendingNavigation, router]);
 
   return <RouterProvider
     router={router}
