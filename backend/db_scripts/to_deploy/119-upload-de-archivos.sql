@@ -34,6 +34,14 @@ create table if not exists ia_desk.rag_documents (
     id bigserial primary key,
     uuid uuid not null default gen_random_uuid(),
 
+    is_active boolean not null,
+    file_name varchar(255) not null,
+    file_path text not null,
+    mime_type varchar(100) not null,
+    file_size bigint not null,
+    checksum varchar(128) not null,
+    status varchar(50) not null,
+
     created_at timestamp not null default current_timestamp,
     created_by_id bigint not null,
 
@@ -42,14 +50,6 @@ create table if not exists ia_desk.rag_documents (
 
     deleted_at timestamp null,
     deleted_by_id bigint null,
-
-    file_name varchar(255) not null,
-    file_path text not null,
-    mime_type varchar(100) not null,
-    file_size bigint not null,
-    checksum varchar(128) not null,
-
-    status varchar(50) not null,
 
     constraint uk_ia_desk_rag_documents_uuid unique (uuid),
     constraint uk_ia_desk_rag_documents_checksum unique (checksum),

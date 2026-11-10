@@ -10,6 +10,7 @@ export default (sequelize) => {
     updatedById: { field: 'updated_by_id', type: DataTypes.BIGINT, allowNull: false },
     deletedAt: { field: 'deleted_at', type: DataTypes.DATE, allowNull: true },
     deletedById: { field: 'deleted_by_id', type: DataTypes.BIGINT, allowNull: true },
+    isActive: { field: 'is_active', type: DataTypes.BOOLEAN, defaultValue: true },
     fileName: { field: 'file_name', type: DataTypes.STRING, allowNull: false },
     filePath: { field: 'file_path', type: DataTypes.TEXT, allowNull: false },
     mimeType: { field: 'mime_type', type: DataTypes.STRING, allowNull: false },
