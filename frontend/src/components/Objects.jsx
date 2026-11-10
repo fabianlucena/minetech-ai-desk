@@ -185,7 +185,7 @@ export default function Objects({
       style={{
         flex: 1,
         display: 'flex',
-        flexDirection: 'property',
+        flexDirection: 'column',
         overflow: 'hidden',
       }}
       sx={{

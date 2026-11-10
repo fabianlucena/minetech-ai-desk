@@ -71,10 +71,29 @@ export function ApiProvider({
       headers['Authorization'] = authorization;
     }
 
-    if (options.json) {
-      headers['Content-Type'] = 'application/json';
-      if (options.body && typeof options.body === 'object') {
-        body = JSON.stringify(options.body);
+    if (body) {
+      let contentType = headers['Content-Type'] || headers['content-type'];
+      if (contentType !== 'multipart/form-data') {
+        for (const key in body) {
+          if (body[key] instanceof File) {
+            contentType = 'multipart/form-data';
+            headers['Content-Type'] = contentType;
+            break;
+          }
+        }
+      }
+
+      if (contentType === 'multipart/form-data') {
+        const formData = new FormData();
+        for (const key in body) {
+          formData.append(key, body[key]);
+        }
+        body = formData;
+      } else if (options.json) {
+        headers['Content-Type'] = 'application/json';
+        if (options.body && typeof options.body === 'object') {
+          body = JSON.stringify(options.body);
+        }
       }
     }
 
