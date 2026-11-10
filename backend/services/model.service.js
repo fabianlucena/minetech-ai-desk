@@ -183,6 +183,11 @@ export default class ModelService {
     return result;
   }
 
+  async getCount(options) {
+    options = this.getModelOptions(options);
+    return await this.model.count(options);
+  }
+
   async getFirstOrDefault(options) {
     if (!options?.where)
       throw new Error('La cláusula where es obligatoria');

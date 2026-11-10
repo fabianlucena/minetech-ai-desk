@@ -17,8 +17,13 @@ export default function UsuariosPage() {
   const { addMessage, addError } = useToast();
   const { getUsers, deleteUser, restoreUser } = useUser();
   const { subscribe } = useDataNotifications();
-  const [data, setData] = useState([]);
+  const [rows, setRows] = useState([]);
+  const [rowCount, setRowCount] = useState(0);
   const [includeDeleted, setIncludeDeleted] = useState(false);
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: 20
+  });
 
   const columns = useMemo(() => {
     const baseColumns = [
@@ -83,18 +88,19 @@ export default function UsuariosPage() {
 
   const load = useCallback(async () => {
     try {
-      const query = {};
+      const query = { ...paginationModel };
       if (includeDeleted) {
         query.includeDeleted = 1;
       }
 
       const res = await getUsers({ query });
-      setData(res);
+      setRows(res.rows);
+      setRowCount(res.rowCount ?? res.rows.length);
     } catch (error) {
       addError('Error al obtener los usuarios');
       console.error('Error al obtener los usuarios:', error);
     }
-  }, [addError, includeDeleted, getUsers]);
+  }, [addError, includeDeleted, getUsers, paginationModel]);
 
   useEffect(() => {
     function reload() {
@@ -130,7 +136,12 @@ export default function UsuariosPage() {
   return <Grid
     title="Usuarios"
     columns={columns}
-    rows={data}
+    rows={rows}
+    rowCount={rowCount}
+    paginationMode="server"
+    paginationModel={paginationModel}
+    onPaginationModelChange={(...args) => { setRows([]); setPaginationModel(...args); }}
+    pageSizeOptions={[10, 20, 50, 100]}
     onReload={() => load()}
     createPath={hasPermission('users.create') && "/users/new"}
     onDelete={hasPermission('users.delete') && deleteUserHandler}
