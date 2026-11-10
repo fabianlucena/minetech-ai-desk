@@ -17,7 +17,7 @@ function normalizeUser(user) {
 export default function useUser() {
   const api = useApi();
 
-  const getUsers = useCallback((params) => api.getJson('v1/users', { normalizeItem: normalizeUser, rowCount: true, ...params }), [api]);
+  const getUsers = useCallback((params) => api.getJson('v1/users', { normalizeItem: normalizeUser, ...params }), [api]);
   const getUser = useCallback((uuid, params) => api.getJson(`v1/users/${uuid}`, { normalizeItem: normalizeUser, ...params }), [api]);
   const getRoles = useCallback((params) => api.getJson('v1/users/roles', { normalizeItem: normalizeUser, ...params }), [api]);
   const createUser = useCallback((data) => api.postJson('v1/users', { normalizeItem: normalizeUser, body: data }), [api]);

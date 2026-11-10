@@ -244,11 +244,9 @@ export function DataNotificationsProvider({ children }) {
     subscribe
   }), [subscribe]);
 
-  return (
-    <DataNotificationsContext.Provider value={value}>
-      {children}
-    </DataNotificationsContext.Provider>
-  );
+  return <DataNotificationsContext.Provider value={value}>
+    {children}
+  </DataNotificationsContext.Provider>;
 }
 
 // oxlint-disable-next-line react/only-export-components

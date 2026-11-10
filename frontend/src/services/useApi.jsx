@@ -135,7 +135,7 @@ export function ApiProvider({
       }
     }
 
-    if (options.rowCount) {
+    if (options.query?.includeCount) {
       data = { rows: data };
       if (res.headers.has('X-Total-Count'))
         data.rowCount = parseInt(res.headers.get('X-Total-Count'), 10);
