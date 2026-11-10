@@ -33,6 +33,11 @@ export default function UsuariosPage() {
         flex: 1,
       },
       {
+        field: 'email',
+        headerName: 'Correo electrónico',
+        flex: 1,
+      },
+      {
         field: 'isActive',
         headerName: 'Activo',
         renderCell: ({value}) => value ? '🟢' : '🔴',

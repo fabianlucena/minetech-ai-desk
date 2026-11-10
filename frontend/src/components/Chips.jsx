@@ -8,8 +8,8 @@ export default function Chips({
 
   return <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.2 }}>
     {chips
-      .map(mapper || defaultMapper)
-      .map(chip =>
+      ?.map(mapper || defaultMapper)
+      ?.map(chip =>
         <Chip key={chip.id} label={chip.label} title={chip.title} />
       )}
   </Box>;
