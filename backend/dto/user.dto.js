@@ -12,6 +12,7 @@ export class UserDTO {
   constructor(user) {
     this.uuid = user.uuid;
     this.username = user.username;
+    this.email = user.email;
     this.displayName = user.displayName;
     this.isActive = user.isActive;
     this.canLogin = user.canLogin;

@@ -37,6 +37,7 @@ export default class UserService extends ModelService {
       options.include.push({
         model: getDependency('roleModel'),
         as: 'roles',
+        required: false,
         where,
         through: {
           where: { deletedAt: null },
