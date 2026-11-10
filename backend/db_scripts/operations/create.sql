@@ -428,7 +428,8 @@ insert into auth.permissions (
     ('settings.create'),('settings.delete'),('settings.update'),('settings.list'),('settings.read'),('settings.restore'),
     ('conversations.list'),('conversations.read'),('conversations.delete'),('conversations.restore'),('conversations.close'),('conversations.viewChat'),('conversations.chat'),
     ('conversationMessages.list'),('conversationMessages.read'),
-    ('tickets.create'),('tickets.delete'),('tickets.update'),('tickets.list'),('tickets.read'),('tickets.restore')
+    ('tickets.create'),('tickets.delete'),('tickets.update'),('tickets.list'),('tickets.read'),('tickets.restore'),
+    ('ragDocuments.create'),('ragDocuments.delete'),('ragDocuments.update'),('ragDocuments.list'),('ragDocuments.read'),('ragDocuments.restore')
   ) as p(name)
   join auth.users system on system.username = 'system'
 on conflict (name) do nothing;
@@ -457,7 +458,10 @@ insert into auth.permissions_x_roles (
   from auth.permissions p
   join auth.users system on system.username = 'system'
   join auth.roles r on r.name = 'technician'
-  where p.name in('conversations.list', 'conversations.read', 'conversations.chat', 'conversationMessages.read')
+  where p.name in(
+    'conversations.list','conversations.read','conversations.chat','conversationMessages.read',
+    'ragDocuments.create','ragDocuments.delete','ragDocuments.update','ragDocuments.list','ragDocuments.read','ragDocuments.restore'
+  )
 on conflict (permission_id, role_id) do nothing;
 
 ---------------------------------------------------------------------------
