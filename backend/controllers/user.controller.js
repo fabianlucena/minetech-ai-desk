@@ -11,11 +11,14 @@ export async function getList(req, res) {
     ...getOptionsFromRequest(req),
   });
 
-  const count = await userService.getCount({
-    includeDeleted: !!req.query.includeDeleted,
-    session: req.session,
-  });
-  res.set('X-Total-Count', count.toString());
+  if (req.query.includeCount) {
+    const count = await userService.getCount({
+      includeDeleted: !!req.query.includeDeleted,
+      session: req.session,
+    });
+    res.set('X-Total-Count', count.toString());
+  }
+  
   res.json(rows.map(u => new UserDTO(u)));
 }
 

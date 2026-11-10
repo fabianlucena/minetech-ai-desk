@@ -88,7 +88,7 @@ export default function UsersPage() {
 
   const load = useCallback(async () => {
     try {
-      const query = { ...paginationModel };
+      const query = { ...paginationModel, includeCount: true };
       if (includeDeleted) {
         query.includeDeleted = 1;
       }
