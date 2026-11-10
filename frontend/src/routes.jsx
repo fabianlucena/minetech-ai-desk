@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import useGlobal from './contexts/useGlobal.jsx';
 import { AboutIcon, ClientIcon, ConversationIcon, DashboardIcon, HomeIcon, 
   LoginIcon, LogoutIcon, RequesterIcon, SettingsIcon, ShiftIcon, TechnicianIcon, 
-  TicketIcon, UsersIcon
+  TicketIcon, UsersIcon, DocumentsIcon
 } from './components/icons/index.jsx';
 import MainLayout from './layouts/MainLayout.jsx';
 import SimpleLayout from './layouts/SimpleLayout.jsx';
@@ -28,6 +28,7 @@ import ShiftsPage from './pages/ShiftsPage.jsx';
 import SettingsPage from './pages/SettingsPage.jsx';
 import SettingPage from './pages/SettingPage.jsx';
 import TicketsPage from './pages/TicketsPage.jsx';
+import RagDocumentsPage from './pages/RagDocumentsPage.jsx';
 
 export const allRoutes = [
   {
@@ -148,6 +149,14 @@ export const allRoutes = [
         path: '/conversations/:uuid/messages',
         element: <ConversationMessagesPage />,
         condition: ({ permissions }) => permissions.includes('conversationMessages.read'),
+      },
+      {
+        path: '/rag-documents',
+        label: 'Documentos',
+        icon: <DocumentsIcon />,
+        menuItemOrder: 3,
+        element: <RagDocumentsPage />,
+        condition: ({ permissions }) => permissions.includes('ragDocuments.list'),
       },
       {
         path: '/settings',

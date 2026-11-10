@@ -11,7 +11,7 @@ import { PasswordIcon } from '../components/icons';
 import SwitchField from '../components/fields/SwitchField.jsx';
 import useDataNotifications from '../services/useDataNotifications.jsx';
 
-export default function UsuariosPage() {
+export default function UsersPage() {
   const navigate = useNavigate();
   const { hasPermission } = usePermissions();
   const { addMessage, addError } = useToast();
