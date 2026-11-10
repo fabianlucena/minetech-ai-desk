@@ -135,6 +135,12 @@ export function ApiProvider({
       }
     }
 
+    if (options.rowCount) {
+      data = { rows: data };
+      if (res.headers.has('X-Total-Count'))
+        data.rowCount = parseInt(res.headers.get('X-Total-Count'), 10);
+    }
+
     return data;
   }, [debug, urlBase, authorization, authorizationExpireAt]);
 

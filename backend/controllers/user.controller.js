@@ -1,16 +1,22 @@
 import getDependency from '../dependency.js';
 import { UserDTO } from '../dto/user.dto.js';
 import { RoleMinDTO } from '../dto/role.dto.js';
+import { getOptionsFromRequest } from './utils.js';
 
 export async function getList(req, res) {
   const userService = getDependency('userService');
-  const users = await userService.getList({
+  const rows = await userService.getList({
     includeRoles: true,
     includePassword: true,
+    ...getOptionsFromRequest(req),
+  });
+
+  const count = await userService.getCount({
     includeDeleted: !!req.query.includeDeleted,
     session: req.session,
   });
-  res.json(users.map(u => new UserDTO(u)));
+  res.set('X-Total-Count', count.toString());
+  res.json(rows.map(u => new UserDTO(u)));
 }
 
 export async function getByUuid(req, res) {
