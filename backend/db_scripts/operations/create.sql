@@ -490,13 +490,13 @@ create table if not exists ia_desk.settings(
     constraint uk_ia_desk_settings_uuid unique (uuid),
     constraint uk_ia_desk_settings_key unique (key),
     
-    constraint uk_ia_desk_settings_created_by_id foreign key (created_by_id)
+    constraint fk_ia_desk_settings_created_by_id foreign key (created_by_id)
       references auth.users(id) on delete restrict,
     
-    constraint uk_ia_desk_settings_updated_by_id foreign key (updated_by_id)
+    constraint fk_ia_desk_settings_updated_by_id foreign key (updated_by_id)
       references auth.users(id) on delete restrict,
     
-    constraint uk_ia_desk_settings_deleted_by_id foreign key (deleted_by_id)
+    constraint fk_ia_desk_settings_deleted_by_id foreign key (deleted_by_id)
       references auth.users(id) on delete restrict
 );
 
@@ -526,19 +526,18 @@ create table if not exists ia_desk.technicians(
     deleted_by_id bigint null,
   
     constraint uk_ia_desk_technicians_id unique (id),
-    
     constraint uk_ia_desk_technicians_uuid unique (uuid),
     
-    constraint uk_ia_desk_technicians_user_id foreign key (id)
+    constraint fk_ia_desk_technicians_user_id foreign key (id)
       references auth.users(id) on delete restrict,
     
-    constraint uk_ia_desk_technicians_created_by_id foreign key (created_by_id)
+    constraint fk_ia_desk_technicians_created_by_id foreign key (created_by_id)
       references auth.users(id) on delete restrict,
     
-    constraint uk_ia_desk_technicians_updated_by_id foreign key (updated_by_id)
+    constraint fk_ia_desk_technicians_updated_by_id foreign key (updated_by_id)
       references auth.users(id) on delete restrict,
     
-    constraint uk_ia_desk_technicians_deleted_by_id foreign key (deleted_by_id)
+    constraint fk_ia_desk_technicians_deleted_by_id foreign key (deleted_by_id)
       references auth.users(id) on delete restrict
 );
 
@@ -567,13 +566,13 @@ create table if not exists ia_desk.clients(
     constraint uk_ia_desk_clients_name unique (name),
     constraint uk_ia_desk_clients_access_code unique (access_code),
     
-    constraint uk_ia_desk_clients_created_by_id foreign key (created_by_id)
+    constraint fk_ia_desk_clients_created_by_id foreign key (created_by_id)
       references auth.users(id) on delete restrict,
     
-    constraint uk_ia_desk_clients_updated_by_id foreign key (updated_by_id)
+    constraint fk_ia_desk_clients_updated_by_id foreign key (updated_by_id)
       references auth.users(id) on delete restrict,
     
-    constraint uk_ia_desk_clients_deleted_by_id foreign key (deleted_by_id)
+    constraint fk_ia_desk_clients_deleted_by_id foreign key (deleted_by_id)
       references auth.users(id) on delete restrict
 );
 
@@ -610,19 +609,19 @@ create table if not exists ia_desk.requesters(
     constraint uk_ia_desk_requesters_uuid unique (uuid),
     constraint uk_ia_desk_requesters_phone unique (phone),
     
-    constraint uk_ia_desk_requesters_client_id foreign key (client_id)
+    constraint fk_ia_desk_requesters_client_id foreign key (client_id)
       references ia_desk.clients(id) on delete restrict,
     
-    constraint uk_ia_desk_requesters_created_by_id foreign key (created_by_id)
+    constraint fk_ia_desk_requesters_created_by_id foreign key (created_by_id)
       references auth.users(id) on delete restrict,
     
-    constraint uk_ia_desk_requesters_updated_by_id foreign key (updated_by_id)
+    constraint fk_ia_desk_requesters_updated_by_id foreign key (updated_by_id)
       references auth.users(id) on delete restrict,
     
-    constraint uk_ia_desk_requesters_deleted_by_id foreign key (deleted_by_id)
+    constraint fk_ia_desk_requesters_deleted_by_id foreign key (deleted_by_id)
       references auth.users(id) on delete restrict,
     
-    constraint uk_ia_desk_requesters_banned_by_id foreign key (banned_by_id)
+    constraint fk_ia_desk_requesters_banned_by_id foreign key (banned_by_id)
       references auth.users(id) on delete restrict
 );
 
@@ -648,16 +647,16 @@ create table if not exists ia_desk.shifts(
     
     constraint uk_ia_desk_shifts_uuid unique (uuid),
     
-    constraint uk_ia_desk_shifts_technician_id foreign key (technician_id)
+    constraint fk_ia_desk_shifts_technician_id foreign key (technician_id)
       references ia_desk.technicians(id) on delete restrict,
     
-    constraint uk_ia_desk_shifts_created_by_id foreign key (created_by_id)
+    constraint fk_ia_desk_shifts_created_by_id foreign key (created_by_id)
       references auth.users(id) on delete restrict,
     
-    constraint uk_ia_desk_shifts_updated_by_id foreign key (updated_by_id)
+    constraint fk_ia_desk_shifts_updated_by_id foreign key (updated_by_id)
       references auth.users(id) on delete restrict,
     
-    constraint uk_ia_desk_shifts_deleted_by_id foreign key (deleted_by_id)
+    constraint fk_ia_desk_shifts_deleted_by_id foreign key (deleted_by_id)
       references auth.users(id) on delete restrict
 );
 
@@ -679,16 +678,16 @@ create table if not exists ia_desk.conversations(
 
     constraint uk_ia_desk_conversations_uuid unique (uuid),
     
-    constraint uk_ia_desk_conversations_requester_id foreign key (requester_id)
+    constraint fk_ia_desk_conversations_requester_id foreign key (requester_id)
       references ia_desk.requesters(id) on delete restrict,
     
-    constraint uk_ia_desk_conversations_client_id foreign key (client_id)
+    constraint fk_ia_desk_conversations_client_id foreign key (client_id)
       references ia_desk.clients(id) on delete restrict,
     
-    constraint uk_ia_desk_conversations_deleted_by_id foreign key (deleted_by_id)
+    constraint fk_ia_desk_conversations_deleted_by_id foreign key (deleted_by_id)
       references auth.users(id) on delete restrict,
     
-    constraint uk_ia_desk_conversations_closed_by_id foreign key (closed_by_id)
+    constraint fk_ia_desk_conversations_closed_by_id foreign key (closed_by_id)
       references auth.users(id) on delete restrict
 );
 
@@ -724,16 +723,16 @@ create table if not exists ia_desk.conversation_messages(
 
     constraint uk_ia_desk_conversation_messages_uuid unique (uuid),
     
-    constraint uk_ia_desk_conversation_messages_conversation_id foreign key (conversation_id)
+    constraint fk_ia_desk_conversation_messages_conversation_id foreign key (conversation_id)
       references ia_desk.conversations(id) on delete restrict,
 
-    constraint uk_ia_desk_conversation_messages_updated_by_id foreign key (updated_by_id)
+    constraint fk_ia_desk_conversation_messages_updated_by_id foreign key (updated_by_id)
       references auth.users(id) on delete restrict,
 
-    constraint uk_ia_desk_conversation_messages_deleted_by_id foreign key (deleted_by_id)
+    constraint fk_ia_desk_conversation_messages_deleted_by_id foreign key (deleted_by_id)
       references auth.users(id) on delete restrict,
 
-    constraint uk_ia_desk_conversation_messages_reply_to_id foreign key (reply_to_id)
+    constraint fk_ia_desk_conversation_messages_reply_to_id foreign key (reply_to_id)
       references  ia_desk.conversation_messages(id)
 );
 
@@ -764,31 +763,31 @@ create table if not exists ia_desk.tickets(
     constraint uk_ia_desk_tickets_code unique (code),
     constraint uk_ia_desk_tickets_uuid unique (uuid),
     
-    constraint uk_ia_desk_tickets_conversation_id foreign key (conversation_id)
+    constraint fk_ia_desk_tickets_conversation_id foreign key (conversation_id)
       references ia_desk.conversations(id) on delete restrict,
     
-    constraint uk_ia_desk_tickets_client_id foreign key (client_id)
+    constraint fk_ia_desk_tickets_client_id foreign key (client_id)
       references ia_desk.clients(id) on delete restrict,
     
-    constraint uk_ia_desk_tickets_requester_id foreign key (requester_id)
+    constraint fk_ia_desk_tickets_requester_id foreign key (requester_id)
       references ia_desk.requesters(id) on delete restrict,
     
-    constraint uk_ia_desk_tickets_technician_id foreign key (technician_id)
+    constraint fk_ia_desk_tickets_technician_id foreign key (technician_id)
       references ia_desk.technicians(id) on delete restrict,
     
-    constraint uk_ia_desk_tickets_shift_id foreign key (shift_id)
+    constraint fk_ia_desk_tickets_shift_id foreign key (shift_id)
       references ia_desk.shifts(id) on delete restrict,
     
-    constraint uk_ia_desk_tickets_parent_ticket_id foreign key (parent_ticket_id)
+    constraint fk_ia_desk_tickets_parent_ticket_id foreign key (parent_ticket_id)
       references ia_desk.tickets(id) on delete restrict,
     
-    constraint uk_ia_desk_tickets_created_by_id foreign key (created_by_id)
+    constraint fk_ia_desk_tickets_created_by_id foreign key (created_by_id)
       references auth.users(id) on delete restrict,
     
-    constraint uk_ia_desk_tickets_updated_by_id foreign key (updated_by_id)
+    constraint fk_ia_desk_tickets_updated_by_id foreign key (updated_by_id)
       references auth.users(id) on delete restrict,
     
-    constraint uk_ia_desk_tickets_deleted_by_id foreign key (deleted_by_id)
+    constraint fk_ia_desk_tickets_deleted_by_id foreign key (deleted_by_id)
       references auth.users(id) on delete restrict
 );
 
@@ -815,18 +814,18 @@ create table if not exists ia_desk.technician_devices(
     constraint uk_ia_desk_technician_devices_uuid unique (uuid),
     constraint uk_ia_desk_technician_devices_token unique (token),
     
-    constraint uk_ia_desk_technician_devices_technician_id foreign key (technician_id)
+    constraint fk_ia_desk_technician_devices_technician_id foreign key (technician_id)
       references ia_desk.technicians(id) on delete restrict,
     
-    constraint uk_ia_desk_technician_devices_device_id foreign key (device_id)
+    constraint fk_ia_desk_technician_devices_device_id foreign key (device_id)
       references auth.devices(id) on delete restrict,
     
-    constraint uk_ia_desk_technician_devices_created_by_id foreign key (created_by_id)
+    constraint fk_ia_desk_technician_devices_created_by_id foreign key (created_by_id)
       references auth.users(id) on delete restrict,
     
-    constraint uk_ia_desk_technician_devices_updated_by_id foreign key (updated_by_id)
+    constraint fk_ia_desk_technician_devices_updated_by_id foreign key (updated_by_id)
       references auth.users(id) on delete restrict,
     
-    constraint uk_ia_desk_technician_devices_deleted_by_id foreign key (deleted_by_id)
+    constraint fk_ia_desk_technician_devices_deleted_by_id foreign key (deleted_by_id)
       references auth.users(id) on delete restrict
 );
