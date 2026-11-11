@@ -24,7 +24,6 @@ export default function RagDocumentPage() {
       const data = {
         ...defaultData,
         ...res,
-        roles: res.roles.map(role => role.uuid) || [],
       };
       setData(data);
       setUnchangedData(data);
@@ -105,39 +104,28 @@ export default function RagDocumentPage() {
         onChange={(e) => setData({...data, fileName: e.target.value})}
       />
       <TextField
-        label="Ruta"
-        disabled={true}
-        required
-        value={data.filePath}
-        onChange={(e) => setData({...data, filePath: e.target.value})}
-      />
-      <TextField
         label="Tipo de archivo"
-        disabled={true}
-        required
+        readonly
+        disabled={disabled}
         value={data.mimeType}
-        onChange={(e) => setData({...data, mimeType: e.target.value})}
       />
       <TextField
         label="Tamaño del archivo"
-        disabled={true}
-        required
+        readonly
+        disabled={disabled}
         value={data.fileSize}
-        onChange={(e) => setData({...data, fileSize: e.target.value})}
       />
       <TextField
         label="Checksum"
-        disabled={true}
-        required
+        readonly
+        disabled={disabled}
         value={data.checksum}
-        onChange={(e) => setData({...data, checksum: e.target.value})}
       />
       <TextField
         label="Estado"
-        disabled={true}
-        required
+        readonly
+        disabled={disabled}
         value={data.status}
-        onChange={(e) => setData({...data, status: e.target.value})}
       />
     </> || <>
       <FileUploadField

@@ -5,6 +5,18 @@ import useDataNotifications from '../services/useDataNotifications';
 import useRagDocument from '../services/useRagDocument';
 import Objects from '../components/Objects';
 import SwitchField from '../components/fields/SwitchField.jsx';
+import { Typography } from '@mui/material';
+import { DocumentIcon } from '../components/icons/index.jsx';
+import Chip from '../components/Chip.jsx';
+
+function sizeInMB(size) {
+  if (size < 1000)
+    return size + ' B';
+
+  const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+  const i = Math.floor(Math.log(size) / Math.log(1000));
+  return (size / Math.pow(1000, i)).toFixed(2) + ' ' + units[i];
+}
 
 export default function RagDocumentsPage() {
   const { hasPermission } = usePermissions();
@@ -67,6 +79,18 @@ export default function RagDocumentsPage() {
     title="Documentos RAG"
     items={items}
     itemCount={itemCount}
+    renderItem={(item) => <>
+      <DocumentIcon sx={{ fontSize: 52, color: 'text.secondary' }} />
+      <Typography variant="subtitle1" fontWeight="medium" color="text.primary">
+        {item.fileName}
+      </Typography>
+      <Typography variant="body2" color="text.secondary">
+        {sizeInMB(item.fileSize)}
+      </Typography>
+      <Typography variant="body2" color="text.secondary">
+        <Chip label={item.status} />
+      </Typography>
+    </>}
     paginationMode="server"
     paginationModel={paginationModel}
     onPaginationModelChange={(...args) => { setRows([]); setPaginationModel(...args); }}
