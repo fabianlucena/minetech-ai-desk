@@ -1,18 +1,19 @@
-import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ObjectsList from './ObjectsList.jsx';
 import { Box, Typography } from '@mui/material';
 import { ReloadButton, CreateButton } from './buttons/index.jsx';
 import { DeleteIcon, EditIcon, RestoreIcon } from './icons/index.jsx';
 import ConfirmDialog from './dialogs/ConfirmDialog.jsx';
+import ObjectAction from './ObjectAction.jsx';
 
 export default function Objects({
   title,
   description,
   items,
   itemsActions,
-  properties = [],
-  propertyIdName = 'uuid',
+  renderItem,
+  itemIdName = 'uuid',
   tools,
   onReload,
   onCreate,
@@ -38,7 +39,7 @@ export default function Objects({
 
   useEffect(() => {
     const currentIds = new Set(
-      items.map(item => item[propertyIdName])
+      items.map(item => item[itemIdName])
     );
 
     const addedIds = [...currentIds].filter(
@@ -50,7 +51,7 @@ export default function Objects({
     }
 
     previousIdsRef.current = currentIds;
-  }, [items, propertyIdName]);
+  }, [items, itemIdName]);
 
   useEffect(() => {
     if (newItems.size === 0)
@@ -83,52 +84,35 @@ export default function Objects({
     });
   }, [onDelete, deleteConfirmationMessage, confirmation]);
 
-  const effectiveProperties = useMemo(() => {
-    const effectiveProperties = [...properties];
-    if (onDelete || onEdit || editPath || onRestore || itemsActions) {
-      let actionsField = effectiveProperties.find(col => col.field === 'actions');
-      if (!actionsField) {
-        actionsField = {
-          field: 'actions',
-          type: 'actions',
-          headerName: 'Acciones',
-        };
-        effectiveProperties.push(actionsField);
-      }
-
-      actionsField.getActions = (params) => [
-        onDelete && !params?.item?.deletedAt && <div
-          key="delete"
-          icon={<DeleteIcon />}
-          label="Eliminar"
-          onClick={() => handleDelete(params?.item)}
-        />,
-        onEdit && !params?.item?.deletedAt && <div
-          key="edit"
-          icon={<EditIcon />}
-          label="Editar"
-          onClick={() => onEdit(params?.item)}
-        />,
-        editPath && !params?.item?.deletedAt && <div
-          key="edit"
-          icon={<EditIcon />}
-          label="Editar"
-          onClick={() => navigate(editPath.replace(':uuid', params?.item?.[propertyIdName]))}
-        />,
-        onRestore && params?.item?.deletedAt && <div
-          key="restore"
-          icon={<RestoreIcon />}
-          label="Restaurar"
-          onClick={() => onRestore(params?.item)}
-        />,
-        ...itemsActions?.(params) || [],
-      ];
-
-      actionsField.width = 40 * actionsField.getActions({ item: { deletedAt: false }}).filter(a => a).length;
-    }
-
-    return effectiveProperties;
-  }, [properties, onDelete, onEdit, editPath, onRestore, itemsActions, propertyIdName, navigate, handleDelete]);
+  const effectiveItemActions = useCallback((params) => {
+    return [
+      onDelete && !params?.item?.deletedAt && <ObjectAction
+        key="delete"
+        icon={<DeleteIcon />}
+        label="Eliminar"
+        onClick={() => handleDelete(params?.item)}
+      />,
+      onEdit && !params?.item?.deletedAt && <ObjectAction
+        key="edit"
+        icon={<EditIcon />}
+        label="Editar"
+        onClick={() => onEdit(params?.item)}
+      />,
+      editPath && !params?.item?.deletedAt && <ObjectAction
+        key="edit"
+        icon={<EditIcon />}
+        label="Editar"
+        onClick={() => navigate(editPath.replace(':uuid', params?.item?.[itemIdName]))}
+      />,
+      onRestore && params?.item?.deletedAt && <ObjectAction
+        key="restore"
+        icon={<RestoreIcon />}
+        label="Restaurar"
+        onClick={() => onRestore(params?.item)}
+      />,
+      ...itemsActions?.(params) || [],
+    ];
+  }, [onDelete, onEdit, editPath, onRestore, itemsActions, itemIdName, navigate, handleDelete]);
 
   return <Box
     sx={{
@@ -164,8 +148,8 @@ export default function Objects({
     </Box>}
     <ObjectsList
       items={items}
-      properties={effectiveProperties}
-      getItemId={(item) => item[propertyIdName]}
+      renderItem={renderItem}
+      getItemId={(item) => item[itemIdName]}
       getItemClassName={(params) => {
         let className = getItemClassName?.(params);
         if (!className) {
@@ -177,11 +161,12 @@ export default function Objects({
               : 'item-odd';
         }
 
-        if (newItems.has(params.item[propertyIdName]))
+        if (newItems.has(params.item[itemIdName]))
             className += ' item-new';
 
         return className;
       }}
+      itemActions={effectiveItemActions}
       style={{
         flex: 1,
         display: 'flex',
