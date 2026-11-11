@@ -1,6 +1,7 @@
 import getDependency from '../dependency.js';
 import { getOptionsFromRequest } from './utils.js';
 import { Error400 } from '../errors/error400.js';
+import { RagDocumentDTO } from '../dto/ragDocument.dto.js';
 
 export async function getList(req, res) {
   const ragDocumentService = getDependency('ragDocumentService');
@@ -16,15 +17,15 @@ export async function getList(req, res) {
     res.set('X-Total-Count', count.toString());
   }
   
-  res.json(rows.map(u => new UserDTO(u)));
+  res.json(rows.map(d => new RagDocumentDTO(d)));
 }
 
 export async function getByUuid(req, res) {
   const ragDocumentService = getDependency('ragDocumentService');
-  const user = await ragDocumentService.getByUuid(req.params.uuid, {
+  const document = await ragDocumentService.getByUuid(req.params.uuid, {
     session: req.session,
   });
-  res.json(new UserDTO(user));
+  res.json(new RagDocumentDTO(document));
 }
 
 export async function create(req, res) {
@@ -33,21 +34,29 @@ export async function create(req, res) {
   
   const ragDocumentService = getDependency('ragDocumentService');
   
-  const user = await ragDocumentService.create(
-    req.body,
-    { session: req.session }
-  );
-  res.json(new UserDTO(user));
+  const ragDocuments = [];
+  for (const file of req.files) {
+    const ragDocument = await ragDocumentService.create(
+      {
+        ...req.body,
+        file,
+      },
+      { session: req.session }
+    );
+    ragDocuments.push(ragDocument);
+  }
+
+  res.json(ragDocuments.map(ragDocument => new RagDocumentDTO(ragDocument)));
 }
 
 export async function updateByUuid(req, res) {
   const ragDocumentService = getDependency('ragDocumentService');
-  const user = await ragDocumentService.updateByUuid(
+  const document = await ragDocumentService.updateByUuid(
     req.params.uuid,
     req.body,
     { session: req.session }
   );
-  res.json(new UserDTO(user));
+  res.json(new RagDocumentDTO(document));
 }
 
 export async function deleteByUuid(req, res) {

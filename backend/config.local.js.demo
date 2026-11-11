@@ -1,5 +1,6 @@
 export default {
   webPath: '../frontend/dist',
+  ragDocumentsPath: 'rag_documents',
   
   dbName: 'minetech-ai-desk',
   dbUser: 'minetech-ai-desk',

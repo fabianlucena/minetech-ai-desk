@@ -1,6 +1,7 @@
 import { addDependency } from './dependency.js';
 import { mergeFromEnv } from './utils/merge_from_env.js';
 import { deepMerge } from './utils/object.js';
+import fs from 'fs';
 
 let config = {
   port: 3000,
@@ -42,6 +43,15 @@ try {
   } else {
     throw err;
   }
+}
+
+config.ragDocumentsPath ??= 'rag_documents';
+if (!config.ragDocumentsPath.startsWith('/')) {
+  config.ragDocumentsPath = process.cwd() + '/' + config.ragDocumentsPath;
+}
+
+if (!fs.existsSync(config.ragDocumentsPath)) {
+  fs.mkdirSync(config.ragDocumentsPath, { recursive: true });
 }
 
 addDependency('config', config);
