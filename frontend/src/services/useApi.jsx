@@ -77,7 +77,6 @@ export function ApiProvider({
         for (const key in body) {
           if (body[key] instanceof File) {
             contentType = 'multipart/form-data';
-            headers['Content-Type'] = contentType;
             break;
           }
         }
