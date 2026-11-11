@@ -102,10 +102,10 @@ export default function ShiftDialog({
     } catch (error) {
       if (uuid) {
         console.error('Error al actualizar turno:', error);
-        addError('Error al actualizar turno: ' + (error.data?.message || error.message || error.data?.error));
+        addError('Error al actualizar turno: ' + (error.data?.message || error.data?.error || error.message));
       } else {
         console.error('Error al crear turno:', error);
-        addError('Error al crear turno: ' + (error.data?.message || error.message || error.data?.error));
+        addError('Error al crear turno: ' + (error.data?.message || error.data?.error || error.message));
       }
     }
     setDisabled(false);

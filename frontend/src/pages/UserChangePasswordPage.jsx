@@ -33,7 +33,7 @@ export default function UserChangePasswordPage() {
       setData(data);
       setUnchangedData(data);
     } catch (error) {
-      addError('Error al obtener el usuario: ' + (error.data?.message || error.message || error.data?.error));
+      addError('Error al obtener el usuario: ' + (error.data?.message || error.data?.error || error.message));
       console.error('Error al obtener el usuario:', error);
     }
   }, [uuid, addError, getUser]);

@@ -29,8 +29,8 @@ export default function RagDocumentPage() {
       setData(data);
       setUnchangedData(data);
     } catch (error) {
-      addError('Error al obtener el usuario');
-      console.error('Error al obtener el usuario:', error);
+      addError('Error al obtener el documento: ' + (error.data?.message || error.data?.error || error.message));
+      console.error('Error al obtener el documento:', error);
     }
   }, [uuid, addError, getRagDocument]);
 
@@ -58,10 +58,10 @@ export default function RagDocumentPage() {
     } catch (error) {
       if (uuid) {
         console.error('Error al actualizar documento:', error);
-        addError('Error al actualizar documento: ' + (error.data?.message || error.message || error.data?.error));
+        addError('Error al actualizar documento: ' + (error.data?.message || error.data?.error || error.message));
       } else {
         console.error('Error al crear documento:', error);
-        addError('Error al crear documento: ' + (error.data?.message || error.message || error.data?.error));
+        addError('Error al crear documento: ' + (error.data?.message || error.data?.error || error.message ));
       }
     }
     setDisabled(false);

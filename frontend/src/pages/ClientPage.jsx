@@ -95,10 +95,10 @@ export default function ClientPage() {
     } catch (error) {
       if (uuid) {
         console.error('Error al actualizar cliente:', error);
-        addError('Error al actualizar cliente: ' + (error.data?.message || error.message || error.data?.error));
+        addError('Error al actualizar cliente: ' + (error.data?.message || error.data?.error || error.message));
       } else {
         console.error('Error al crear cliente:', error);
-        addError('Error al crear cliente: ' + (error.data?.message || error.message || error.data?.error));
+        addError('Error al crear cliente: ' + (error.data?.message || error.data?.error || error.message));
       }
     }
     setDisabled(false);

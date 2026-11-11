@@ -93,10 +93,10 @@ export default function SettingPage() {
     } catch (error) {
       if (uuid) {
         console.error('Error al actualizar configuración:', error);
-        addError('Error al actualizar configuración: ' + (error.data?.message || error.message || error.data?.error));
+        addError('Error al actualizar configuración: ' + (error.data?.message || error.data?.error || error.message));
       } else {
         console.error('Error al crear configuración:', error);
-        addError('Error al crear configuración: ' + (error.data?.message || error.message || error.data?.error));
+        addError('Error al crear configuración: ' + (error.data?.message || error.data?.error || error.message));
       }
     }
     setDisabled(false);

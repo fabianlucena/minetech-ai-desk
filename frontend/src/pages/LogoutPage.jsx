@@ -22,7 +22,7 @@ export default function LogoutPage() {
       addWarning('Sesión cerrada correctamente');
     } catch (error) {
       console.error('Error al cerrar sesión:', error);
-      addError('Error al cerrar sesión: ' + (error.data?.message || error.message || error.data?.error));
+      addError('Error al cerrar sesión: ' + (error.data?.message || error.data?.error || error.message));
     }
   }, [updateSession, navigate, addWarning, addError, clearCredentials]);
 

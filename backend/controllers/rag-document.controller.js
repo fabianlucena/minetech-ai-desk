@@ -1,5 +1,6 @@
 import getDependency from '../dependency.js';
 import { getOptionsFromRequest } from './utils.js';
+import { Error400 } from '../errors/error400.js';
 
 export async function getList(req, res) {
   const ragDocumentService = getDependency('ragDocumentService');
@@ -27,7 +28,11 @@ export async function getByUuid(req, res) {
 }
 
 export async function create(req, res) {
+  if (!req.files?.length)
+    throw new Error400('No se ha subido ningún archivo');
+  
   const ragDocumentService = getDependency('ragDocumentService');
+  
   const user = await ragDocumentService.create(
     req.body,
     { session: req.session }

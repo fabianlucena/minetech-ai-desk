@@ -30,7 +30,7 @@ export default function TechnicianPage() {
     try {
       setTechnicianUsers(await getTechnicianUsers({ query: { skipTechnicians: true }}));
     } catch (error) {
-      addError('Error al obtener los usuarios técnicos: ' + (error.data?.message || error.message || error.data?.error));
+      addError('Error al obtener los usuarios técnicos: ' + (error.data?.message || error.data?.error || error.message));
       console.error('Error al obtener los usuarios técnicos:', error);
     }
   }, [addError, getTechnicianUsers]);
@@ -45,7 +45,7 @@ export default function TechnicianPage() {
       setData(data);
       setUnchangedData(data);
     } catch (error) {
-      addError('Error al obtener el técnico: ' + (error.data?.message || error.message || error.data?.error));
+      addError('Error al obtener el técnico: ' + (error.data?.message || error.data?.error || error.message));
       console.error('Error al obtener el técnico:', error);
     }
   }, [uuid, addError, getTechnician]);
@@ -89,10 +89,10 @@ export default function TechnicianPage() {
     } catch (error) {
       if (uuid) {
         console.error('Error al actualizar técnico:', error);
-        addError('Error al actualizar técnico: ' + (error.data?.message || error.message || error.data?.error));
+        addError('Error al actualizar técnico: ' + (error.data?.message || error.data?.error || error.message));
       } else {
         console.error('Error al crear técnico:', error);
-        addError('Error al crear técnico: ' + (error.data?.message || error.message || error.data?.error));
+        addError('Error al crear técnico: ' + (error.data?.message || error.data?.error || error.message));
       }
     }
     setDisabled(false);

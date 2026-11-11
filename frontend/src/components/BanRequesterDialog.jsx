@@ -43,7 +43,7 @@ export default function BanRequesterDialog({
       onSubmit?.();
     } catch (error) {
       console.error('Error al banear solicitante:', error);
-      addError('Error al banear solicitante: ' + (error.data?.message || error.message || error.data?.error));
+      addError('Error al banear solicitante: ' + (error.data?.message || error.data?.error || error.message));
     }
     setDisabled(false);
   }

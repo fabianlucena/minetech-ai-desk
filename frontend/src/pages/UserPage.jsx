@@ -28,7 +28,7 @@ export default function UserPage() {
     try {
       setRoles(await getRoles());
     } catch (error) {
-      addError('Error al obtener los roles: ' + (error.data?.message || error.message || error.data?.error));
+      addError('Error al obtener los roles: ' + (error.data?.message || error.data?.error || error.message));
       console.error('Error al obtener los roles:', error);
     }
   }, [addError, getRoles]);
@@ -82,10 +82,10 @@ export default function UserPage() {
     } catch (error) {
       if (uuid) {
         console.error('Error al actualizar usuario:', error);
-        addError('Error al actualizar usuario: ' + (error.data?.message || error.message || error.data?.error));
+        addError('Error al actualizar usuario: ' + (error.data?.message || error.data?.error || error.message));
       } else {
         console.error('Error al crear usuario:', error);
-        addError('Error al crear usuario: ' + (error.data?.message || error.message || error.data?.error));
+        addError('Error al crear usuario: ' + (error.data?.message || error.data?.error || error.message));
       }
     }
     setDisabled(false);

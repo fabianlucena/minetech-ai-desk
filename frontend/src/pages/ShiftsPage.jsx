@@ -85,7 +85,7 @@ export default function ShiftsPage() {
       addMessage('Turno restaurado correctamente');
       load();
     } catch (error) {
-      addError('Error al restaurar el turno: ' + (error.data?.message || error.message || error.data?.error));
+      addError('Error al restaurar el turno: ' + (error.data?.message || error.data?.error || error.message));
       console.error('Error al restaurar el turno:', error);
     }
   }

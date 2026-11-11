@@ -34,7 +34,7 @@ export default function LoginPage() {
       addInfo('Sesión iniciada correctamente');
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
-      addError('Error al iniciar sesión: ' + (error.data?.message || error.message || error.data?.error));
+      addError('Error al iniciar sesión: ' + (error.data?.message || error.data?.error || error.message));
     }
     setDisabled(false);
   }
@@ -44,7 +44,7 @@ export default function LoginPage() {
       .then(setProviders)
       .catch(error => {
         console.error('Error al obtener los proveedores de OAuth2:', error);
-        addError('Error al obtener los proveedores de autorización: ' + (error.data?.message || error.message || error.data?.error || error.error || 'Error desconocido'));
+        addError('Error al obtener los proveedores de autorización: ' + (error.data?.message || error.data?.error || error.message || error.error || 'Error desconocido'));
       });
   }, [addError, getOAuth2Providers]);
 
