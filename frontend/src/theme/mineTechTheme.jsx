@@ -124,7 +124,18 @@ export const mineTechTheme = createTheme(
           },
         },
       },
+
+      MuiTypography: {
+        styleOverrides: {
+          root: {
+            '&.page-title': {
+              padding: '.5em 1em',
+            },
+          },
+        },
+      },
     },
   },
+  
   esES,
 );

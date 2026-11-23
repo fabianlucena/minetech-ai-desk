@@ -132,7 +132,7 @@ export default function Objects({
       }}
     >
       <Box>
-        {title && <Typography variant="h6" fontWeight={600}>
+        {title && <Typography className="page-title" variant="h6" fontWeight={600}>
           {title}
         </Typography>}
         {description && <Typography variant="body2" color="text.secondary">

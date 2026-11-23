@@ -12,14 +12,19 @@ export default function ObjectsList({
     sx={{
       border: '1px solid',
       borderColor: 'grey.400',
-      borderRadius: 3,
-      p: 4,
+      borderRadius: 1,
+      p: 1,
       textAlign: 'center',
       bgcolor: 'background.default',
       transition: 'all 0.2s ease-in-out',
       display: 'flex',
       flexDirection: 'row',
       gap: 1,
+      height: '100%',
+      flexWrap: 'wrap',
+      overflowY: 'auto',
+      justifyContent: 'space-evenly',
+      alignItems: 'flex-start',
     }}
   >
     {items.map((item) => <Box
