@@ -12,6 +12,7 @@ export { default as DeleteIcon } from './delete.icon.jsx';
 export { default as DisconnectedIcon } from './disconnected.icon.jsx';
 export { default as DocumentIcon } from './document.icon.jsx';
 export { default as DocumentsIcon } from './documents.icon.jsx';
+export { default as DownloadIcon } from './download.icon.jsx';
 export { default as EditIcon } from './edit.icon.jsx';
 export { default as HomeIcon } from './home.icon.jsx';
 export { default as LoginIcon } from './login.icon.jsx';

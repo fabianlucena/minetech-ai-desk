@@ -11,7 +11,7 @@ export default function Objects({
   title,
   description,
   items,
-  itemsActions,
+  itemActions,
   renderItem,
   itemIdName = 'uuid',
   tools,
@@ -110,9 +110,9 @@ export default function Objects({
         label="Restaurar"
         onClick={() => onRestore(params?.item)}
       />,
-      ...itemsActions?.(params) || [],
+      ...itemActions?.(params)?.filter(action => action) || [],
     ].filter(action => action !== null && action !== undefined);
-  }, [onDelete, onEdit, editPath, onRestore, itemsActions, itemIdName, navigate, handleDelete]);
+  }, [onDelete, onEdit, editPath, onRestore, itemActions, itemIdName, navigate, handleDelete]);
 
   return <Box
     sx={{
@@ -128,7 +128,7 @@ export default function Objects({
     {(title || description || tools || onReload || onCreate || createPath) && <Box
       sx={{
         display: 'flex',
-        justifyContent: 'space-between',
+        justifyContent: 'space-evenly',
       }}
     >
       <Box>

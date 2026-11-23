@@ -9,7 +9,9 @@ import { Typography, Box } from '@mui/material';
 import { DocumentIcon } from '../components/icons/index.jsx';
 import Chip from '../components/Chip.jsx';
 import { UploadButton } from '../components/buttons/index.jsx';
+import { DownloadIcon } from '../components/icons/index.jsx';
 import { useNavigate } from 'react-router-dom';
+import ObjectAction from '../components/ObjectAction.jsx';
 
 function sizeInMB(size) {
   if (size < 1000)
@@ -113,6 +115,14 @@ export default function RagDocumentsPage() {
       </Typography>
       <Chip label={getStatusNameByValue(item.status) || 'Desconocido'} />
     </Box>}
+    itemActions={() => [
+      hasPermission('ragDocuments.download') && <ObjectAction
+        key="restore"
+        icon={<DownloadIcon color="primary" />}
+        label="Descargar"
+        onClick={() => onRestore(params?.item)}
+      />
+    ]}
     paginationMode="server"
     paginationModel={paginationModel}
     onPaginationModelChange={(...args) => { setRows([]); setPaginationModel(...args); }}
