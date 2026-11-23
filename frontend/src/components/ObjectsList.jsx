@@ -35,7 +35,7 @@ export default function ObjectsList({
       sx={{
         border: '1px solid',
         borderColor: 'grey.500',
-        padding: '1em',
+        padding: '.3em .5em',
         borderRadius: '.5em',
         flexDirection: 'column',
         alignItems: 'center',
@@ -45,10 +45,11 @@ export default function ObjectsList({
       {renderItem(item)}
       {itemActions && <Box
         sx={{
-          display: "flex",
-          flexDirection: "row",
+          display: 'flex',
+          flexDirection: 'row',
           gap: 1,
-          justifyContent: "center"
+          justifyContent: 'space-around',
+          marginTop: '0.5em',
         }}
       >
         {(typeof itemActions === 'function' ? itemActions({item}) : itemActions).map((action, index) => <Box key={index}>

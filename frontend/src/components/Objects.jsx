@@ -88,30 +88,30 @@ export default function Objects({
     return [
       onDelete && !params?.item?.deletedAt && <ObjectAction
         key="delete"
-        icon={<DeleteIcon />}
+        icon={<DeleteIcon color="error" />}
         label="Eliminar"
         onClick={() => handleDelete(params?.item)}
       />,
       onEdit && !params?.item?.deletedAt && <ObjectAction
         key="edit"
-        icon={<EditIcon />}
+        icon={<EditIcon color="primary" />}
         label="Editar"
         onClick={() => onEdit(params?.item)}
       />,
       editPath && !params?.item?.deletedAt && <ObjectAction
         key="edit"
-        icon={<EditIcon />}
+        icon={<EditIcon color="primary" />}
         label="Editar"
         onClick={() => navigate(editPath.replace(':uuid', params?.item?.[itemIdName]))}
       />,
       onRestore && params?.item?.deletedAt && <ObjectAction
         key="restore"
-        icon={<RestoreIcon />}
+        icon={<RestoreIcon color="primary" />}
         label="Restaurar"
         onClick={() => onRestore(params?.item)}
       />,
       ...itemsActions?.(params) || [],
-    ];
+    ].filter(action => action !== null && action !== undefined);
   }, [onDelete, onEdit, editPath, onRestore, itemsActions, itemIdName, navigate, handleDelete]);
 
   return <Box

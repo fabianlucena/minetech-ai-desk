@@ -85,16 +85,14 @@ export default function RagDocumentsPage() {
     renderItem={(item) => <Box
       onClick={() => hasPermission('ragDocuments.read') && navigate(`/rag-documents/${item.uuid}`)}
     >
-      <DocumentIcon sx={{ fontSize: 52, color: 'text.secondary' }} />
+      <DocumentIcon sx={{ fontSize: 52, color: '#4040a0' }} />
       <Typography variant="subtitle1" fontWeight="medium" color="text.primary">
         {item.fileName}
       </Typography>
       <Typography variant="body2" color="text.secondary">
         {sizeInMB(item.fileSize)}
       </Typography>
-      <Typography variant="body2" color="text.secondary">
-        <Chip label={item.status} />
-      </Typography>
+      <Chip label={item.status} />
     </Box>}
     paginationMode="server"
     paginationModel={paginationModel}
