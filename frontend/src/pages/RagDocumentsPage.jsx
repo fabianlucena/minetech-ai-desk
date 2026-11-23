@@ -25,11 +25,16 @@ export default function RagDocumentsPage() {
   const { hasPermission } = usePermissions();
   const { addMessage, addError } = useToast();
   const { subscribe } = useDataNotifications();
-  const { getRagDocuments, deleteRagDocument, restoreRagDocument } = useRagDocument();
+  const { getRagDocuments, deleteRagDocument, restoreRagDocument, getRagDocumentsStatus } = useRagDocument();
   const [includeDeleted, setIncludeDeleted] = useState(false);
   const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 20 });
   const [items, setItems] = useState([]);
   const [itemCount, setItemCount] = useState(0);
+  const [status, setStatus] = useState({});
+
+  const getStatusNameByValue = useCallback((value) => {
+    return status.find(s => s.value === value)?.name ?? value;
+  }, [status]);
 
   const load = useCallback(async () => {
     try {
@@ -47,12 +52,23 @@ export default function RagDocumentsPage() {
     }
   }, [addError, includeDeleted, getRagDocuments, paginationModel]);
 
+  const loadStatuses = useCallback(async () => {
+    try {
+      setStatus(await getRagDocumentsStatus());
+    } catch (error) {
+      addError('Error al obtener los estados de los documentos');
+      console.error('Error al obtener los estados de los documentos:', error);
+    }
+  }, [getRagDocumentsStatus, addError]);
+
   useEffect(() => {
     function reload() {
       load();
     }
     reload();
-  }, [load]);
+
+    loadStatuses();
+  }, [load, loadStatuses]);
   
   useEffect(() => subscribe('ragDocuments', load), [subscribe, load]);
 
@@ -84,6 +100,9 @@ export default function RagDocumentsPage() {
     itemCount={itemCount}
     renderItem={(item) => <Box
       onClick={() => hasPermission('ragDocuments.read') && navigate(`/rag-documents/${item.uuid}`)}
+      sx={{
+        width: 120,
+      }}
     >
       <DocumentIcon sx={{ fontSize: 52, color: '#4040a0' }} />
       <Typography variant="subtitle1" fontWeight="medium" color="text.primary">
@@ -92,7 +111,7 @@ export default function RagDocumentsPage() {
       <Typography variant="body2" color="text.secondary">
         {sizeInMB(item.fileSize)}
       </Typography>
-      <Chip label={item.status} />
+      <Chip label={getStatusNameByValue(item.status) || 'Desconocido'} />
     </Box>}
     paginationMode="server"
     paginationModel={paginationModel}

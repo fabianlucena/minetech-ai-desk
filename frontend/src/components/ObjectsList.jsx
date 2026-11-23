@@ -40,6 +40,9 @@ export default function ObjectsList({
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
+        '&:hover': {
+          boxShadow: 3,
+        },
       }}
     >
       {renderItem(item)}

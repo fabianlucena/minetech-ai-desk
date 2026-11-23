@@ -22,6 +22,7 @@ export default function useRagDocument() {
   const updateRagDocument = useCallback((uuid, data) => api.putJson(`v1/rag-documents/${uuid}`, { normalizeItem: normalizeRagDocument, body: data }), [api]);
   const deleteRagDocument = useCallback((uuid) => api.deleteJson(`v1/rag-documents/${uuid}`), [api]);
   const restoreRagDocument = useCallback((uuid) => api.patchJson(`v1/rag-documents/${uuid}/restore`), [api]);
+  const getRagDocumentsStatus = useCallback(() => api.getJson('v1/rag-documents/status'), [api]);
 
   return useMemo(() => ({
     normalizeRagDocument,
@@ -31,5 +32,14 @@ export default function useRagDocument() {
     updateRagDocument,
     deleteRagDocument,
     restoreRagDocument,
-  }), [getRagDocuments, getRagDocument, createRagDocument, updateRagDocument, deleteRagDocument, restoreRagDocument]);
+    getRagDocumentsStatus,
+  }), [
+    getRagDocuments,
+    getRagDocument,
+    createRagDocument,
+    updateRagDocument,
+    deleteRagDocument,
+    restoreRagDocument,
+    getRagDocumentsStatus
+  ]);
 }

@@ -2,6 +2,7 @@ import getDependency from '../dependency.js';
 import { getOptionsFromRequest } from './utils.js';
 import { Error400 } from '../errors/error400.js';
 import { RagDocumentDTO } from '../dto/ragDocument.dto.js';
+import { ragDocumentsStatus } from '../categories/rag_documents_status.js';
 
 export async function getList(req, res) {
   const ragDocumentService = getDependency('ragDocumentService');
@@ -75,4 +76,8 @@ export async function restoreByUuid(req, res) {
     { session: req.session }
   );
   res.status(204).end();
+}
+
+export async function getStatus(req, res) {
+  res.json(ragDocumentsStatus);
 }
