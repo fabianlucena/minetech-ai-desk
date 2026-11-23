@@ -9,7 +9,9 @@ const defaultData = {
   isActive: true,
 };
 
-export default function RagDocumentPage() {
+export default function RagDocumentPage({
+  edit = false,
+}) {
   const navigate = useNavigate();
   const { uuid } = useParams();
   const { addInfo, addError } = useToast();
@@ -17,6 +19,7 @@ export default function RagDocumentPage() {
   const [disabled, setDisabled] = useState(false);
   const [data, setData] = useState({...defaultData});
   const [unchangedData, setUnchangedData] = useState({...defaultData});
+  const readOnly = !edit && !!uuid;
 
   const load = useCallback(async () => {
     try {
@@ -73,7 +76,7 @@ export default function RagDocumentPage() {
 
   return <Form
     disabled={disabled}
-    onSubmit={onSubmit}
+    onSubmit={edit && onSubmit}
     onCancelGoBack={true}
     validationError={getValidationError()}
     unchangedData={JSON.stringify(data) === JSON.stringify(unchangedData)}
@@ -92,12 +95,14 @@ export default function RagDocumentPage() {
       <SwitchField
         label="Activo"
         disabled={disabled}
+        readOnly={readOnly}
         checked={data.isActive}
         onChange={(e) => setData({...data, isActive: e.target.checked})}
       />
       <TextField
         label="Nombre"
         disabled={disabled}
+        readOnly={readOnly}
         required
         autoFocus
         value={data.fileName}
@@ -105,25 +110,26 @@ export default function RagDocumentPage() {
       />
       <TextField
         label="Tipo de archivo"
-        readonly
+        readOnly
         disabled={disabled}
         value={data.mimeType}
+        defaultValue="N/A"
       />
       <TextField
         label="Tamaño del archivo"
-        readonly
+        readOnly
         disabled={disabled}
         value={data.fileSize}
       />
       <TextField
         label="Checksum"
-        readonly
+        readOnly
         disabled={disabled}
         value={data.checksum}
       />
       <TextField
         label="Estado"
-        readonly
+        readOnly
         disabled={disabled}
         value={data.status}
       />

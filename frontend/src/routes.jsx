@@ -171,7 +171,7 @@ export const allRoutes = [
       },
       {
         path: '/rag-documents/:uuid/edit',
-        element: <RagDocumentPage />,
+        element: <RagDocumentPage edit={true} />,
         condition: ({ permissions }) => permissions.includes('ragDocuments.update'),
       },
       {

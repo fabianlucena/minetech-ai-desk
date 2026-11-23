@@ -5,6 +5,8 @@ export default function TextField({
   children,
   variant = 'outlined',
   sx = {},
+  readOnly,
+  value,
   ...props
 }) {
   if (variant === 'standard') {
@@ -19,6 +21,21 @@ export default function TextField({
     };
   }
 
+  if (readOnly) {
+    props ??= {};
+    props.slotProps ??= {};
+    props.slotProps.input ??= {};
+    // oxlint-disable-next-line react/immutability
+    props.slotProps.input.readOnly = true;
+  }
+
+  if (value) {
+    props ??= {};
+    props.slotProps ??= {};
+    props.slotProps.inputLabel ??= {};
+    props.slotProps.inputLabel.shrink ??= {};
+  }
+
   return <Box 
     sx={{
       display: 'flex',
@@ -30,6 +47,7 @@ export default function TextField({
       fullWidth
       variant={variant}
       sx={sx}
+      value={value}
       {...props}
     >
       {children}

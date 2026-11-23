@@ -182,7 +182,7 @@ export default function Form({
         {(onCancelGoBack) && <Button secondary onClick={e => handleCancel(e, () => navigate(-1))}>
           {cancelText || 'Cancelar'}
         </Button>}
-        {(onSubmit || submitText) && <Button type="submit" disabled={!canSubmit || validationError || unchangedData || disabled}>
+        {(onSubmit !== false && (onSubmit || submitText)) && <Button type="submit" disabled={!canSubmit || validationError || unchangedData || disabled}>
           {submitText || 'Enviar'}
         </Button>}
       </Box> }
