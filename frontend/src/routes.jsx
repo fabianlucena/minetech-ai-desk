@@ -165,6 +165,11 @@ export const allRoutes = [
         condition: ({ permissions }) => permissions.includes('ragDocuments.create'),
       },
       {
+        path: '/rag-documents/:uuid',
+        element: <RagDocumentPage />,
+        condition: ({ permissions }) => permissions.includes('ragDocuments.read'),
+      },
+      {
         path: '/rag-documents/:uuid/edit',
         element: <RagDocumentPage />,
         condition: ({ permissions }) => permissions.includes('ragDocuments.update'),

@@ -15,4 +15,5 @@ export { default as RestoreButton } from './restore.button.jsx';
 export { default as SecondaryButton } from './SecondaryButton.jsx';
 export { default as ShowButton } from './show.button.jsx';
 export { default as SubmitButton } from './SubmitButton.jsx';
+export { default as UploadButton } from './upload.button.jsx';
 export { default as WeekButton } from './week.button.jsx';

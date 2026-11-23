@@ -5,9 +5,11 @@ import useDataNotifications from '../services/useDataNotifications';
 import useRagDocument from '../services/useRagDocument';
 import Objects from '../components/Objects';
 import SwitchField from '../components/fields/SwitchField.jsx';
-import { Typography } from '@mui/material';
+import { Typography, Box } from '@mui/material';
 import { DocumentIcon } from '../components/icons/index.jsx';
 import Chip from '../components/Chip.jsx';
+import { UploadButton } from '../components/buttons/index.jsx';
+import { useNavigate } from 'react-router-dom';
 
 function sizeInMB(size) {
   if (size < 1000)
@@ -19,6 +21,7 @@ function sizeInMB(size) {
 }
 
 export default function RagDocumentsPage() {
+  const navigate = useNavigate();
   const { hasPermission } = usePermissions();
   const { addMessage, addError } = useToast();
   const { subscribe } = useDataNotifications();
@@ -79,7 +82,9 @@ export default function RagDocumentsPage() {
     title="Documentos RAG"
     items={items}
     itemCount={itemCount}
-    renderItem={(item) => <>
+    renderItem={(item) => <Box
+      onClick={() => hasPermission('ragDocuments.read') && navigate(`/rag-documents/${item.uuid}`)}
+    >
       <DocumentIcon sx={{ fontSize: 52, color: 'text.secondary' }} />
       <Typography variant="subtitle1" fontWeight="medium" color="text.primary">
         {item.fileName}
@@ -90,16 +95,16 @@ export default function RagDocumentsPage() {
       <Typography variant="body2" color="text.secondary">
         <Chip label={item.status} />
       </Typography>
-    </>}
+    </Box>}
     paginationMode="server"
     paginationModel={paginationModel}
     onPaginationModelChange={(...args) => { setRows([]); setPaginationModel(...args); }}
     pageSizeOptions={[10, 20, 50, 100]}
     onReload={() => load()}
-    createPath={hasPermission('ragDocuments.create') && '/rag-documents/new'}
     onDelete={hasPermission('ragDocuments.delete') && deleteRagDocumentHandler}
     editPath={hasPermission('ragDocuments.update') && '/rag-documents/:uuid/edit'}
     onRestore={hasPermission('ragDocuments.restore') && restoreRagDocumentHandler}
+    clickItemPath={hasPermission('ragDocuments.show') && '/rag-documents/:uuid'}
     tools={<>
       {hasPermission('ragDocuments.restore') && 
         <SwitchField
@@ -107,6 +112,9 @@ export default function RagDocumentsPage() {
           checked={includeDeleted}
           onChange={(e) => setIncludeDeleted(e.target.checked)}
         />
+      }
+      {hasPermission('ragDocuments.create') &&
+        <UploadButton onClick={() => navigate('/rag-documents/new')} />
       }
     </>}
   />;
