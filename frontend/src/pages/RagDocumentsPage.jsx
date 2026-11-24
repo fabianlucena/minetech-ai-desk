@@ -54,7 +54,7 @@ export default function RagDocumentsPage() {
     }
   }, [addError, includeDeleted, getRagDocuments, paginationModel]);
 
-  const loadStatuses = useCallback(async () => {
+  const loadStatus = useCallback(async () => {
     try {
       setStatus(await getRagDocumentsStatus());
     } catch (error) {
@@ -69,8 +69,8 @@ export default function RagDocumentsPage() {
     }
     reload();
 
-    loadStatuses();
-  }, [load, loadStatuses]);
+    loadStatus();
+  }, [load, loadStatus]);
   
   useEffect(() => subscribe('ragDocuments', load), [subscribe, load]);
 

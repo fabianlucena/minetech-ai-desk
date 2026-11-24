@@ -55,23 +55,26 @@ export default function ClientPage() {
   }, [addError, uuid, getClient]);
 
   useEffect(() => {
-    loadStatus();
+    function _load() {
+      loadStatus();
 
-    if (uuid) {
-      setFormConfig({
-        title: 'Editar cliente',
-        description: 'Modifique los datos del cliente',
-        disabledMessage: 'Actualizando cliente...',
-      });
+      if (uuid) {
+        setFormConfig({
+          title: 'Editar cliente',
+          description: 'Modifique los datos del cliente',
+          disabledMessage: 'Actualizando cliente...',
+        });
 
-      load();
-    } else {
-      setFormConfig({
-        title: 'Crear nuevo cliente',
-        description: 'Por favor, ingrese los datos del nuevo cliente',
-        disabledMessage: 'Creando cliente...',
-      });
+        load();
+      } else {
+        setFormConfig({
+          title: 'Crear nuevo cliente',
+          description: 'Por favor, ingrese los datos del nuevo cliente',
+          disabledMessage: 'Creando cliente...',
+        });
+      }
     }
+    _load();
   }, [uuid, loadStatus, load]);
 
   async function onSubmit() {
@@ -105,14 +108,18 @@ export default function ClientPage() {
   }
 
   useEffect(() => {
-    let { code, accessCode } = generateClientIdentifiers(data.name);
-    if (accessCode.substring(0, 3) === data.accessCode.substring(0, 3))
-      accessCode = data.accessCode;
+    function exec() {
+      let { code, accessCode } = generateClientIdentifiers(data.name);
+      if (accessCode.substring(0, 3) === data.accessCode.substring(0, 3))
+        accessCode = data.accessCode;
 
-    if (code === data.code && accessCode === data.accessCode)
-      return;
+      if (code === data.code && accessCode === data.accessCode)
+        return;
 
-    setData({...data, code, accessCode});
+      setData({...data, code, accessCode});
+    }
+
+    exec();
   }, [data]);
 
   function getValidationError() {

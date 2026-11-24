@@ -161,7 +161,7 @@ export const allRoutes = [
       },
       {
         path: '/rag-documents/new',
-        element: <RagDocumentPage />,
+        element: <RagDocumentPage edit={true} />,
         condition: ({ permissions }) => permissions.includes('ragDocuments.create'),
       },
       {

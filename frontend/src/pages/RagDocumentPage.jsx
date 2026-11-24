@@ -4,6 +4,9 @@ import Form from '../components/Form.jsx';
 import { TextField, SwitchField, FileUploadField } from '../components/fields/index.jsx';
 import useToast from '../contexts/useToast.jsx';
 import useRagDocument from '../services/useRagDocument.jsx';
+import Button from '../components/buttons/SecondaryButton.jsx';
+import usePermissions from '../contexts/usePermissions';
+import { DownloadIcon } from '../components/icons/index.jsx';
 
 const defaultData = {
   isActive: true,
@@ -15,11 +18,26 @@ export default function RagDocumentPage({
   const navigate = useNavigate();
   const { uuid } = useParams();
   const { addInfo, addError } = useToast();
-  const { getRagDocument, updateRagDocument, createRagDocument } = useRagDocument();
+  const { getRagDocument, updateRagDocument, createRagDocument, getRagDocumentsStatus, downloadRagDocument } = useRagDocument();
   const [disabled, setDisabled] = useState(false);
   const [data, setData] = useState({...defaultData});
   const [unchangedData, setUnchangedData] = useState({...defaultData});
   const readOnly = !edit && !!uuid;
+  const [status, setStatus] = useState([]);
+  const { hasPermission } = usePermissions();
+
+  const getStatusNameByValue = useCallback((value) => {
+    return status?.find(s => s.value === value)?.name ?? value;
+  }, [status]);
+
+  const loadStatus = useCallback(async () => {
+    try {
+      setStatus(await getRagDocumentsStatus());
+    } catch (error) {
+      addError('Error al obtener los estados de los documentos');
+      console.error('Error al obtener los estados de los documentos:', error);
+    }
+  }, [getRagDocumentsStatus, addError]);  
 
   const load = useCallback(async () => {
     try {
@@ -37,11 +55,14 @@ export default function RagDocumentPage({
   }, [uuid, addError, getRagDocument]);
 
   useEffect(() => {
-    function _load() { load(); }
+    function _load() {
+      loadStatus();
+      load();
+    }
 
     if (uuid)
       _load();
-  }, [uuid, load]);
+  }, [uuid, load, loadStatus]);
 
   async function onSubmit() {
     setDisabled(true);
@@ -74,12 +95,32 @@ export default function RagDocumentPage({
       return 'Seleccione el archivo que desea cargar';
   }
 
+  const downloadRagDocumentHandler = useCallback(async (item) => {
+    if (!item?.uuid) {
+      addError('No se proporcionó un UUID válido para descargar el documento');
+      return;
+    }
+    
+    try {
+      await downloadRagDocument(item.uuid, { fileName: item.fileName });
+    } catch (error) {
+      addError('Error al descargar el documento');
+      console.error('Error al descargar el documento:', error);
+    }
+  }, [addError, downloadRagDocument]);
+
   return <Form
     disabled={disabled}
     onSubmit={edit && onSubmit}
     onCancelGoBack={true}
     validationError={getValidationError()}
     unchangedData={JSON.stringify(data) === JSON.stringify(unchangedData)}
+    footer={hasPermission('ragDocuments.download') && uuid &&<Button
+      secondary onClick={() => downloadRagDocumentHandler(data)}
+    >
+      <DownloadIcon color="primary" />
+      Descargar documento
+    </Button>}
     {...(uuid ? {
         title: 'Modificar documento',
         description: 'Modifique los datos del documento',
@@ -131,7 +172,7 @@ export default function RagDocumentPage({
         label="Estado"
         readOnly
         disabled={disabled}
-        value={data.status}
+        value={getStatusNameByValue(data.status) || 'Desconocido'}
       />
     </> || <>
       <FileUploadField
