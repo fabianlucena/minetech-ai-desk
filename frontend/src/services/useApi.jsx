@@ -115,6 +115,34 @@ export function ApiProvider({
 
     let data = res;
 
+    if (options.download) {
+      if (res.ok) {
+        let fileName = options.fileName || options.download || 'download';
+        if (fileName === true) {
+          fileName = 'download';
+          const contentDisposition = res.headers.get('content-disposition');
+          if (contentDisposition) {
+            const filenameMatch = contentDisposition.match(/filename="?([^"]+)"?/);
+            if (filenameMatch && filenameMatch[1]) {
+              fileName = filenameMatch[1];
+            }
+          }
+        }
+
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+
+        a.href = url;
+        a.download = fileName || 'download';
+        document.body.appendChild(a);
+
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      }
+    }
+
     if (options.json) {
       if (res.headers.get('Content-Type')?.startsWith('application/json')) {
         data = await data.json();
@@ -204,6 +232,13 @@ export function ApiProvider({
     });
   }, [fetchJson]);
 
+  const download = useCallback(async (service, options) => {
+    await fetch(service, {
+      ...options,
+      download: true,
+    });
+  }, [fetch]);
+
   const value = useMemo(() => ({
     urlBase, setUrlBase,
     debug, setDebug,
@@ -217,6 +252,7 @@ export function ApiProvider({
     putJson,
     deleteJson,
     patchJson,
+    download,
   }), [
     urlBase, setUrlBase,
     debug, setDebug,
@@ -230,6 +266,7 @@ export function ApiProvider({
     putJson,
     deleteJson,
     patchJson,
+    download,
   ]);
 
   return <ApiContext.Provider

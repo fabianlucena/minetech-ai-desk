@@ -27,15 +27,15 @@ export default function RagDocumentsPage() {
   const { hasPermission } = usePermissions();
   const { addMessage, addError } = useToast();
   const { subscribe } = useDataNotifications();
-  const { getRagDocuments, deleteRagDocument, restoreRagDocument, getRagDocumentsStatus } = useRagDocument();
+  const { getRagDocuments, deleteRagDocument, restoreRagDocument, getRagDocumentsStatus, downloadRagDocument } = useRagDocument();
   const [includeDeleted, setIncludeDeleted] = useState(false);
   const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 20 });
   const [items, setItems] = useState([]);
   const [itemCount, setItemCount] = useState(0);
-  const [status, setStatus] = useState({});
+  const [status, setStatus] = useState([]);
 
   const getStatusNameByValue = useCallback((value) => {
-    return status.find(s => s.value === value)?.name ?? value;
+    return status?.find(s => s.value === value)?.name ?? value;
   }, [status]);
 
   const load = useCallback(async () => {
@@ -96,6 +96,20 @@ export default function RagDocumentsPage() {
     }
   }, [restoreRagDocument, addMessage, addError, load]);
 
+  const downloadRagDocumentHandler = useCallback(async (item) => {
+    if (!item?.uuid) {
+      addError('No se proporcionó un UUID válido para descargar el documento');
+      return;
+    }
+    
+    try {
+      await downloadRagDocument(item.uuid, { fileName: item.fileName });
+    } catch (error) {
+      addError('Error al descargar el documento');
+      console.error('Error al descargar el documento:', error);
+    }
+  }, [addError, downloadRagDocument]);
+
   return <Objects
     title="Documentos RAG"
     items={items}
@@ -115,12 +129,12 @@ export default function RagDocumentsPage() {
       </Typography>
       <Chip label={getStatusNameByValue(item.status) || 'Desconocido'} />
     </Box>}
-    itemActions={() => [
+    itemActions={params => [
       hasPermission('ragDocuments.download') && <ObjectAction
-        key="restore"
+        key="download"
         icon={<DownloadIcon color="primary" />}
         label="Descargar"
-        onClick={() => onRestore(params?.item)}
+        onClick={() => downloadRagDocumentHandler(params?.item)}
       />
     ]}
     paginationMode="server"

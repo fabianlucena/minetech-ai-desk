@@ -7,6 +7,7 @@ const router = Router();
 
 router.get('/', checkPermissionMiddleware('ragDocuments.list'), (...args) => getDependency('ragDocumentController').getList(...args));
 router.get('/status', checkPermissionMiddleware('ragDocuments.list', 'ragDocuments.read'), (...args) => getDependency('ragDocumentController').getStatus(...args));
+router.get('/:uuid/download', checkPermissionMiddleware('ragDocuments.download'), (...args) => getDependency('ragDocumentController').downloadByUuid(...args));
 router.get('/:uuid', checkPermissionMiddleware('ragDocuments.read'), (...args) => getDependency('ragDocumentController').getByUuid(...args));
 router.post('/', checkPermissionMiddleware('ragDocuments.create'), multer().array('file'), (...args) => getDependency('ragDocumentController').create(...args));
 router.put('/:uuid', checkPermissionMiddleware('ragDocuments.update'), (...args) => getDependency('ragDocumentController').updateByUuid(...args));

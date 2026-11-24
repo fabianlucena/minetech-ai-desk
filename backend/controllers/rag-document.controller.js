@@ -1,6 +1,7 @@
 import getDependency from '../dependency.js';
 import { getOptionsFromRequest } from './utils.js';
 import { Error400 } from '../errors/error400.js';
+import { Error404 } from '../errors/error404.js';
 import { RagDocumentDTO } from '../dto/ragDocument.dto.js';
 import { ragDocumentsStatus } from '../categories/rag_documents_status.js';
 
@@ -80,4 +81,19 @@ export async function restoreByUuid(req, res) {
 
 export async function getStatus(req, res) {
   res.json(ragDocumentsStatus);
+}
+
+export async function downloadByUuid(req, res) {
+  const ragDocumentService = getDependency('ragDocumentService');
+  const document = await ragDocumentService.getByUuid(req.params.uuid, {
+    session: req.session,
+  });
+
+  if (!document) {
+    throw new Error404('Documento no encontrado');
+  }
+
+  res.setHeader('Content-Disposition', `attachment; filename="${document.fileName}"`);
+  res.setHeader('Content-Type', document.mimeType);
+  res.sendFile(document.filePath);
 }
