@@ -116,12 +116,22 @@ export default function RagDocumentsPage() {
     itemCount={itemCount}
     renderItem={(item) => <Box
       onClick={() => hasPermission('ragDocuments.read') && navigate(`/rag-documents/${item.uuid}`)}
+      title={item.fileName}
       sx={{
         width: 120,
+        cursor: hasPermission('ragDocuments.read') ? 'pointer' : 'default',
       }}
     >
       <DocumentIcon sx={{ fontSize: 52, color: '#4040a0' }} />
-      <Typography variant="subtitle1" fontWeight="medium" color="text.primary">
+      <Typography
+        variant="subtitle1"
+        fontWeight="medium"
+        color="text.primary"
+        sx={{
+          textOverflow: 'ellipsis',
+          overflow: 'hidden',
+        }}
+      >
         {item.fileName}
       </Typography>
       <Typography variant="body2" color="text.secondary">

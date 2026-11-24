@@ -51,7 +51,7 @@ export default function ObjectsList({
           display: 'flex',
           flexDirection: 'row',
           gap: 1,
-          justifyContent: 'space-around',
+          justifyContent: 'space-evenly',
           marginTop: '0.5em',
         }}
       >

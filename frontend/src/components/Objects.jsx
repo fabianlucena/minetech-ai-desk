@@ -128,7 +128,7 @@ export default function Objects({
     {(title || description || tools || onReload || onCreate || createPath) && <Box
       sx={{
         display: 'flex',
-        justifyContent: 'space-evenly',
+        justifyContent: 'space-between',
       }}
     >
       <Box>
