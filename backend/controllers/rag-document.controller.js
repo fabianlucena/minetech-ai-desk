@@ -43,7 +43,10 @@ export async function create(req, res) {
     const ragDocument = await ragDocumentService.create(
       {
         ...req.body,
-        file,
+        file: {
+          ...file,
+          originalname: Buffer.from(file.originalname, 'latin1').toString('utf8'),
+        },
       },
       { session: req.session }
     );

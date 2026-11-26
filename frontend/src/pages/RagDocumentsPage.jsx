@@ -122,7 +122,7 @@ export default function RagDocumentsPage() {
       onClick={() => hasPermission('ragDocuments.read') && navigate(`/rag-documents/${item.uuid}`)}
       title={item.fileName}
       sx={{
-        width: 120,
+        width: 160,
         cursor: hasPermission('ragDocuments.read') ? 'pointer' : 'default',
       }}
     >
@@ -132,6 +132,7 @@ export default function RagDocumentsPage() {
         fontWeight="medium"
         color="text.primary"
         sx={{
+          whiteSpace: 'nowrap',
           textOverflow: 'ellipsis',
           overflow: 'hidden',
         }}
