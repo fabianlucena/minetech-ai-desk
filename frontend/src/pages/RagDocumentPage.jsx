@@ -30,6 +30,10 @@ export default function RagDocumentPage({
     return status?.find(s => s.value === value)?.name ?? value;
   }, [status]);
 
+  const getStatusColorByValue = useCallback((value) => {
+    return status?.find(s => s.value === value)?.color ?? 'red';
+  }, [status]);
+
   const loadStatus = useCallback(async () => {
     try {
       setStatus(await getRagDocumentsStatus());
@@ -41,7 +45,7 @@ export default function RagDocumentPage({
 
   const load = useCallback(async () => {
     try {
-      const res = await getRagDocument(uuid);
+      const res = await getRagDocument(uuid, { query: { includeChunksCount: 1 }});
       const data = {
         ...defaultData,
         ...res,
@@ -173,6 +177,13 @@ export default function RagDocumentPage({
         readOnly
         disabled={disabled}
         value={getStatusNameByValue(data.status) || 'Desconocido'}
+        color={getStatusColorByValue(data.status) || 'red'}
+      />
+      <TextField
+        label="Fragmentos"
+        readOnly
+        disabled={disabled}
+        value={data.chunksCount}
       />
     </> || <>
       <FileUploadField

@@ -38,6 +38,10 @@ export default function RagDocumentsPage() {
     return status?.find(s => s.value === value)?.name ?? value;
   }, [status]);
 
+  const getStatusColorByValue = useCallback((value) => {
+    return status?.find(s => s.value === value)?.color ?? 'red';
+  }, [status]);
+
   const load = useCallback(async () => {
     try {
       const query = { ...paginationModel, includeCount: true };
@@ -137,7 +141,10 @@ export default function RagDocumentsPage() {
       <Typography variant="body2" color="text.secondary">
         {sizeInMB(item.fileSize)}
       </Typography>
-      <Chip label={getStatusNameByValue(item.status) || 'Desconocido'} />
+      <Chip
+        label={getStatusNameByValue(item.status) || 'Desconocido'} 
+        color={getStatusColorByValue(item.status) || 'red'}
+      />
     </Box>}
     itemActions={params => [
       hasPermission('ragDocuments.download') && <ObjectAction

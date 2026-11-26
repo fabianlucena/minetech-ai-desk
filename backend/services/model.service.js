@@ -192,8 +192,8 @@ export default class ModelService {
     if (!options?.where)
       throw new Error('La cláusula where es obligatoria');
 
-    const result = await this.model.findOne(this.getModelOptions(options));
-    return result?.get({ plain: true }) || null;
+    const list = await this.getList(options);
+    return list?.[0];
   }
 
   async getList(options) {

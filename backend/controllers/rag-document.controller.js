@@ -14,6 +14,7 @@ export async function getList(req, res) {
   if (req.query.includeCount) {
     const count = await ragDocumentService.getCount({
       includeDeleted: !!req.query.includeDeleted,
+      includeChunksCount: !!req.query.includeChunksCount,
       session: req.session,
     });
     res.set('X-Total-Count', count.toString());
@@ -26,6 +27,7 @@ export async function getByUuid(req, res) {
   const ragDocumentService = getDependency('ragDocumentService');
   const document = await ragDocumentService.getByUuid(req.params.uuid, {
     session: req.session,
+    includeChunksCount: !!req.query.includeChunksCount,
   });
   res.json(new RagDocumentDTO(document));
 }

@@ -14,6 +14,7 @@ export class RagDocumentDTO {
     this.fileSize = client.fileSize;
     this.checksum = client.checksum;
     this.status = client.status;
+    this.chunksCount = client.chunksCount;
     this.createdAt = client.createdAt;
     this.updatedAt = client.updatedAt;
     this.deletedAt = client.deletedAt;

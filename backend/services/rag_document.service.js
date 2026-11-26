@@ -87,6 +87,17 @@ export default class RagDocumentService extends ModelService {
     }
   }
 
+  async getList(options) {
+    const result = await super.getList(options);
+    if (options.includeChunksCount) {
+      const ragChunkService = getDependency('ragChunkService');
+      for (const item of result) {
+        item.chunksCount = await ragChunkService.getCount({ where: { documentId: item.id } });
+      }
+    }
+    return result;
+  }
+
   async addUniqueFileName(data) {
     const extension = path.extname(data.fileName);
     while(true) {
