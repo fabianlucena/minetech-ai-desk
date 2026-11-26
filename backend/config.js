@@ -17,6 +17,9 @@ let config = {
   dbHost: 'localhost',
   dbPort: 5432,
 
+  chunkSize: 400,
+  overlap: 80,
+
   embed: {
     url: 'http://localhost:11434/api/embed',
     method: 'POST',
