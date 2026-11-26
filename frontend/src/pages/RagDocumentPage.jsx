@@ -73,7 +73,7 @@ export default function RagDocumentPage({
     try {
       if (uuid) {
         await updateRagDocument(uuid, {
-          fileName: data.fileName,
+          isActive: data.isActive,
         });
         addInfo('Documento actualizado correctamente');
       } else {
@@ -147,7 +147,7 @@ export default function RagDocumentPage({
       <TextField
         label="Nombre"
         disabled={disabled}
-        readOnly={readOnly}
+        readOnly
         required
         autoFocus
         value={data.fileName}

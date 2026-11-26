@@ -10,6 +10,7 @@ export default class RagDocumentProcessorService {
   static logger;
   static ragDocumentService;
   static ragChunkService;
+  static dataNotificationService;
 
   static async init() {
     if (this.isInited)
@@ -19,6 +20,14 @@ export default class RagDocumentProcessorService {
     this.logger = getDependency('logger');
     this.ragDocumentService = getDependency('ragDocumentService');
     this.ragChunkService = getDependency('ragChunkService');
+    this.dataNotificationService = getDependency('dataNotificationService');
+
+    this.dataNotificationService.addListener(notification => {
+      if (notification.topic !== 'rag_documents')
+        return;
+      
+      this.exec();
+    });
 
     await this.ragDocumentService.update(
       {
@@ -35,6 +44,8 @@ export default class RagDocumentProcessorService {
     if (this.isProcessing)
       return;
     this.isProcessing = true;
+
+    this.logger.info(`Begin RAG documents processing.`);
 
     let doc;
     do {
@@ -55,6 +66,8 @@ export default class RagDocumentProcessorService {
         );
       }
     } while (doc);
+
+    this.logger.info(`End RAG documents processing.`);
 
     this.isProcessing = false;
   }

@@ -141,10 +141,13 @@ export default function RagDocumentsPage() {
       <Typography variant="body2" color="text.secondary">
         {sizeInMB(item.fileSize)}
       </Typography>
-      <Chip
-        label={getStatusNameByValue(item.status) || 'Desconocido'} 
-        color={getStatusColorByValue(item.status) || 'red'}
-      />
+      {item.isActive ?
+        <Chip
+          label={getStatusNameByValue(item.status) || 'Desconocido'} 
+          color={getStatusColorByValue(item.status) || 'red'}
+        />
+        : <Chip label="Inactivo" color="#ddd" />
+      }
     </Box>}
     itemActions={params => [
       hasPermission('ragDocuments.download') && <ObjectAction
