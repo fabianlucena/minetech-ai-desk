@@ -1,0 +1,16 @@
+@url=http://localhost:11434
+
+###
+
+GET {{url}}/api/tags
+
+###
+
+POST {{url}}/api/embed
+Accept: application/json
+Content-Type: application/json
+
+{
+  "model": "all-minilm:latest",
+  "input": "Hola mundo"
+}

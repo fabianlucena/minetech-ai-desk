@@ -2,6 +2,7 @@ import { getDependency } from '../dependency.js';
 import { getBufferFromPath } from '../utils/get_buffer_from_path.js';
 import { extractPdfPagesFromPath } from '../utils/pdf.js';
 import { buildChunksFromSegments } from '../utils/create_chunks.js';
+import { extractByPath } from '../utils/extract_by_path.js';
 
 export default class RagDocumentProcessorService {
   static isInited = false;
@@ -82,15 +83,30 @@ export default class RagDocumentProcessorService {
     const chunks = buildChunksFromSegments(pages);
 
     for (const chunk of chunks) {
+      const embedding = await this.embed(chunk.content);
       await this.ragChunkService.create({
         documentId: doc.id,
         index: chunk.index,
         content: chunk.content,
         metadata: chunk.metadata,
-        embedding: Array.from({ length: 384 }, (_, i) => i),
+        embedding,
       });
     }
 
     await this.ragDocumentService.updateById(doc.id, { status: 'indexed' });
+  }
+
+  static async embed(text) {
+    const config = getDependency('config');
+    const response = await fetch(config.embed.url, {
+      method: config.embed.method,
+      headers: config.embed.headers,
+      body: JSON.stringify({
+        model: config.embed.model,
+        input: text,
+      }),
+    });
+    const data = await response.json();
+    return extractByPath(data, config.embed.data);
   }
 }

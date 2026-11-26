@@ -16,6 +16,17 @@ let config = {
   dbPass: 'password',
   dbHost: 'localhost',
   dbPort: 5432,
+
+  embed: {
+    url: 'http://localhost:11434/api/embed',
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    },
+    model: 'all-minilm:latest',
+    data: 'embeddings[0]'
+  },
   
   tokenSize: 64,
   sessionExpiration: 60 * 60 * 24 * 1, // 1 day
