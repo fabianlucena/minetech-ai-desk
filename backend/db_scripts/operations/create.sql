@@ -157,7 +157,7 @@ begin
   end if;
 end $$;
 
--- Insert default admin user pasword (only if admin does not have password) 1234
+-- Insert default admin user password (only if admin does not have password) 1234
 insert into auth.user_passwords (
   id,
   password_hash,
@@ -504,7 +504,7 @@ insert into ia_desk.settings (created_by_id,updated_by_id,"key","description",va
 	values 
     (1,1,'failedAuthBlockedTime','Tiempo de bloqueo (hh:mm:ss) para un solicitante que falló en la autentificación','"1:00:00"'::jsonb),
     (1,1,'maxFailedAuthAttempts','Número máximo de intentos de autentificación permitidos al solicitante, antes de bloquearlo','3'::jsonb),
-    (1,1,'authenticationExpirationDays','Tiempo (dd hh:mm:ss) en que un solicitante puede realizar consultas antes de solicitar su authentificación nuevamente','"60 00:00:00"'::jsonb)
+    (1,1,'authenticationExpirationDays','Tiempo (dd hh:mm:ss) en que un solicitante puede realizar consultas antes de solicitar su autentificación nuevamente','"60 00:00:00"'::jsonb)
 on conflict ("key") do nothing;
 
 -- Table technicians
@@ -842,6 +842,7 @@ create table if not exists ia_desk.rag_documents (
     file_size bigint not null,
     checksum varchar(128) not null,
     status varchar(50) not null,
+    error text null,
 
     created_at timestamp not null default current_timestamp,
     created_by_id bigint not null,
@@ -865,5 +866,28 @@ create table if not exists ia_desk.rag_documents (
       references auth.users(id) on delete restrict
 );
 
-create index if not exists ik__ia_desk_rag_documents_status
+create index if not exists ix_ia_desk_rag_documents_status
   on ia_desk.rag_documents(status);
+
+create table if not exists ia_desk.rag_chunks (
+    id bigserial primary key,
+    uuid uuid not null default gen_random_uuid(),
+
+    document_id bigint not null,
+    index int not null,
+    content text not null,
+    embedding vector(384),
+    metadata jsonb default '{}'::jsonb,
+
+    created_at timestamp not null default current_timestamp,
+    
+    constraint fk_ia_desk_rag_chunks_document_id foreign key (document_id)
+      references ia_desk.rag_documents(id) on delete cascade
+);
+
+create index if not exists ix_ia_desk_rag_chunks_embedding_hnsw
+  on ia_desk.rag_chunks
+  using hnsw (embedding vector_cosine_ops);
+
+create index if not exists ix_ia_desk_rag_chunks_document_id
+  on ia_desk.rag_chunks(document_id);

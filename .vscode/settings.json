@@ -6,10 +6,16 @@
     "**/node_modules": true
   },
   "cSpell.words": [
+    "Activable",
     "Autorization",
+    "conname",
+    "hnsw",
+    "Inited",
     "minetech",
     "unban",
     "Unban",
+    "unpdf",
+    "uuids",
     "UUIDV"
   ]
 }

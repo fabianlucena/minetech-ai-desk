@@ -29,11 +29,11 @@ export default class RagDocumentService extends ModelService {
   }
 
   get validPropertiesForCreation() {
-    return ['uuid', 'isActive', 'fileName', 'filePath', 'mimeType', 'fileSize', 'checksum', 'status'];
+    return ['uuid', 'isActive', 'fileName', 'filePath', 'mimeType', 'fileSize', 'checksum', 'status', 'error'];
   }
 
   get validPropertiesForUpdate() {
-    return ['isActive', 'status'];
+    return ['isActive', 'status', 'error'];
   }
 
   async create(data, options) {

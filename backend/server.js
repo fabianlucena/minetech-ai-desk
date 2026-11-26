@@ -9,12 +9,13 @@ import logMiddleware from './middlewares/log.middleware.js';
 import checkAuthorizationTokenMiddleware from './middlewares/check_authorization_token_middleware.js';
 
 await import('./models/index.js');
-await import('./services/index.js');
+const { init: initServices } = await import('./services/index.js');
 const { init: initControllers } = await import('./controllers/index.js');
 const { init: initAdapters } = await import('./adapters/index.js');
 const routes = (await import('./routes/index.js')).default;
 const index = path.resolve(config.webPath, 'index.html');
 
+await initServices();
 await initControllers();
 await initAdapters();
 

@@ -41,6 +41,7 @@ create table if not exists ia_desk.rag_documents (
     file_size bigint not null,
     checksum varchar(128) not null,
     status varchar(50) not null,
+    error text null,
 
     created_at timestamp not null default current_timestamp,
     created_by_id bigint not null,
@@ -64,5 +65,28 @@ create table if not exists ia_desk.rag_documents (
       references auth.users(id) on delete restrict
 );
 
-create index if not exists ik__ia_desk_rag_documents_status
+create index if not exists ix_ia_desk_rag_documents_status
   on ia_desk.rag_documents(status);
+
+create table if not exists ia_desk.rag_chunks (
+    id bigserial primary key,
+    uuid uuid not null default gen_random_uuid(),
+
+    document_id bigint not null,
+    index int not null,
+    content text not null,
+    embedding vector(384),
+    metadata jsonb default '{}'::jsonb,
+
+    created_at timestamp not null default current_timestamp,
+    
+    constraint fk_ia_desk_rag_chunks_document_id foreign key (document_id)
+      references ia_desk.rag_documents(id) on delete cascade
+);
+
+create index if not exists ix_ia_desk_rag_chunks_embedding_hnsw
+  on ia_desk.rag_chunks
+  using hnsw (embedding vector_cosine_ops);
+
+create index if not exists ix_ia_desk_rag_chunks_document_id
+  on ia_desk.rag_chunks (document_id);

@@ -9,6 +9,8 @@ import { toCamelCase } from '../utils/string.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+const services = [];
+
 async function run() {
   try {
     logger.info('🛠️  Setting up services');
@@ -24,6 +26,7 @@ async function run() {
       const fullPath = path.join(__dirname, file);
       const fileUrl = pathToFileURL(fullPath).href;
       const service = await import(fileUrl);
+      services.push(service.default);
       addDependency(serviceName, () => new service.default());
     }
 
@@ -35,3 +38,11 @@ async function run() {
 }
 
 await run();
+
+export async function init() {
+  for (const service of services) {
+    if (typeof service.init === 'function') {
+      await service.init();
+    }
+  }
+}

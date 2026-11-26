@@ -17,6 +17,7 @@ export default (sequelize) => {
     fileSize: { field: 'file_size', type: DataTypes.BIGINT, allowNull: false },
     checksum: { field: 'checksum', type: DataTypes.STRING, allowNull: false },
     status: { field: 'status', type: DataTypes.STRING, allowNull: false },
+    error: { field: 'error', type: DataTypes.TEXT, allowNull: true },
   }, {
     tableName: 'rag_documents',
     schema: 'ia_desk',
